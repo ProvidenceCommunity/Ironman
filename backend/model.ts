@@ -3,9 +3,16 @@ import { TestGameMode } from "./GameModes/test";
 export interface IronmanMatch {
     id: string;
     players: string[];
+    type: IronmanMatchType;
     scores: number[];
     finished?: boolean;
     rounds: IronmanRound[];
+}
+
+export enum IronmanMatchType {
+    FFA,
+    TEAM_SIMULTANEOUS,
+    TEAM_RELAYED
 }
 
 export interface IronmanRound {
@@ -35,10 +42,19 @@ export interface GeneratorOptions {
 export interface GameMode {
     getGeneratorOptions(): GeneratorOption[];
     generate(options: GeneratorOptions): GameModeDetails;
-    handleUserEvent(event: string, payload: unknown, currentState: GameModeDetails): GameModeDetails;
+    handleUserEvent(event: string, player: number, payload: unknown, currentState: GameModeDetails): GameModeDetails;
     handleAdminEvent(event: string, payload: unknown, currentState: GameModeDetails): GameModeDetails;
+    getPlayerDetails(player: number, currentState: GameModeDetails): GameModeDetails;
 }
 
-export const GameModes = {
+export const GameModes: { [key: string]: GameMode } = {
     "test": new TestGameMode()
+}
+
+declare module 'express-session' {
+    interface SessionData {
+        isAdmin: boolean;
+        username: string;
+        avatarURI: string;
+    }
 }

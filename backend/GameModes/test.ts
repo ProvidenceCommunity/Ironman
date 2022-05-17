@@ -1,5 +1,9 @@
 import {GameMode, GameModeDetails, GeneratorOption, GeneratorOptions} from "../model";
 
+interface TestEventPayload {
+    value: number;
+}
+
 export class TestGameMode implements GameMode {
 
     getGeneratorOptions(): GeneratorOption[] {
@@ -38,9 +42,9 @@ export class TestGameMode implements GameMode {
         };
     }
 
-    handleUserEvent(event: string, payload: unknown, currentState: GameModeDetails): GameModeDetails {
+    handleUserEvent(event: string, user: number, payload: TestEventPayload, currentState: GameModeDetails): GameModeDetails {
         if (event === "updateCounter") {
-            currentState['counter'] += payload['value'];
+            (currentState['counter'] as number) += payload.value;
         }
         return currentState;
     }
@@ -49,6 +53,10 @@ export class TestGameMode implements GameMode {
         if (event === "resetCounter") {
             currentState['counter'] = 0;
         }
+        return currentState;
+    }
+
+    getPlayerDetails(player: number, currentState: GameModeDetails): GameModeDetails {
         return currentState;
     }
 }

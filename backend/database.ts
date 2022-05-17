@@ -1,4 +1,5 @@
 import {IronmanMatch} from "./model";
+import session from 'express-session';
 
 interface MatchList {
     [id: string]: IronmanMatch;
@@ -17,3 +18,5 @@ export async function writeDatabase(): Promise<void> {
 export function getMatch(id: string): IronmanMatch {
     return matches[id];
 }
+
+export const sessionStore = session({ secret: "TODO FIX ME" });

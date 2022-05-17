@@ -1,15 +1,15 @@
 import express from 'express';
-import session from 'express-session';
 import {loadDatabase, writeDatabase} from "./database";
 import {apiRouter} from "./apiRouter";
+import {authRouter} from "./authenticator";
 
 async function main() {
     const app = express();
 
     await loadDatabase();
 
-    app.use(session({ secret: 'TODO FIX THIS' }));
     app.use('/api/', apiRouter);
+    app.use('/auth/', authRouter);
 
     app.listen(3000, 'localhost', () => {
         console.log(`Server listening on localhost:3000`);
