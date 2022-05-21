@@ -3,16 +3,15 @@ import { TestGameMode } from "./GameModes/test";
 export interface IronmanMatch {
     id: string;
     players: string[];
-    type: IronmanMatchType;
+    scoringType: IronmanScoringType;
     scores: number[];
     finished?: boolean;
     rounds: IronmanRound[];
 }
 
-export enum IronmanMatchType {
-    FFA,
-    TEAM_SIMULTANEOUS,
-    TEAM_RELAYED
+export enum IronmanScoringType {
+    PLAYER,
+    TEAMS
 }
 
 export interface IronmanRound {
