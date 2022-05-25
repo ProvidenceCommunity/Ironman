@@ -1,13 +1,23 @@
-import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
-import Index from '@/views/Index.vue';
-import MatchList from "@/views/MatchList.vue";
+import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
+import IndexView from '../views/Index.vue'
+import MatchListView from '../views/MatchList.vue'
 
-const routes: RouteRecordRaw[] = [
-    { path: '/', component: Index },
-    { path: '/admin', component: MatchList }
-];
+const routes: Array<RouteRecordRaw> = [
+  {
+    path: '/',
+    name: 'home',
+    component: IndexView
+  },
+  {
+    path: '/admin',
+    name: 'admin',
+    component: MatchListView
+  }
+]
 
-export default createRouter({
-    history: createWebHistory(),
-    routes
-});
+const router = createRouter({
+  history: createWebHistory(),
+  routes
+})
+
+export default router
