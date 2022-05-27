@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 import IndexView from '../views/Index.vue'
 import MatchListView from '../views/MatchList.vue'
+import AdminInterfaceView from '../views/AdminInterface.vue'
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -12,6 +13,11 @@ const routes: Array<RouteRecordRaw> = [
     path: '/admin',
     name: 'admin',
     component: MatchListView
+  },
+  {
+    path: '/admin/:matchID',
+    name: 'admininterface',
+    component: AdminInterfaceView
   }
 ]
 

@@ -1,4 +1,17 @@
 <template>
+  <v-dialog v-model="creationDialog">
+    <v-card>
+      <v-card-title>Create match</v-card-title>
+      <v-card-text>
+        Players: (One per line)
+        <v-textarea v-model="players"></v-textarea>
+      </v-card-text>
+      <v-card-actions>
+        <v-spacer></v-spacer>
+        <v-btn @click="createMatch()">Create</v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
   <v-container fluid>
     <v-row>
       <v-spacer></v-spacer>
@@ -16,9 +29,9 @@
           <v-card-text>
             <v-container>
               <v-row>
-                <v-col><v-checkbox v-model="showFinished" label="Show finished matches" hide-details></v-checkbox></v-col>
-                <v-col align-self="end"><v-btn class="float-right">Add match</v-btn></v-col>
-              </v-row>
+                 <v-col><v-checkbox v-model="showFinished" label="Show finished matches" hide-details></v-checkbox></v-col>
+                 <v-col align-self="end"><v-btn class="float-right" @click="openMatchCreator()">Add match</v-btn></v-col>
+               </v-row>
             </v-container>
             <v-table>
               <thead>
@@ -33,7 +46,7 @@
                   <tr v-if="!match.finished || showFinished">
                     <td>{{ match.players.join(", ") }}</td>
                     <td>{{ match.finished }}</td>
-                    <td></td>
+                    <td><a :href="'/admin/' + match.id">Administrate</a></td>
                   </tr>
                 </template>
               </tbody>
@@ -48,7 +61,7 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { get } from '@/http';
+import { get, post } from '@/http';
 
 export default defineComponent({
   name: 'MatchList',
@@ -73,7 +86,9 @@ export default defineComponent({
           finished: true
         }
       ],
-      showFinished: false
+      showFinished: false,
+      creationDialog: false,
+      players: ""
     }
   },
   async created() {
@@ -84,6 +99,16 @@ export default defineComponent({
     }
     this.username = userInfo.data.username;
     this.avatar = userInfo.data.avatar;
+  },
+  methods: {
+    async createMatch() {
+      this.creationDialog = false;
+      await post("/api/match/create", {players: this.players.split("\n"), scoringType: 0});
+    },
+    openMatchCreator() {
+      this.players = "";
+      this.creationDialog = true;
+    }
   }
 })
 </script>
