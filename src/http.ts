@@ -9,7 +9,8 @@ export async function get(path: string) {
         headers: {
             "Content-type": "application/json",
         },
-        validateStatus: status => true
+        validateStatus: status => true,
+        withCredentials: true
     });
 }
 export async function patch(path: string, data: any) {
@@ -17,7 +18,8 @@ export async function patch(path: string, data: any) {
         headers: {
             "Content-type": "application/json",
         },
-        validateStatus: status => true
+        validateStatus: status => true,
+        withCredentials: true
     });
 }
 export async function post(path: string, data: any) {
@@ -25,6 +27,7 @@ export async function post(path: string, data: any) {
         headers: {
             "Content-type": "application/json",
         },
-        validateStatus: status => true
+        validateStatus: status => true,
+        withCredentials: true
     });
 }

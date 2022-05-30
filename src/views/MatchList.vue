@@ -92,6 +92,8 @@ export default defineComponent({
     }
   },
   async created() {
+    // TODO: Debug call, remove me!
+    await get('/auth/local_login');
     const userInfo = await get('/data/me');
     if (userInfo.status !== 200) {
       await this.$router.push('/');
@@ -99,11 +101,17 @@ export default defineComponent({
     }
     this.username = userInfo.data.username;
     this.avatar = userInfo.data.avatar;
+    await this.updateList();
   },
   methods: {
+    async updateList() {
+      const matches = await get('/data/matches');
+      this.matches = matches.data.matches;
+    },
     async createMatch() {
       this.creationDialog = false;
       await post("/api/match/create", {players: this.players.split("\n"), scoringType: 0});
+      await this.updateList();
     },
     openMatchCreator() {
       this.players = "";

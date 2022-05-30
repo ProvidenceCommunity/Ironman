@@ -47,6 +47,7 @@ apiRouter.post('/match/admin/:mID/:event', (req, res) => {
 });
 
 apiRouter.get('/match/player/:mID/:player', (req, res) => {
+    //TODO: Countdown?
     const match = getMatch(req.params.mID as string);
     if (!match) {
         res.sendStatus(404);

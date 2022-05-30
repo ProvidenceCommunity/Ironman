@@ -1,4 +1,4 @@
-import {IronmanMatch, IronmanScoringType} from "./model";
+import {IronmanMatch, IronmanScoringType, SimplifiedIronmanMatch} from "./model";
 import session from 'express-session';
 import { randomUUID } from 'crypto';
 
@@ -33,6 +33,16 @@ export function createMatch(players: string[], scoringType: IronmanScoringType):
         rounds: []
     };
     return uuid;
+}
+
+export function getMatches(): SimplifiedIronmanMatch[] {
+    return Object.values(matches).map(e => {
+        return {
+            id: e.id,
+            players: e.players,
+            finished: e.finished
+        }
+    });
 }
 
 export const sessionStore = session({ secret: "TODO FIX ME" });

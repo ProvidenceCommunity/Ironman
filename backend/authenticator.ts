@@ -21,5 +21,5 @@ authRouter.get("/local_login", (req, res) => {
     req.session.isAdmin = true;
     req.session.username = "root";
     req.session.avatarURI = "";
-    res.redirect("/");
+    res.sendStatus(204);
 });

@@ -9,6 +9,12 @@ export interface IronmanMatch {
     rounds: IronmanRound[];
 }
 
+export interface SimplifiedIronmanMatch {
+    id: string;
+    players: string[];
+    finished?: boolean;
+}
+
 export enum IronmanScoringType {
     PLAYER,
     TEAMS
@@ -20,7 +26,6 @@ export interface IronmanRound {
     arrivingTimestamp: number;
     leavingTimestamp: number;
     playersDone: number[];
-    scoreUpdates: number[];
 }
 
 export interface GameModeDetails {

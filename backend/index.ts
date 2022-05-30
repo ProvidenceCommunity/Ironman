@@ -13,7 +13,9 @@ async function main() {
 
     app.use(bodyParser.json());
     app.use(cors({
-        origin: 'http://localhost:8080'
+        // TODO: Not static?
+        origin: 'http://localhost:8080',
+        credentials: true
     }))
 
     app.use('/api/', apiRouter);
