@@ -1,5 +1,14 @@
 <template>
   <AddRoundDialog v-if="addingRound" :game_mode="gameModeToAdd" @done="doneAddingRound"/>
+  <v-dialog v-model="matchDoneDialog" persistent>
+    <v-card>
+      <v-card-text>Are you sure you want to mark this match as done and return to the main page?</v-card-text>
+      <v-card-actions>
+        <v-btn @click="matchDoneDialog = false">Cancel</v-btn>
+        <v-btn @click="confirmDone">Confirm & return</v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
   <v-container fluid>
     <v-row>
       <v-spacer></v-spacer>
@@ -31,7 +40,7 @@
             <v-expansion-panel-text>
               <ul>
                 <li v-for="(player, index) of matchInfo.players" :key="index">
-                  <v-text-field v-model="matchInfo.scores[index]" hide-details="true" density="compact" :label="player"></v-text-field>
+                  <v-text-field v-model="matchInfo.scores[index]" hide-details="true" density="compact" :label="player" @change="sendData"></v-text-field>
                 </li>
               </ul>
             </v-expansion-panel-text>
@@ -43,12 +52,17 @@
     <v-row>
       <v-spacer></v-spacer>
       <v-col cols="5">
-        Add new round:<br>
+        <b>Add new round:</b><br>
         <v-select :items="gameModes" v-model="gameModeToAdd" ></v-select>
-        Mark match as done
+        <v-btn @click="markMatchDone">Mark match as done</v-btn>
       </v-col>
       <v-col cols="5">
-        Previous rounds
+        <b>Rounds of this match:</b><br>
+        <ol>
+          <li v-for="(round, index) of matchInfo.rounds" :key="index">{{ round }}</li>
+        </ol>
+        <v-text-field label="Arrival timestamp" v-model="arrivingTimestamp" dense @change="updateTimestamps"></v-text-field><br>
+        <v-text-field label="Departure timestamp" v-model="leavingTimestamp" dense @change="updateTimestamps"></v-text-field>
       </v-col>
       <v-spacer></v-spacer>
     </v-row>
@@ -57,7 +71,7 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { get } from '@/http';
+import { get, post } from '@/http';
 import AddRoundDialog from '@/components/AddRoundDialog.vue';
 
 export default defineComponent({
@@ -68,33 +82,67 @@ export default defineComponent({
   data() {
     return {
       matchId: "",
-      gameModes: ["test"],
+      gameModes: [],
       matchInfo: {},
       gameModeToAdd: "",
-      addingRound: false
+      addingRound: false,
+      refreshTask: -1,
+      arrivingTimestamp: 0,
+      leavingTimestamp: 0,
+      matchDoneDialog: false
     }
   },
   async created() {
     this.matchId = window.location.pathname.split("/").pop() as string;
-    const matchInfo = await get("/api/match/admin/" + this.matchId);
     const gameModes = await get("/data/game_modes");
     this.gameModes = gameModes.data.game_modes;
-    this.matchInfo = matchInfo.data;
+    this.refreshTask = setInterval(this.updateData, 1000);
+  },
+  beforeUnmount() {
+    clearInterval(this.refreshTask);
   },
   methods: {
     getPlayerLink(playerName: string): string {
-      return `${window.location.origin}/match/${this.matchId}/${playerName}`
+      return `${window.location.origin}/client/${this.matchId}/${playerName}`
     },
     async doneAddingRound(values: any) {
-      console.log(values);
+      await post('/api/match/admin/' + this.matchId + '/addRound', {
+        game_mode: this.gameModeToAdd,
+        generatorOptions: values
+      });
+      await this.updateData();
       this.addingRound = false;
       this.gameModeToAdd = "";
+    },
+    async updateData() {
+      const matchInfo = await get("/api/match/admin/" + this.matchId);
+      this.matchInfo = matchInfo.data;
+    },
+    async sendData() {
+      await post('/api/match/update/' + this.matchId, this.matchInfo);
+    },
+    async updateTimestamps() {
+      if (this.matchInfo) {
+        let roundIndex = (this.matchInfo as any).rounds.length - 1;
+        if (roundIndex >= 0) {
+          (this.matchInfo as any).rounds[roundIndex].arrivingTimestamp = this.arrivingTimestamp;
+          (this.matchInfo as any).rounds[roundIndex].leavingTimestamp = this.leavingTimestamp;
+          await this.sendData();
+        }
+      }
+    },
+    markMatchDone() {
+      this.matchDoneDialog = true;
+    },
+    async confirmDone() {
+      (this.matchInfo as any).finished = true;
+      await this.sendData();
+      this.matchDoneDialog = false;
+      await this.$router.push("/admin");
     }
   },
   watch: {
     gameModeToAdd(newGM, oldGM) {
-      console.log(oldGM);
-      console.log(newGM);
       if (newGM !== "") {
         this.addingRound = true;
       }

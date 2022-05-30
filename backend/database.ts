@@ -6,7 +6,7 @@ interface MatchList {
     [id: string]: IronmanMatch;
 }
 
-let matches: MatchList = {}
+const matches: MatchList = {}
 
 export async function loadDatabase(): Promise<void> {
     //TODO SQLite?
@@ -18,6 +18,10 @@ export async function writeDatabase(): Promise<void> {
 
 export function getMatch(id: string): IronmanMatch {
     return matches[id];
+}
+
+export function setMatch(id: string, match: IronmanMatch): void {
+    matches[id] = match;
 }
 
 export function createMatch(players: string[], scoringType: IronmanScoringType): string {

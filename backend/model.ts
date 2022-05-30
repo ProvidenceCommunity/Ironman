@@ -25,7 +25,6 @@ export interface IronmanRound {
     additionalDetails: GameModeDetails;
     arrivingTimestamp: number;
     leavingTimestamp: number;
-    playersDone: number[];
 }
 
 export interface GameModeDetails {

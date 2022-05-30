@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import {createMatch, getMatch, sessionStore} from "./database";
+import {createMatch, getMatch, sessionStore, setMatch} from "./database";
 import {GameModes} from "./model";
 
 export const apiRouter = Router();
@@ -15,7 +15,12 @@ apiRouter.post('/match/create', (req, res) => {
 });
 
 apiRouter.post('/match/update/:mID', (req, res) => {
-
+    if (!req.session.isAdmin) {
+        res.sendStatus(403);
+        return;
+    }
+    setMatch(req.params.mID as string, req.body);
+    res.sendStatus(204);
 });
 
 apiRouter.get('/match/admin/:mID', (req, res) => {
@@ -29,6 +34,26 @@ apiRouter.get('/match/admin/:mID', (req, res) => {
         return;
     }
     res.json(match);
+});
+
+apiRouter.post('/match/admin/:mID/addRound', (req, res) => {
+    if (!req.session.isAdmin) {
+        res.sendStatus(403);
+        return;
+    }
+    const match = getMatch(req.params.mID as string);
+    if (!match) {
+        res.sendStatus(404);
+        return;
+    }
+    match.rounds.push({
+        mode: req.body.game_mode,
+        additionalDetails: GameModes[req.body.game_mode].generate(req.body.generatorOptions),
+        arrivingTimestamp: -1,
+        leavingTimestamp: -1
+    });
+    setMatch(req.params.mID as string, match);
+    res.sendStatus(204);
 });
 
 apiRouter.post('/match/admin/:mID/:event', (req, res) => {
