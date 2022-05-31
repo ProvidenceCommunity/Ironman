@@ -59,10 +59,19 @@
       <v-col cols="5">
         <b>Rounds of this match:</b><br>
         <ol>
-          <li v-for="(round, index) of matchInfo.rounds" :key="index">{{ round }}</li>
+          <li v-for="(round, index) of matchInfo.rounds" :key="index">{{ round.mode }} - <v-chip>{{ getRoundStatus(round, index) }}</v-chip></li>
         </ol>
         <v-text-field label="Arrival timestamp" v-model="arrivingTimestamp" dense @change="updateTimestamps"></v-text-field><br>
         <v-text-field label="Departure timestamp" v-model="leavingTimestamp" dense @change="updateTimestamps"></v-text-field>
+      </v-col>
+      <v-spacer></v-spacer>
+    </v-row>
+    <v-row>
+      <v-spacer></v-spacer>
+      <v-col cols="10">
+
+        <DoneButtonAdmin v-if="currentRound.mode === 'simpleDoneButton'" :players="matchInfo.players" :details="currentRound.additionalDetails"></DoneButtonAdmin>
+
       </v-col>
       <v-spacer></v-spacer>
     </v-row>
@@ -73,10 +82,12 @@
 import { defineComponent } from "vue";
 import { get, post } from '@/http';
 import AddRoundDialog from '@/components/AddRoundDialog.vue';
+import DoneButtonAdmin from "@/components/GameModesAdmin/DoneButton.vue";
 
 export default defineComponent({
   name: 'AdminInterface',
   components: {
+    DoneButtonAdmin,
     AddRoundDialog
   },
   data() {
@@ -122,13 +133,11 @@ export default defineComponent({
       await post('/api/match/update/' + this.matchId, this.matchInfo);
     },
     async updateTimestamps() {
-      if (this.matchInfo) {
-        let roundIndex = (this.matchInfo as any).rounds.length - 1;
-        if (roundIndex >= 0) {
-          (this.matchInfo as any).rounds[roundIndex].arrivingTimestamp = this.arrivingTimestamp;
-          (this.matchInfo as any).rounds[roundIndex].leavingTimestamp = this.leavingTimestamp;
-          await this.sendData();
-        }
+      const roundIndex = this.getCurrentRoundIndex();
+      if (roundIndex >= 0) {
+        (this.matchInfo as any).rounds[roundIndex].arrivingTimestamp = this.arrivingTimestamp;
+        (this.matchInfo as any).rounds[roundIndex].leavingTimestamp = this.leavingTimestamp;
+        await this.sendData();
       }
     },
     markMatchDone() {
@@ -139,6 +148,22 @@ export default defineComponent({
       await this.sendData();
       this.matchDoneDialog = false;
       await this.$router.push("/admin");
+    },
+    getRoundStatus(round: any, index: number) {
+      if (index === this.getCurrentRoundIndex()) {
+        return "Currently running";
+      } else {
+        return "Finished";
+      }
+    },
+    getCurrentRoundIndex() {
+      if ((this.matchInfo as any).rounds !== undefined) {
+        let roundIndex = (this.matchInfo as any).rounds.length - 1;
+        if (roundIndex >= 0) {
+          return roundIndex;
+        }
+      }
+      return -1;
     }
   },
   watch: {
@@ -146,6 +171,18 @@ export default defineComponent({
       if (newGM !== "") {
         this.addingRound = true;
       }
+    }
+  },
+  computed: {
+    currentRound(): unknown {
+      let mInfo = this.matchInfo as any;
+      if (mInfo.rounds !== undefined) {
+        let roundIndex = mInfo.rounds.length - 1;
+        if (roundIndex >= 0) {
+          return mInfo.rounds[roundIndex];
+        }
+      }
+      return { mode: "" };
     }
   }
 })

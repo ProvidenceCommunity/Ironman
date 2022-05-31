@@ -1,4 +1,5 @@
 import { TestGameMode } from "./GameModes/test";
+import { DoneButtonGameMode } from "./GameModes/simpleDone";
 
 export interface IronmanMatch {
     id: string;
@@ -28,7 +29,7 @@ export interface IronmanRound {
 }
 
 export interface GameModeDetails {
-    [key: string]: string | number | boolean;
+    [key: string]: string | number | boolean | string[] | number[] | boolean[];
 }
 
 export interface GeneratorOption {
@@ -44,14 +45,15 @@ export interface GeneratorOptions {
 
 export interface GameMode {
     getGeneratorOptions(): GeneratorOption[];
-    generate(options: GeneratorOptions): GameModeDetails;
+    generate(options: GeneratorOptions, players: string[]): GameModeDetails;
     handleUserEvent(event: string, player: number, payload: unknown, currentState: GameModeDetails): GameModeDetails;
     handleAdminEvent(event: string, payload: unknown, currentState: GameModeDetails): GameModeDetails;
     getPlayerDetails(player: number, currentState: GameModeDetails): GameModeDetails;
 }
 
 export const GameModes: { [key: string]: GameMode } = {
-    "test": new TestGameMode()
+    "test": new TestGameMode(),
+    "simpleDoneButton": new DoneButtonGameMode()
 }
 
 declare module 'express-session' {

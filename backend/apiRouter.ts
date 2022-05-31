@@ -48,7 +48,7 @@ apiRouter.post('/match/admin/:mID/addRound', (req, res) => {
     }
     match.rounds.push({
         mode: req.body.game_mode,
-        additionalDetails: GameModes[req.body.game_mode].generate(req.body.generatorOptions),
+        additionalDetails: GameModes[req.body.game_mode].generate(req.body.generatorOptions, match.players),
         arrivingTimestamp: -1,
         leavingTimestamp: -1
     });

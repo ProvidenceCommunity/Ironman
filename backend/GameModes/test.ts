@@ -32,7 +32,7 @@ export class TestGameMode implements GameMode {
         ];
     }
 
-    generate(options: GeneratorOptions): GameModeDetails {
+    generate(options: GeneratorOptions, players: string[]): GameModeDetails {
         return {
             title: options['one'],
             number: options['two'],
