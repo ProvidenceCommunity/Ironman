@@ -70,7 +70,7 @@
       <v-spacer></v-spacer>
       <v-col cols="10">
 
-        <DoneButtonAdmin v-if="currentRound.mode === 'simpleDoneButton'" :players="matchInfo.players" :details="currentRound.additionalDetails"></DoneButtonAdmin>
+        <DoneButtonAdmin v-if="currentRound.mode === 'simpleDoneButton'" :players="matchInfo.players" :details="currentRound.additionalDetails" :matchId="this.matchId"></DoneButtonAdmin>
 
       </v-col>
       <v-spacer></v-spacer>

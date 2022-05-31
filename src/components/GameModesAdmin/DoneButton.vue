@@ -6,8 +6,8 @@
       <v-list-item-title>{{ player }}</v-list-item-title>
       <b>Current status:</b> {{ getPlayerStatus(index) }}<br>
       <v-list-item-action v-if="isPlayerDone(index)">
-        <v-btn>Accept</v-btn>
-        <v-btn>Reject</v-btn>
+        <v-btn @click="acceptRun(index)">Accept</v-btn>
+        <v-btn @click="rejectRun(index)">Reject</v-btn>
       </v-list-item-action>
     </v-list-item>
   </v-list>
@@ -15,10 +15,11 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
+import {post} from "@/http";
 
 export default defineComponent({
   name: "DoneButtonAdmin",
-  props: [ 'players', 'details' ],
+  props: [ 'players', 'details', 'matchId' ],
   data() {
     return {}
   },
@@ -37,6 +38,12 @@ export default defineComponent({
     },
     timestampToLocale(timestamp: number): string {
       return timestamp.toString();
+    },
+    async acceptRun(player: number) {
+      await post("/api/match/admin/" + this.matchId + "/acceptDone", {playerIndex: player});
+    },
+    async rejectRun(player: number) {
+      await post("/api/match/admin/" + this.matchId + "/rejectDone", {playerIndex: player});
     }
   }
 })
