@@ -1,8 +1,8 @@
 <template>
-  <v-text-field v-if="option.type === 'string'" :label="option.caption" v-model="value" @change="change"></v-text-field>
-  <v-text-field v-if="option.type === 'number'" :label="option.caption" v-model="value" @change="change" :rules="[isNumber]"></v-text-field>
-  <v-checkbox v-if="option.type === 'boolean'" :label="option.caption" v-model="value" @change="change"></v-checkbox>
-  <v-select v-if="option.type === 'select'" v-model="value" :items="option.options" :label="option.caption" @change="change"></v-select>
+  <v-text-field v-if="option.type === 'string'" :label="option.caption" v-model="value"></v-text-field>
+  <v-text-field v-if="option.type === 'number'" :label="option.caption" v-model="value" :rules="[isNumber]"></v-text-field>
+  <v-checkbox v-if="option.type === 'boolean'" :label="option.caption" v-model="value"></v-checkbox>
+  <v-select v-if="option.type === 'select'" v-model="value" :items="option.options" :label="option.caption"></v-select>
 </template>
 
 <script lang="ts">
@@ -18,15 +18,17 @@ export default defineComponent({
     }
   },
   methods: {
-    change() {
-      this.$emit('change', this.option.id, this.value);
-    },
     isNumber(val: string) {
       if (/^\d+$/.test(val)) {
         return true;
       } else {
         return "Input must be a number";
       }
+    }
+  },
+  watch: {
+    value(newVal, oldVal) {
+      this.$emit('change', this.option.id, this.value);
     }
   }
 })

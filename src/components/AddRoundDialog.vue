@@ -40,6 +40,7 @@ export default defineComponent({
     },
     addRound() {
       this.show = false;
+      console.log(this.values);
       this.$emit('done', this.values);
     },
     updateValue(id: string, value: any) {

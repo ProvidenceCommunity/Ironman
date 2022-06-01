@@ -14,26 +14,36 @@ export default defineComponent({
   props: ['matchId', 'player', 'details'],
   data() {
     return {
-      sentDone: false
+      sentDone: false,
+      timer: -1,
+      rejectedFor: 0
     }
+  },
+  created() {
+    setInterval(this.rejectionTimer, 1000);
+  },
+  beforeUnmount() {
+    clearInterval(this.timer);
   },
   methods: {
     async done() {
       await post('/api/match/player/' + this.matchId + '/' + this.player + '/done', {});
-      this.sentDone = true;
+      setTimeout(() => { this.sentDone = true }, 500);
     },
-    resetDone() {
-      this.sentDone = false;
+    rejectionTimer() {
+      if (this.details.doneStatus === 0 && this.sentDone) {
+        this.rejectedFor++;
+      }
+      if (this.rejectedFor >= 10) {
+        this.rejectedFor = 0;
+        this.sentDone = false;
+      }
     }
   },
   computed: {
     buttonText() {
       if (this.details.doneStatus === 0 && !this.sentDone) return "DONE";
-      if (this.details.doneStatus === 0 && this.sentDone) {
-        // eslint-disable-next-line vue/no-async-in-computed-properties
-        setTimeout(this.resetDone, 10000);
-        return "REJECTED!";
-      }
+      if (this.details.doneStatus === 0 && this.sentDone) return "REJECTED!";
       if (this.details.doneStatus === 1) return "Awaiting verification...";
       if (this.details.doneStatus === 2) return "Run verified!";
       return "DONE";

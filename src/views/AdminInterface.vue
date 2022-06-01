@@ -71,6 +71,7 @@
       <v-col cols="10">
 
         <DoneButtonAdmin v-if="currentRound.mode === 'simpleDoneButton'" :players="matchInfo.players" :details="currentRound.additionalDetails" :matchId="this.matchId"></DoneButtonAdmin>
+        <RouletteSpinAdmin v-if="currentRound.mode === 'rouletteSpin'" :players="matchInfo.players" :details="currentRound.additionalDetails" :matchId="this.matchId"></RouletteSpinAdmin>
 
       </v-col>
       <v-spacer></v-spacer>
@@ -83,10 +84,12 @@ import { defineComponent } from "vue";
 import { get, post } from '@/http';
 import AddRoundDialog from '@/components/AddRoundDialog.vue';
 import DoneButtonAdmin from "@/components/GameModesAdmin/DoneButton.vue";
+import RouletteSpinAdmin from "@/components/GameModesAdmin/RouletteSpin.vue";
 
 export default defineComponent({
   name: 'AdminInterface',
   components: {
+    RouletteSpinAdmin,
     DoneButtonAdmin,
     AddRoundDialog
   },
@@ -108,6 +111,7 @@ export default defineComponent({
     const gameModes = await get("/data/game_modes");
     this.gameModes = gameModes.data.game_modes;
     this.refreshTask = setInterval(this.updateData, 1000);
+    await this.updateData();
   },
   beforeUnmount() {
     clearInterval(this.refreshTask);
@@ -117,17 +121,19 @@ export default defineComponent({
       return `${window.location.origin}/client/${this.matchId}/${playerName}`
     },
     async doneAddingRound(values: any) {
-      await post('/api/match/admin/' + this.matchId + '/addRound', {
-        game_mode: this.gameModeToAdd,
-        generatorOptions: values
-      });
-      await this.updateData();
+      if (values) {
+        await post('/api/match/admin/' + this.matchId + '/addRound', {
+          game_mode: this.gameModeToAdd,
+          generatorOptions: values
+        });
+        await this.updateData();
+      }
       this.addingRound = false;
       this.gameModeToAdd = "";
     },
     async updateData() {
       const matchInfo = await get("/api/match/admin/" + this.matchId);
-      this.matchInfo = matchInfo.data;
+      if (this.matchInfo !== matchInfo.data) this.matchInfo = matchInfo.data;
     },
     async sendData() {
       await post('/api/match/update/' + this.matchId, this.matchInfo);

@@ -36,7 +36,7 @@ apiRouter.get('/match/admin/:mID', (req, res) => {
     res.json(match);
 });
 
-apiRouter.post('/match/admin/:mID/addRound', (req, res) => {
+apiRouter.post('/match/admin/:mID/addRound', async (req, res) => {
     if (!req.session.isAdmin) {
         res.sendStatus(403);
         return;
@@ -48,7 +48,7 @@ apiRouter.post('/match/admin/:mID/addRound', (req, res) => {
     }
     match.rounds.push({
         mode: req.body.game_mode,
-        additionalDetails: GameModes[req.body.game_mode].generate(req.body.generatorOptions, match.players),
+        additionalDetails: await GameModes[req.body.game_mode].generate(req.body.generatorOptions, match.players),
         arrivingTimestamp: -1,
         leavingTimestamp: -1
     });
@@ -56,7 +56,7 @@ apiRouter.post('/match/admin/:mID/addRound', (req, res) => {
     res.sendStatus(204);
 });
 
-apiRouter.post('/match/admin/:mID/:event', (req, res) => {
+apiRouter.post('/match/admin/:mID/:event', async (req, res) => {
     if (!req.session.isAdmin) {
         res.sendStatus(403);
         return;
@@ -67,7 +67,7 @@ apiRouter.post('/match/admin/:mID/:event', (req, res) => {
         return;
     }
     const round = match.rounds[match.rounds.length - 1];
-    round.additionalDetails = GameModes[round.mode].handleAdminEvent(req.params['event'] as string, req.body, round.additionalDetails);
+    round.additionalDetails = await GameModes[round.mode].handleAdminEvent(req.params['event'] as string, req.body, round.additionalDetails);
     res.sendStatus(204);
 });
 

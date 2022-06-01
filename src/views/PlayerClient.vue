@@ -45,6 +45,9 @@ export default defineComponent({
     this.matchId = pathname.pop() as string;
     this.updateInterval = setInterval(this.update, 1000);
   },
+  beforeUnmount() {
+    clearInterval(this.updateInterval)
+  },
   methods: {
     async update() {
       this.matchInfo = (await get("/api/match/player/" + this.matchId + "/" + this.player)).data;
