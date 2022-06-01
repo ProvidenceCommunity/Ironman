@@ -1,5 +1,7 @@
 <template>
-  <h1>{{ details.currentSpin }}</h1>
+  <h1>{{ details.currentSpin.mission.name }}</h1>
+  <v-btn @click="respin">Respin</v-btn><br>
+  <RouletteCondition v-for="(target, index) in details.currentSpin.targetConditions" :key="index" :condition="target"></RouletteCondition>
   <v-list>
     <v-list-item v-for="(player, index) in players" :key="index">
       <v-list-item-title>{{ player }}</v-list-item-title>
@@ -15,9 +17,11 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import {post} from "@/http";
+import RouletteCondition from "@/components/RouletteCondition.vue";
 
 export default defineComponent({
   name: "RouletteSpinAdmin",
+  components: {RouletteCondition},
   props: [ 'players', 'details', 'matchId' ],
   data() {
     return {}
@@ -43,6 +47,9 @@ export default defineComponent({
     },
     async rejectRun(player: number) {
       await post("/api/match/admin/" + this.matchId + "/rejectDone", {playerIndex: player});
+    },
+    async respin() {
+      await post("/api/match/admin/" + this.matchId + "/respin", {});
     }
   }
 })
