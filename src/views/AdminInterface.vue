@@ -28,6 +28,9 @@
                 <li v-for="player of matchInfo.players" :key="player">
                   <b>{{player}}:</b> <a :href="getPlayerLink(player)">{{ getPlayerLink(player) }}</a>
                 </li>
+                <li>
+                  <b>Shoutcast-Overlay:</b> <a :href="getOverlayLink()">{{ getOverlayLink() }}</a>
+                </li>
               </ul>
             </v-expansion-panel-text>
           </v-expansion-panel>
@@ -72,6 +75,7 @@
 
         <DoneButtonAdmin v-if="currentRound.mode === 'simpleDoneButton'" :players="matchInfo.players" :details="currentRound.additionalDetails" :matchId="this.matchId"></DoneButtonAdmin>
         <RouletteSpinAdmin v-if="currentRound.mode === 'rouletteSpin'" :players="matchInfo.players" :details="currentRound.additionalDetails" :matchId="this.matchId"></RouletteSpinAdmin>
+        <BingoAdmin v-if="currentRound.mode === 'bingo'" :players="matchInfo.players" :details="currentRound.additionalDetails" :matchId="this.matchId"></BingoAdmin>
 
       </v-col>
       <v-spacer></v-spacer>
@@ -85,12 +89,14 @@ import { get, post } from '@/http';
 import AddRoundDialog from '@/components/AddRoundDialog.vue';
 import DoneButtonAdmin from "@/components/GameModesAdmin/DoneButton.vue";
 import RouletteSpinAdmin from "@/components/GameModesAdmin/RouletteSpin.vue";
+import BingoAdmin from "@/components/GameModesAdmin/Bingo.vue";
 
 export default defineComponent({
   name: 'AdminInterface',
   components: {
     RouletteSpinAdmin,
     DoneButtonAdmin,
+    BingoAdmin,
     AddRoundDialog
   },
   data() {
@@ -119,6 +125,9 @@ export default defineComponent({
   methods: {
     getPlayerLink(playerName: string): string {
       return `${window.location.origin}/client/${this.matchId}/${playerName}`
+    },
+    getOverlayLink(playerName: string): string {
+      return `${window.location.origin}/overlay/${this.matchId}`
     },
     async doneAddingRound(values: any) {
       if (values) {

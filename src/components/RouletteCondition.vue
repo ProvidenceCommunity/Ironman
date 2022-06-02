@@ -23,7 +23,7 @@
   </v-container>
 </template>
 
-<style>
+<style scoped>
   .target {
     height: 198px;
     width: 325px;

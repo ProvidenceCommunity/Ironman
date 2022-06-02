@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import {createMatch, getMatch, sessionStore, setMatch} from "./database";
-import {GameModeDetails, GameModes, IronmanScoringType} from "./model";
+import {GameModeDetails, GameModes, IronmanRound, IronmanScoringType} from "./model";
 
 export const apiRouter = Router();
 apiRouter.use(sessionStore);
@@ -113,5 +113,19 @@ apiRouter.post('/match/player/:mID/:player/:event', (req, res) => {
 });
 
 apiRouter.get('/match/overlay/:mID', (req, res) => {
-
+    const match = getMatch(req.params.mID as string);
+    if (!match) {
+        res.sendStatus(404);
+        return;
+    }
+    const roundIndex = match.rounds.length - 1;
+    const result: {players:string[];scores:number[];scoringType:IronmanScoringType;round?:IronmanRound} = {
+        players: match.players,
+        scores: match.scores,
+        scoringType: match.scoringType,
+    };
+    if (roundIndex >= 0) {
+        result.round = match.rounds[roundIndex];
+    }
+    res.json(result);
 });

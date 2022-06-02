@@ -69,23 +69,7 @@ export default defineComponent({
     return {
       username: '',
       avatar: '',
-      matches: [
-        {
-          id: "abc",
-          players: ["Player one", "player two"],
-          finished: false
-        },
-        {
-          id: "cde",
-          players: ["Player three", "player four", "player five", "player six"],
-          finished: false
-        },
-        {
-          id: "adsdw",
-          players: ["Player one", "player six"],
-          finished: true
-        }
-      ],
+      matches: [],
       showFinished: false,
       creationDialog: false,
       players: ""

@@ -1,5 +1,5 @@
 import {GameMode, GameModeDetails, GeneratorOption, GeneratorOptions} from "../model";
-import axios from 'axios';
+import axios, {AxiosError} from 'axios';
 
 interface SpinGeneratorOptions {
     missionPool: string[];
@@ -174,8 +174,33 @@ export class RouletteSpinGameMode implements GameMode {
     }
 
     async generateSpin(options: SpinGeneratorOptions): Promise<Spin> {
-        const spin = await axios.post('https://roulette.hitmaps.com/api/spins', options, { validateStatus: () => { return true } });
-        return spin.data;
+        try {
+            const spin = await axios.post('https://roulette.hitmaps.com/api/spins', options, { validateStatus: () => { return true } });
+            return spin.data;
+        } catch(e) {
+            return {
+                mission: {
+                    slug: "error",
+                    name: "Error in spin generation.",
+                    locationTileUrl: "",
+                },
+                targetConditions: [{
+                    target: {
+                        name: (e as Error).name,
+                        tileUrl: ""
+                    },
+                    killMethod: {
+                        name: (e as Error).message,
+                        selectedVariant: "",
+                        tileUrl: ""
+                    },
+                    disguise: {
+                        name: "",
+                        tileUrl: ""
+                    }
+                }]
+            }
+        }
     }
 
 }

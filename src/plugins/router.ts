@@ -3,6 +3,7 @@ import IndexView from '../views/Index.vue'
 import MatchListView from '../views/MatchList.vue'
 import AdminInterfaceView from '../views/AdminInterface.vue'
 import PlayerClientView from '../views/PlayerClient.vue';
+import OverlayView from '../views/Overlay.vue';
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -24,6 +25,11 @@ const routes: Array<RouteRecordRaw> = [
     path: '/client/:matchID/:player',
     name: 'playerclient',
     component: PlayerClientView
+  },
+  {
+    path: '/overlay/:matchID',
+    name: 'overlay',
+    component: OverlayView
   }
 ]
 

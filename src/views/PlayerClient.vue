@@ -12,6 +12,7 @@
       <v-col cols="10">
         <DoneButtonPlayer v-if="matchInfo.currentGameMode === 'simpleDoneButton'" :matchId="this.matchId" :player="this.player" :details="this.matchInfo.round"></DoneButtonPlayer>
         <RouletteSpinPlayer v-if="matchInfo.currentGameMode === 'rouletteSpin'" :matchId="this.matchId" :player="this.player" :details="this.matchInfo.round"></RouletteSpinPlayer>
+        <BingoPlayer v-if="matchInfo.currentGameMode === 'bingo'" :matchId="this.matchId" :player="this.player" :details="this.matchInfo.round"></BingoPlayer>
         <h1 v-else>Waiting for match info...</h1>
       </v-col>
       <v-spacer></v-spacer>
@@ -24,10 +25,12 @@ import {defineComponent} from "vue";
 import DoneButtonPlayer from '@/components/GameModesPlayer/DoneButton.vue';
 import RouletteSpinPlayer from '@/components/GameModesPlayer/RouletteSpin.vue';
 import {get} from '@/http';
+import BingoPlayer from "@/components/GameModesPlayer/Bingo.vue";
 
 export default defineComponent({
   name: "PlayerClient",
   components: {
+    BingoPlayer,
     DoneButtonPlayer,
     RouletteSpinPlayer
   },
