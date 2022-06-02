@@ -76,8 +76,6 @@ export default defineComponent({
     }
   },
   async created() {
-    // TODO: Debug call, remove me!
-    // await get('/auth/local_login');
     const userInfo = await get('/data/me');
     if (userInfo.status !== 200) {
       await this.$router.push('/');

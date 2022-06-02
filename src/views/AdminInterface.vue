@@ -57,15 +57,25 @@
       <v-col cols="5">
         <b>Add new round:</b><br>
         <v-select :items="gameModes" v-model="gameModeToAdd" ></v-select>
+
+        <v-container>
+          <v-row>
+            <v-col>
+              <v-text-field label="Round starts" v-model="arrivingTimestamp" dense @change="updateTimestamps" type="datetime-local"></v-text-field>
+            </v-col>
+            <v-col>
+              <v-text-field label="Round ends" v-model="leavingTimestamp" dense @change="updateTimestamps" type="datetime-local"></v-text-field>
+            </v-col>
+          </v-row>
+        </v-container>
+
         <v-btn @click="markMatchDone">Mark match as done</v-btn>
       </v-col>
       <v-col cols="5">
         <b>Rounds of this match:</b><br>
         <ol>
-          <li v-for="(round, index) of matchInfo.rounds" :key="index">{{ round.mode }} - <v-chip>{{ getRoundStatus(round, index) }}</v-chip></li>
+          <li v-for="(round, index) of matchInfo.rounds" :key="index">{{ round.mode }} - <v-chip>{{ roundTimers[index] }}</v-chip></li>
         </ol>
-        <v-text-field label="Arrival timestamp" v-model="arrivingTimestamp" dense @change="updateTimestamps"></v-text-field><br>
-        <v-text-field label="Departure timestamp" v-model="leavingTimestamp" dense @change="updateTimestamps"></v-text-field>
       </v-col>
       <v-spacer></v-spacer>
     </v-row>
@@ -90,6 +100,7 @@ import AddRoundDialog from '@/components/AddRoundDialog.vue';
 import DoneButtonAdmin from "@/components/GameModesAdmin/DoneButton.vue";
 import RouletteSpinAdmin from "@/components/GameModesAdmin/RouletteSpin.vue";
 import BingoAdmin from "@/components/GameModesAdmin/Bingo.vue";
+import { DateTime } from "luxon";
 
 export default defineComponent({
   name: 'AdminInterface',
@@ -109,11 +120,12 @@ export default defineComponent({
       gameModeToAdd: "",
       addingRound: false,
       refreshTask: -1,
-      arrivingTimestamp: 0,
-      leavingTimestamp: 0,
+      arrivingTimestamp: "",
+      leavingTimestamp: "",
       matchDoneDialog: false,
       playerScores: [] as number[],
-      players: []
+      players: [],
+      roundTimers: [] as string[]
     }
   },
   async created() {
@@ -139,6 +151,8 @@ export default defineComponent({
           game_mode: this.gameModeToAdd,
           generatorOptions: values
         });
+        this.arrivingTimestamp = "";
+        this.leavingTimestamp = "";
         await this.updateData();
       }
       this.addingRound = false;
@@ -147,27 +161,31 @@ export default defineComponent({
     async updateData() {
       const matchInfo = await get("/api/match/admin/" + this.matchId);
       if (JSON.stringify(this.matchInfo) !== JSON.stringify(matchInfo.data)) {
-        console.log("Why are you updating");
-        console.log(JSON.stringify(this.matchInfo));
-        console.log(JSON.stringify(matchInfo.data));
         this.playerScores = [...matchInfo.data.scores];
         this.players = matchInfo.data.players;
         this.matchInfo = matchInfo.data;
       }
+
+      this.updateRoundTimers();
     },
     async sendData() {
       await post('/api/match/update/' + this.matchId, this.matchInfo);
     },
     async updateScores() {
-      console.log("Score's being updated");
       this.matchInfo['scores'] = [...this.playerScores];
       await this.sendData();
     },
     async updateTimestamps() {
       const roundIndex = this.getCurrentRoundIndex();
       if (roundIndex >= 0) {
-        (this.matchInfo as any).rounds[roundIndex].arrivingTimestamp = this.arrivingTimestamp;
-        (this.matchInfo as any).rounds[roundIndex].leavingTimestamp = this.leavingTimestamp;
+        const arrivingTS = DateTime.fromISO(this.arrivingTimestamp).toMillis();
+        if (!isNaN(arrivingTS)) {
+          (this.matchInfo as any).rounds[roundIndex].arrivingTimestamp = arrivingTS;
+        }
+        const leavingTS = DateTime.fromISO(this.leavingTimestamp).toMillis();
+        if (!isNaN(leavingTS)) {
+          (this.matchInfo as any).rounds[roundIndex].leavingTimestamp = leavingTS;
+        }
         await this.sendData();
       }
     },
@@ -180,13 +198,6 @@ export default defineComponent({
       this.matchDoneDialog = false;
       await this.$router.push("/admin");
     },
-    getRoundStatus(round: any, index: number) {
-      if (index === this.getCurrentRoundIndex()) {
-        return "Currently running";
-      } else {
-        return "Finished";
-      }
-    },
     getCurrentRoundIndex() {
       if ((this.matchInfo as any).rounds !== undefined) {
         let roundIndex = (this.matchInfo as any).rounds.length - 1;
@@ -195,6 +206,34 @@ export default defineComponent({
         }
       }
       return -1;
+    },
+    updateRoundTimers() {
+      (this.matchInfo as any).rounds.forEach((round: any, index: number) => {
+        this.roundTimers[index] = this.getRoundStatus(round, index)
+      });
+    },
+    getRoundStatus(round: any, index: number)  {
+      if (index !== this.getCurrentRoundIndex()) {
+        return "Finished";
+      } else if (round.arrivingTimestamp < 0) {
+        return "Not scheduled";
+      } else if (DateTime.local().toMillis() < round.arrivingTimestamp) {
+        const arrivingTime = DateTime.fromMillis(round.arrivingTimestamp);
+        const nowTime = DateTime.local();
+        const diff = arrivingTime.diff(nowTime, ['hours', 'minutes', 'seconds']);
+        return `Arriving in ${diff.toFormat("HH:mm:ss")}`;
+      } else if (round.leavingTimestamp < 0) {
+        return "Running indefinitely";
+      } else if (DateTime.local().toMillis() < round.leavingTimestamp) {
+        const arrivingTime = DateTime.fromMillis(round.leavingTimestamp);
+        const nowTime = DateTime.local();
+        const diff = arrivingTime.diff(nowTime, ['hours', 'minutes', 'seconds']);
+        return `Leaving in ${diff.toFormat("HH:mm:ss")}`;
+      } else if (DateTime.local().toMillis() > round.leavingTimestamp) {
+        return "Finished";
+      } else {
+        return "Literally unknown. What did you to? Talk to Curry please."
+      }
     }
   },
   watch: {
@@ -214,7 +253,7 @@ export default defineComponent({
         }
       }
       return { mode: "" };
-    }
+    },
   }
 })
 </script>
