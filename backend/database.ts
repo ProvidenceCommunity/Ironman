@@ -1,19 +1,25 @@
 import {IronmanMatch, IronmanScoringType, SimplifiedIronmanMatch} from "./model";
 import session from 'express-session';
 import { randomUUID } from 'crypto';
+import { readFile, writeFile } from 'fs/promises';
 
 interface MatchList {
     [id: string]: IronmanMatch;
 }
 
-const matches: MatchList = {}
+let matches: MatchList = {}
 
 export async function loadDatabase(): Promise<void> {
-    //TODO SQLite?
+    try {
+        const file = await readFile("./database.json", 'utf8');
+        matches = JSON.parse(file);
+    } catch {
+        matches = {};
+    }
 }
 
 export async function writeDatabase(): Promise<void> {
-    //TODO SQLite?
+    await writeFile('./database.json', JSON.stringify(matches), 'utf8');
 }
 
 export function getMatch(id: string): IronmanMatch {
@@ -49,4 +55,4 @@ export function getMatches(): SimplifiedIronmanMatch[] {
     });
 }
 
-export const sessionStore = session({ secret: "TODO FIX ME" });
+export const sessionStore = session({ secret: randomUUID() });
