@@ -9,7 +9,7 @@ export async function get(path: string) {
         headers: {
             "Content-type": "application/json",
         },
-        validateStatus: status => true,
+        validateStatus: () => true,
         withCredentials: true
     });
 }
@@ -18,16 +18,16 @@ export async function patch(path: string, data: any) {
         headers: {
             "Content-type": "application/json",
         },
-        validateStatus: status => true,
+        validateStatus: () => true,
         withCredentials: true
     });
 }
 export async function post(path: string, data: any) {
-    return await Axios.post(url + path, data, {
+    return Axios.post(url + path, data, {
         headers: {
             "Content-type": "application/json",
         },
-        validateStatus: status => true,
+        validateStatus: () => { return true },
         withCredentials: true
     });
 }

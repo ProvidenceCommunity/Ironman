@@ -1,7 +1,28 @@
 <template>
-  Please login.
-  <a href="/auth/discord_login">Login with discord</a>
-  <router-link to="/local_login">Local login</router-link>
+  <v-container fluid>
+    <v-row class="mt-10">
+      <v-spacer></v-spacer>
+      <v-col cols="6" align="center">
+        <h1>Ironman Platform</h1>
+      </v-col>
+      <v-spacer></v-spacer>
+    </v-row>
+    <v-row>
+      <v-spacer></v-spacer>
+      <v-col cols="6" align="center">
+        <h3>Please login to administrate matches.</h3>
+      </v-col>
+      <v-spacer></v-spacer>
+    </v-row>
+    <v-row>
+      <v-spacer></v-spacer>
+      <v-col cols="6" align="center">
+        <v-btn href="/auth/discord_login" color="secondary"><v-icon start icon="mdi-discord"></v-icon>Login with discord</v-btn><br>
+        <router-link to="/login">Local login</router-link>
+      </v-col>
+      <v-spacer></v-spacer>
+    </v-row>
+  </v-container>
 </template>
 
 <script lang='ts'>

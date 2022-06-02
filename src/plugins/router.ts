@@ -4,6 +4,7 @@ import MatchListView from '../views/MatchList.vue'
 import AdminInterfaceView from '../views/AdminInterface.vue'
 import PlayerClientView from '../views/PlayerClient.vue';
 import OverlayView from '../views/Overlay.vue';
+import LocalLoginView from '../views/LocalLogin.vue';
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -30,6 +31,11 @@ const routes: Array<RouteRecordRaw> = [
     path: '/overlay/:matchID',
     name: 'overlay',
     component: OverlayView
+  },
+  {
+    path: '/login',
+    name: 'locallogin',
+    component: LocalLoginView
   }
 ]
 

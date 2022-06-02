@@ -6,6 +6,7 @@ import {dataRouter} from "./dataRouter";
 import * as bodyParser from "body-parser";
 import cors from 'cors';
 import history from 'connect-history-api-fallback';
+import 'dotenv/config';
 
 async function main() {
     const app = express();

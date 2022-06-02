@@ -42,8 +42,8 @@
             <v-expansion-panel-title>Player scores</v-expansion-panel-title>
             <v-expansion-panel-text>
               <ul>
-                <li v-for="(player, index) of matchInfo.players" :key="index">
-                  <v-text-field v-model="matchInfo.scores[index]" hide-details="true" density="compact" :label="player" @change="sendData"></v-text-field>
+                <li v-for="(player, index) of players" :key="index">
+                  <v-text-field v-model="playerScores[index]" hide-details="true" density="compact" :label="player" @change="updateScores"></v-text-field>
                 </li>
               </ul>
             </v-expansion-panel-text>
@@ -103,13 +103,17 @@ export default defineComponent({
     return {
       matchId: "",
       gameModes: [],
-      matchInfo: {},
+      matchInfo: {
+        scores: [] as number[]
+      },
       gameModeToAdd: "",
       addingRound: false,
       refreshTask: -1,
       arrivingTimestamp: 0,
       leavingTimestamp: 0,
-      matchDoneDialog: false
+      matchDoneDialog: false,
+      playerScores: [] as number[],
+      players: []
     }
   },
   async created() {
@@ -126,7 +130,7 @@ export default defineComponent({
     getPlayerLink(playerName: string): string {
       return `${window.location.origin}/client/${this.matchId}/${playerName}`
     },
-    getOverlayLink(playerName: string): string {
+    getOverlayLink(): string {
       return `${window.location.origin}/overlay/${this.matchId}`
     },
     async doneAddingRound(values: any) {
@@ -142,10 +146,22 @@ export default defineComponent({
     },
     async updateData() {
       const matchInfo = await get("/api/match/admin/" + this.matchId);
-      if (this.matchInfo !== matchInfo.data) this.matchInfo = matchInfo.data;
+      if (JSON.stringify(this.matchInfo) !== JSON.stringify(matchInfo.data)) {
+        console.log("Why are you updating");
+        console.log(JSON.stringify(this.matchInfo));
+        console.log(JSON.stringify(matchInfo.data));
+        this.playerScores = [...matchInfo.data.scores];
+        this.players = matchInfo.data.players;
+        this.matchInfo = matchInfo.data;
+      }
     },
     async sendData() {
       await post('/api/match/update/' + this.matchId, this.matchInfo);
+    },
+    async updateScores() {
+      console.log("Score's being updated");
+      this.matchInfo['scores'] = [...this.playerScores];
+      await this.sendData();
     },
     async updateTimestamps() {
       const roundIndex = this.getCurrentRoundIndex();

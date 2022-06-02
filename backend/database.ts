@@ -55,4 +55,4 @@ export function getMatches(): SimplifiedIronmanMatch[] {
     });
 }
 
-export const sessionStore = session({ secret: randomUUID() });
+export const sessionStore = session({ secret: randomUUID(), cookie: { maxAge: 1800000 }, rolling: true });

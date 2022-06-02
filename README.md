@@ -22,3 +22,10 @@ yarn lint
 
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
+
+### Ironman Environment Variables
+- `DISCORD_ID`
+- `DISCORD_SECRET`
+- `DISCORD_GUILDS` (`;`-seperated list of guild IDs)
+- `DISCORD_ROLES` (`;`-seperated list of role IDs)
+- `LOCAL_PASSWORD`
