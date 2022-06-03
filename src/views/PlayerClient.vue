@@ -10,10 +10,17 @@
     <v-row>
       <v-spacer></v-spacer>
       <v-col cols="10">
-        <DoneButtonPlayer v-if="matchInfo.currentGameMode === 'simpleDoneButton'" :matchId="this.matchId" :player="this.player" :details="this.matchInfo.round"></DoneButtonPlayer>
-        <RouletteSpinPlayer v-if="matchInfo.currentGameMode === 'rouletteSpin'" :matchId="this.matchId" :player="this.player" :details="this.matchInfo.round"></RouletteSpinPlayer>
-        <BingoPlayer v-if="matchInfo.currentGameMode === 'bingo'" :matchId="this.matchId" :player="this.player" :details="this.matchInfo.round"></BingoPlayer>
-        <h1 v-else>Waiting for match info...</h1>
+        <div v-if="this.matchInfo.roundLive">
+          <CountdownBar :total-time="this.matchInfo.totalMatchTime" :time-remaining="this.matchInfo.countdown"></CountdownBar>
+          <DoneButtonPlayer v-if="matchInfo.currentGameMode === 'simpleDoneButton'" :matchId="this.matchId" :player="this.player" :details="this.matchInfo.round"></DoneButtonPlayer>
+          <RouletteSpinPlayer v-else-if="matchInfo.currentGameMode === 'rouletteSpin'" :matchId="this.matchId" :player="this.player" :details="this.matchInfo.round"></RouletteSpinPlayer>
+          <BingoPlayer v-else-if="matchInfo.currentGameMode === 'bingo'" :matchId="this.matchId" :player="this.player" :details="this.matchInfo.round"></BingoPlayer>
+        </div>
+        <div v-else>
+          <h1>Waiting for match info...</h1>
+          <h3 v-if="matchInfo.countdown">Next mode: {{ matchInfo.currentGameMode }}</h3>
+          <h3 v-if="matchInfo.countdown">Arriving in: {{ countdown }}</h3>
+        </div>
       </v-col>
       <v-spacer></v-spacer>
     </v-row>
@@ -26,10 +33,12 @@ import DoneButtonPlayer from '@/components/GameModesPlayer/DoneButton.vue';
 import RouletteSpinPlayer from '@/components/GameModesPlayer/RouletteSpin.vue';
 import {get} from '@/http';
 import BingoPlayer from "@/components/GameModesPlayer/Bingo.vue";
+import CountdownBar from "@/components/CountdownBar.vue";
 
 export default defineComponent({
   name: "PlayerClient",
   components: {
+    CountdownBar,
     BingoPlayer,
     DoneButtonPlayer,
     RouletteSpinPlayer
@@ -41,7 +50,8 @@ export default defineComponent({
       updateInterval: -1,
       matchInfo: {
         players: [],
-        scores: []
+        scores: [],
+        countdown: 0
       }
     }
   },
@@ -60,8 +70,27 @@ export default defineComponent({
     }
   },
   computed: {
-    currentRound() {
-      return {}
+    countdown() {
+      let h = Math.floor(this.matchInfo.countdown / 3600);
+      let m = Math.floor((this.matchInfo.countdown - h * 3600) / 60);
+      let s = this.matchInfo.countdown - h * 3600 - m * 60;
+      let result = "";
+      if (h < 10) {
+        result += "0" + h.toString() + ":";
+      } else {
+        result += h.toString() + ":";
+      }
+      if (m < 10) {
+        result += "0" + m.toString() + ":";
+      } else {
+        result += m.toString() + ":";
+      }
+      if (s < 10)  {
+        result += "0" + s.toString();
+      } else {
+        result += s.toString();
+      }
+      return result;
     }
   }
 })

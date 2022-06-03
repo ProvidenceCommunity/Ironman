@@ -43,7 +43,7 @@
             <v-expansion-panel-text>
               <ul>
                 <li v-for="(player, index) of players" :key="index">
-                  <v-text-field v-model="playerScores[index]" hide-details="true" density="compact" :label="player" @change="updateScores"></v-text-field>
+                  <v-text-field v-model="playerScores[index]" hide-details="true" density="compact" :label="player" @change="updateScores" type="number"></v-text-field>
                 </li>
               </ul>
             </v-expansion-panel-text>
@@ -75,7 +75,9 @@
         <b>Rounds of this match:</b><br>
         <ol>
           <li v-for="(round, index) of matchInfo.rounds" :key="index">{{ round.mode }} - <v-chip>{{ roundTimers[index] }}</v-chip></li>
-        </ol>
+        </ol><br>
+
+        <v-select label="End round immediately and award points" :items="endRoundItems" v-model="endRound"></v-select>
       </v-col>
       <v-spacer></v-spacer>
     </v-row>
@@ -125,7 +127,8 @@ export default defineComponent({
       matchDoneDialog: false,
       playerScores: [] as number[],
       players: [],
-      roundTimers: [] as string[]
+      roundTimers: [] as string[],
+      endRound: undefined,
     }
   },
   async created() {
@@ -221,14 +224,14 @@ export default defineComponent({
         const arrivingTime = DateTime.fromMillis(round.arrivingTimestamp);
         const nowTime = DateTime.local();
         const diff = arrivingTime.diff(nowTime, ['hours', 'minutes', 'seconds']);
-        return `Arriving in ${diff.toFormat("HH:mm:ss")}`;
+        return `Arriving in ${diff.toFormat("hh:mm:ss")}`;
       } else if (round.leavingTimestamp < 0) {
         return "Running indefinitely";
       } else if (DateTime.local().toMillis() < round.leavingTimestamp) {
         const arrivingTime = DateTime.fromMillis(round.leavingTimestamp);
         const nowTime = DateTime.local();
         const diff = arrivingTime.diff(nowTime, ['hours', 'minutes', 'seconds']);
-        return `Leaving in ${diff.toFormat("HH:mm:ss")}`;
+        return `Leaving in ${diff.toFormat("hh:mm:ss")}`;
       } else if (DateTime.local().toMillis() > round.leavingTimestamp) {
         return "Finished";
       } else {
@@ -237,9 +240,22 @@ export default defineComponent({
     }
   },
   watch: {
-    gameModeToAdd(newGM, oldGM) {
+    gameModeToAdd(newGM) {
       if (newGM !== "") {
         this.addingRound = true;
+      }
+    },
+    async endRound(newER) {
+      if (newER !== undefined) {
+        const roundIndex = this.getCurrentRoundIndex();
+        if (roundIndex >= 0) {
+          (this.matchInfo as any).rounds[roundIndex].leavingTimestamp = Date.now();
+          if (newER >= 0) {
+            (this.matchInfo as any)['scores'][newER] += 1;
+          }
+          await this.sendData();
+        }
+        this.endRound = undefined;
       }
     }
   },
@@ -254,6 +270,11 @@ export default defineComponent({
       }
       return { mode: "" };
     },
+    endRoundItems(): unknown[] {
+      let arr = this.players.map((p, idx) => { return {title: `End round and increase score of ${p} by 1`, value: idx} });
+      arr.push({title: "End round and don't increase scores", value: -1});
+      return arr;
+    }
   }
 })
 </script>

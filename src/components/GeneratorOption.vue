@@ -1,6 +1,6 @@
 <template>
   <v-text-field v-if="option.type === 'string'" :label="option.caption" v-model="value"></v-text-field>
-  <v-text-field v-if="option.type === 'number'" :label="option.caption" v-model="value" :rules="[isNumber]"></v-text-field>
+  <v-text-field v-if="option.type === 'number'" :label="option.caption" v-model="value" :rules="[isNumber]" type="number"></v-text-field>
   <v-checkbox v-if="option.type === 'boolean'" :label="option.caption" v-model="value"></v-checkbox>
   <v-select v-if="option.type === 'select'" v-model="value" :items="option.options" :label="option.caption"></v-select>
 </template>

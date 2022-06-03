@@ -87,6 +87,11 @@ export class RouletteSpinGameMode implements GameMode {
                 options: Object.keys(missionIdToSlug)
             },
             {
+                id: "noTargets",
+                caption: "No Targets (Freestyle Mode)",
+                type: "boolean"
+            },
+            {
                 id: "noDisguise",
                 caption: "No Disguise",
                 type: "boolean"
@@ -133,11 +138,12 @@ export class RouletteSpinGameMode implements GameMode {
             }
         }
 
-        const spin = await this.generateSpin(spinGenOptions);
+        const spin = await this.generateSpin(spinGenOptions, options['noTargets'] as boolean);
 
         return {
             currentSpin: spin,
             generatorOptions: spinGenOptions,
+            noTargets: options['noTargets'],
             doneStatus: players.map(() => { return 0 }),
             lastDone: players.map(() => { return -1 })
         };
@@ -152,7 +158,7 @@ export class RouletteSpinGameMode implements GameMode {
             (currentState['lastDone'] as number[])[payload.playerIndex] = -1;
         }
         if (event === "respin") {
-            currentState['currentSpin'] = await this.generateSpin(currentState['generatorOptions'] as SpinGeneratorOptions);
+            currentState['currentSpin'] = await this.generateSpin(currentState['generatorOptions'] as SpinGeneratorOptions, currentState['noTargets'] as boolean);
         }
         return currentState;
     }
@@ -173,10 +179,23 @@ export class RouletteSpinGameMode implements GameMode {
         };
     }
 
-    async generateSpin(options: SpinGeneratorOptions): Promise<Spin> {
+    async generateSpin(options: SpinGeneratorOptions, freestyleMode: boolean): Promise<Spin> {
         try {
             const spin = await axios.post('https://roulette.hitmaps.com/api/spins', options, { validateStatus: () => { return true } });
-            return spin.data;
+            const result = spin.data;
+            if (freestyleMode) {
+                (result.targetConditions as {target: {name: string;tileUrl: string}}[]).forEach((e, index) => {
+                    e.target.name = "Target #" + (index+1);
+                    e.target.tileUrl = "";
+                });
+            }
+            if (!options.criteriaFilters.specificDisguise) {
+                (result.targetConditions as {disguise: {name: string;tileUrl: string}}[]).forEach((e, index) => {
+                    e.disguise.name = "Any disguise";
+                    e.disguise.tileUrl = "";
+                });
+            }
+            return result;
         } catch(e) {
             return {
                 mission: {

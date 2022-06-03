@@ -72,7 +72,6 @@ apiRouter.post('/match/admin/:mID/:event', async (req, res) => {
 });
 
 apiRouter.get('/match/player/:mID/:player', (req, res) => {
-    //TODO: Countdown?
     const match = getMatch(req.params.mID as string);
     if (!match) {
         res.sendStatus(404);
@@ -84,14 +83,23 @@ apiRouter.get('/match/player/:mID/:player', (req, res) => {
         return;
     }
     const roundIndex = match.rounds.length - 1;
-    const result: {players:string[];scores:number[];scoringType:IronmanScoringType;round?:GameModeDetails;currentGameMode?:string} = {
+    const result: {players:string[];scores:number[];scoringType:IronmanScoringType;round?:GameModeDetails;currentGameMode?:string;countdown?:number;totalMatchTime?:number;roundLive:boolean} = {
         players: match.players,
         scores: match.scores,
         scoringType: match.scoringType,
+        roundLive: false
     };
     if (roundIndex >= 0) {
-        result.round = GameModes[match.rounds[roundIndex].mode].getPlayerDetails(playerIndex, match.rounds[roundIndex].additionalDetails);
-        result.currentGameMode = match.rounds[roundIndex].mode;
+        const round = match.rounds[roundIndex];
+        result.currentGameMode = round.mode;
+        if (Date.now() < round.arrivingTimestamp) {
+            result.countdown = Math.floor((round.arrivingTimestamp - Date.now()) / 1000 );
+        } else if (Date.now() < round.leavingTimestamp || round.leavingTimestamp < 0) {
+            result.totalMatchTime = Math.floor((round.leavingTimestamp - round.arrivingTimestamp) / 1000);
+            result.countdown = Math.floor((round.leavingTimestamp - Date.now()) / 1000);
+            result.round = GameModes[round.mode].getPlayerDetails(playerIndex, round.additionalDetails);
+            result.roundLive = true;
+        }
     }
     res.json(result);
 });

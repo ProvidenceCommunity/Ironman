@@ -2,13 +2,15 @@
   <v-text-field v-model="newCard" label="Card"></v-text-field><v-btn @click="sendNewCard">New card</v-btn>
   <BingoCard :card="this.details.card" :claimedTiles="this.details.claimedTiles" :mode="this.details.mode"></BingoCard>
   <v-list>
-    <v-list-item v-for="(player, index) in players" :key="index">
-      <v-list-item-title>{{ player }}</v-list-item-title>
-      <b>Current status:</b> {{ getPlayerStatus(index) }}<br>
-      <v-list-item-action v-if="isPlayerDone(index)">
-        <v-btn @click="acceptRun(index)">Accept</v-btn>
-        <v-btn @click="rejectRun(index)">Reject</v-btn>
-      </v-list-item-action>
+    <v-list-item v-for="(player, index) in players" :key="index" lines="two">
+      <v-list-item-header>
+        <v-list-item-title>{{ player }}</v-list-item-title>
+        <v-list-item-subtitle>Current status: {{ getPlayerStatus(index) }}</v-list-item-subtitle>
+      </v-list-item-header>
+      <template v-slot:append v-if="isPlayerDone(index)">
+        <v-btn @click="acceptRun(index)" color="green">Accept</v-btn>
+        <v-btn @click="rejectRun(index)" color="red">Reject</v-btn>
+      </template>
     </v-list-item>
   </v-list>
 </template>
@@ -17,6 +19,7 @@
 import { defineComponent } from "vue";
 import {post} from "@/http";
 import BingoCard from "@/components/BingoCard.vue";
+import {DateTime} from 'luxon';
 
 export default defineComponent({
   name: "BingoAdmin",
@@ -41,7 +44,7 @@ export default defineComponent({
       return this.details.doneStatus[index] === 1;
     },
     timestampToLocale(timestamp: number): string {
-      return timestamp.toString();
+      return DateTime.fromMillis(timestamp).toLocaleString(DateTime.DATETIME_SHORT);
     },
     async acceptRun(player: number) {
       await post("/api/match/admin/" + this.matchId + "/acceptDone", {playerIndex: player});
