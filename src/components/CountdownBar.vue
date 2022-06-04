@@ -1,6 +1,6 @@
 <template>
   <v-progress-linear v-model="percentage" height="50" :color="computeColor">
-    <b>{{ formattedTimeRemaining }}</b>
+    <b style="color: white;">{{ formattedTimeRemaining }}</b>
   </v-progress-linear>
 </template>
 

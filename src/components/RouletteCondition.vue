@@ -1,9 +1,8 @@
 <template>
   <v-container fluid>
-    <v-row>
+    <v-row no-gutters>
       <v-col>
         <v-sheet class="target" :style="'background: url(' + condition.target.tileUrl + ') center center / cover no-repeat;'">
-          <!-- for overlay: center -30px no-repeat; -->
           <div class="targetName">{{ condition.target.name }}</div>
         </v-sheet>
       </v-col>

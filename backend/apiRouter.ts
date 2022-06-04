@@ -127,13 +127,22 @@ apiRouter.get('/match/overlay/:mID', (req, res) => {
         return;
     }
     const roundIndex = match.rounds.length - 1;
-    const result: {players:string[];scores:number[];scoringType:IronmanScoringType;round?:IronmanRound} = {
+    const result: {players:string[];scores:number[];scoringType:IronmanScoringType;round?:IronmanRound;countdown?:number;totalMatchTime?:number;roundLive:boolean} = {
         players: match.players,
         scores: match.scores,
         scoringType: match.scoringType,
+        roundLive: false
     };
     if (roundIndex >= 0) {
-        result.round = match.rounds[roundIndex];
+        const round = match.rounds[roundIndex];
+        result.round = round;
+        if (Date.now() < round.arrivingTimestamp) {
+            result.countdown = Math.floor((round.arrivingTimestamp - Date.now()) / 1000 );
+        } else if (Date.now() < round.leavingTimestamp || round.leavingTimestamp < 0) {
+            result.totalMatchTime = Math.floor((round.leavingTimestamp - round.arrivingTimestamp) / 1000);
+            result.countdown = Math.floor((round.leavingTimestamp - Date.now()) / 1000);
+            result.roundLive = true;
+        }
     }
     res.json(result);
 });

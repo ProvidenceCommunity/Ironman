@@ -1,5 +1,5 @@
 <template>
-  <v-app>
+  <v-app :theme="getTheme">
     <v-main>
       <router-view></router-view>
     </v-main>
@@ -15,5 +15,10 @@ export default defineComponent({
   data () {
     return {}
   },
+  computed: {
+    getTheme() {
+      return this.$route.name === "overlay" ? 'light' : 'dark';
+    }
+  }
 })
 </script>

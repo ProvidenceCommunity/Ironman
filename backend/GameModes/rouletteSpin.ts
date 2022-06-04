@@ -186,7 +186,7 @@ export class RouletteSpinGameMode implements GameMode {
             if (freestyleMode) {
                 (result.targetConditions as {target: {name: string;tileUrl: string}}[]).forEach((e, index) => {
                     e.target.name = "Target #" + (index+1);
-                    e.target.tileUrl = "";
+                    e.target.tileUrl = "https://media.hitmaps.com/img/hitmaps-roulette/berlin-target.png";
                 });
             }
             if (!options.criteriaFilters.specificDisguise) {

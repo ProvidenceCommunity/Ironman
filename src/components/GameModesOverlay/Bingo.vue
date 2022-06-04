@@ -1,6 +1,14 @@
 <template>
-  <BingoCard :card="data.card" :claimedTiles="data.claimedTiles" :mode="data.mode"></BingoCard>
+  <div class="bingoContainer">
+    <BingoCard :card="data.card" :claimedTiles="data.claimedTiles" :mode="data.mode" tile-height="79"></BingoCard>
+  </div>
 </template>
+
+<style scoped>
+  .bingoContainer {
+    margin: auto;
+  }
+</style>
 
 <script lang="ts">
 import {defineComponent} from "vue";

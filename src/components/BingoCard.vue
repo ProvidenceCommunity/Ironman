@@ -1,7 +1,7 @@
 <template>
   <table>
     <tr v-for="y in 5" :key="y">
-      <td v-for="x in 5" :key="x" @click="click(x,y)">
+      <td v-for="x in 5" :key="x" @click="click(x,y)" :style="`height: ${tileHeight || '88' }px;`">
         <div :class="getClaimClass('red')" v-if="isTileClaimed(x,y,0)"></div>
         <div :class="getClaimClass('green')" v-if="isTileClaimed(x,y,1)"></div>
         <div class="textField">{{ getTile(x,y) }}</div>
@@ -11,6 +11,9 @@
 </template>
 
 <style scoped>
+table {
+  border-collapse: collapse;
+}
 tr {
   border: 1px solid #ffffff;
   margin: 0;
@@ -31,6 +34,8 @@ td {
   position: relative;
   text-align: center;
   vertical-align: top;
+  background-color: #181818;
+  color: white;
 }
 
 .textField {
@@ -79,7 +84,7 @@ import { defineComponent } from 'vue';
 
 export default defineComponent({
   name: "BingoCard",
-  props: ['card', 'claimedTiles', 'mode'],
+  props: ['card', 'claimedTiles', 'mode', 'tileHeight'],
   emits: ['click'],
   data() {
     return {};
