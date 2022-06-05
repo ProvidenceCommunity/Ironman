@@ -29,3 +29,6 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
 - `DISCORD_GUILDS` (`;`-seperated list of guild IDs)
 - `DISCORD_ROLES` (`;`-seperated list of role IDs)
 - `LOCAL_PASSWORD`
+- `PORT`
+- `HOSTNAME`
+- `PUBLIC_ORIGIN` (e.g. `http://localhost:5002`, for discord redirect)

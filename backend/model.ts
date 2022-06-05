@@ -1,4 +1,3 @@
-import { TestGameMode } from "./GameModes/test";
 import { DoneButtonGameMode } from "./GameModes/simpleDone";
 import { RouletteSpinGameMode } from "./GameModes/rouletteSpin";
 import { BingoGameMode } from "./GameModes/bingo";
@@ -54,7 +53,6 @@ export interface GameMode {
 }
 
 export const GameModes: { [key: string]: GameMode } = {
-    "test": new TestGameMode(),
     "simpleDoneButton": new DoneButtonGameMode(),
     "rouletteSpin": new RouletteSpinGameMode(),
     "bingo": new BingoGameMode(),

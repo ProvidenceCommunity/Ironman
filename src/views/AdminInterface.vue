@@ -226,7 +226,7 @@ export default defineComponent({
         const diff = arrivingTime.diff(nowTime, ['hours', 'minutes', 'seconds']);
         return `Arriving in ${diff.toFormat("hh:mm:ss")}`;
       } else if (round.leavingTimestamp < 0) {
-        return "Running indefinitely";
+        return "No time limit";
       } else if (DateTime.local().toMillis() < round.leavingTimestamp) {
         const arrivingTime = DateTime.fromMillis(round.leavingTimestamp);
         const nowTime = DateTime.local();

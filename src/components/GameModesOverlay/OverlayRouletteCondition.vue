@@ -15,12 +15,12 @@
           <span class="conditionTitle">Wear disguise</span><br>
           <span class="conditionDetail">{{ target.disguise.name }}</span>
         </v-sheet>
-        <v-row>
+        <v-row no-gutters>
           <v-col>
-            <img :src="target.killMethod.tileUrl" class="float-right" :height="dataHeight / 4">
+            <img :src="target.killMethod.tileUrl" class="float-right" :style="`height: ${dataHeight / 2}px; object-fit: cover; width: 100%;`">
           </v-col>
           <v-col>
-            <img :src="target.disguise.tileUrl" class="float-right" :height="dataHeight / 4">
+            <img :src="target.disguise.tileUrl" class="float-right" :style="`height: ${dataHeight / 2}px; object-fit: cover; width: 100%;`">
           </v-col>
         </v-row>
       </v-col>
@@ -41,12 +41,13 @@
   color: red;
   margin-top: 10px;
   margin-left: 10px;
-  font-size: 20px;
+  font-size: 16px;
 }
 .conditionDetail {
+  position: relative;
   margin-left: 10px;
-  margin-top: 10px;
-  font-size: 25px;
+  top: -8px;
+  font-size: 23px;
   font-weight: bold;
 }
 </style>

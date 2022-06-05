@@ -1,17 +1,19 @@
 <template>
-  <v-sheet class="target" :style="`background: url(${ target.target.tileUrl }) -120px -220px no-repeat;`">
-    <span class="targetName">{{ target.target.name }}</span>
-  </v-sheet>
-  <v-sheet class="condition">
-    <img :src="target.killMethod.tileUrl" class="conditionImg float-right">
-    <span class="conditionTitle">Eliminate using</span><br>
-    <span class="conditionDetail">{{ buildKillMethod() }}</span>
-  </v-sheet>
-  <v-sheet class="condition">
-    <img :src="target.disguise.tileUrl" class="conditionImg float-right">
-    <span class="conditionTitle">Wear disguise</span><br>
-    <span class="conditionDetail">{{ target.disguise.name }}</span>
-  </v-sheet>
+  <div :style="`height: ${dataHeight}px`">
+    <v-sheet class="target" :style="`background: url(${ target.target.tileUrl }) -120px -220px no-repeat;`">
+      <span class="targetName">{{ target.target.name }}</span>
+    </v-sheet>
+    <v-sheet class="condition">
+      <img :src="target.killMethod.tileUrl" class="conditionImg float-right">
+      <span class="conditionTitle">Eliminate using</span><br>
+      <span class="conditionDetail">{{ buildKillMethod() }}</span>
+    </v-sheet>
+    <v-sheet class="condition">
+      <img :src="target.disguise.tileUrl" class="conditionImg float-right">
+      <span class="conditionTitle">Wear disguise</span><br>
+      <span class="conditionDetail">{{ target.disguise.name }}</span>
+    </v-sheet>
+  </div>
 </template>
 
 <style scoped>
@@ -20,21 +22,21 @@
 }
 .condition {
   width: 100%;
-  height: 80px;
+  height: 65px;
 }
 .conditionImg {
-  height: 80px;
+  height: 65px;
 }
 .conditionTitle {
   color: red;
   margin-top: 10px;
   margin-left: 10px;
-  font-size: 20px;
+  font-size: 16px;
 }
 .conditionDetail {
   margin-left: 10px;
   margin-top: 10px;
-  font-size: 25px;
+  font-size: 23px;
   font-weight: bold;
 }
 .targetName {
@@ -52,7 +54,7 @@ import {defineComponent} from "vue";
 
 export default defineComponent({
   name: "BerlinRouletteCondition",
-  props: [ 'target' ],
+  props: [ 'target', 'dataHeight' ],
   data() {
     return {}
   },

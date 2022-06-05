@@ -1,6 +1,4 @@
 <template>
-  <v-text-field v-model="newCard" label="Card"></v-text-field><v-btn @click="sendNewCard">New card</v-btn>
-  <BingoCard :card="this.details.card" :claimedTiles="this.details.claimedTiles" :mode="this.details.mode"></BingoCard>
   <v-list>
     <v-list-item v-for="(player, index) in players" :key="index" lines="two">
       <v-list-item-header>
@@ -13,6 +11,8 @@
       </template>
     </v-list-item>
   </v-list>
+  <v-text-field v-model="newCard" label="Card"></v-text-field><v-btn @click="sendNewCard">New card</v-btn>
+  <BingoCard :card="this.details.card" :claimedTiles="this.details.claimedTiles" :mode="this.details.mode"></BingoCard>
 </template>
 
 <script lang="ts">

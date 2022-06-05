@@ -8,7 +8,7 @@
 
 <style scoped>
   .doneButtonContainer {
-    width: 800px;
+    width: 1100px;
     height: 400px;
   }
   .text {

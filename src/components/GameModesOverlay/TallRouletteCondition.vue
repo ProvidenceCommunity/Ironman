@@ -29,12 +29,12 @@
     color: red;
     margin-top: 10px;
     margin-left: 10px;
-    font-size: 20px;
+    font-size: 16px;
   }
   .conditionDetail {
     margin-left: 10px;
     margin-top: 10px;
-    font-size: 25px;
+    font-size: 23px;
     font-weight: bold;
   }
   .targetName {

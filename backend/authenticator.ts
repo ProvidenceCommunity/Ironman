@@ -6,8 +6,7 @@ export const authRouter = Router();
 authRouter.use(sessionStore);
 
 function getRedirectURI(): string {
-    //TODO: Not static blyat
-    return encodeURIComponent("http://localhost:5002/auth/discord_callback");
+    return encodeURIComponent(`${process.env.PUBLIC_ORIGIN}/auth/discord_callback`);
 }
 
 authRouter.get("/discord_login", (req, res) => {

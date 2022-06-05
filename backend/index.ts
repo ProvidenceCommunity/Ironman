@@ -15,7 +15,6 @@ async function main() {
 
     app.use(bodyParser.json());
     app.use(cors({
-        // TODO: Not static?
         origin: 'http://localhost:8080',
         credentials: true
     }));
@@ -27,8 +26,8 @@ async function main() {
 
     app.use(express.static('dist'));
 
-    app.listen(5002, 'localhost', () => {
-        console.log(`Server listening on localhost:5002`);
+    app.listen(parseInt(process.env.PORT as string), process.env.HOSTNAME as string, () => {
+        console.log(`Server listening on ${process.env.HOSTNAME}:${process.env.PORT}`);
     })
 }
 

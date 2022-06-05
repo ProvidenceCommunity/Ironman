@@ -11,25 +11,26 @@
     <div class="spinBox">
       <template v-if="matchInfo.roundLive === false">
         <CountdownOverlay v-if="matchInfo.countdown !== undefined" :next-mode="matchInfo.round.mode" :time="matchInfo.countdown"></CountdownOverlay>
-        <h1 v-else class="gauntletText">Hitman Gauntlet</h1>
       </template>
       <template v-if="matchInfo.roundLive">
         <DoneButtonOverlay v-if="matchInfo.round.mode === 'simpleDoneButton'" :data="matchInfo.round.additionalDetails"></DoneButtonOverlay>
         <RouletteSpinOverlay v-if="matchInfo.round.mode === 'rouletteSpin'" :data="matchInfo.round.additionalDetails"></RouletteSpinOverlay>
         <BingoOverlay v-if="matchInfo.round.mode === 'bingo'" :data="matchInfo.round.additionalDetails"></BingoOverlay>
-        <CountdownBar :total-time="matchInfo.totalMatchTime" :time-remaining="matchInfo.countdown"></CountdownBar>
       </template>
     </div>
+    <v-sheet v-if="matchInfo.roundLive" style="top: 1030px; position: absolute; width: 100%; height: 50px;" theme="dark">
+      <CountdownBar :total-time="matchInfo.totalMatchTime" :time-remaining="matchInfo.countdown"></CountdownBar>
+    </v-sheet>
   </div>
 </template>
 
 <style>
-  body {
+  body.overlay {
     overflow: hidden;
-    width: 1920px;
     height: 1080px;
+    width: 1920px;
   }
-  ::-webkit-scrollbar {
+  body.overlay::-webkit-scrollbar {
     display: none;
   }
 </style>
@@ -43,7 +44,6 @@
   .container {
     width: 1920px;
     height: 1080px;
-    background-image: url("~@/assets/HITMAN_Gauntlet_Overlay_v2.png");
     overflow: hidden;
   }
 
@@ -87,22 +87,15 @@
     top: 670px;
   }
   .rpScore {
-    right: 280px;
+    right: 290px;
     top: 670px;
   }
   .spinBox {
     position: absolute;
-    width: 800px;
-    height: 450px;
+    width: 1100px;
+    height: 400px;
     top: 630px;
-    left: 561px;
-  }
-  .gauntletText {
-    width: 100%;
-    text-align: center;
-    color: white;
-    font-size: 80px;
-    margin-top: 30px;
+    left: 411px;
   }
 </style>
 
@@ -135,6 +128,12 @@ export default defineComponent({
         players: []
       }
     }
+  },
+  beforeCreate() {
+    document.body.className = "overlay";
+  },
+  beforeUnmount() {
+    document.body.className = "";
   },
   async created() {
     const pathname = window.location.pathname.split("/");

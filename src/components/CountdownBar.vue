@@ -25,7 +25,7 @@ export default defineComponent({
       return ((this.timeRemaining / this.totalTime) * 100);
     },
     formattedTimeRemaining() {
-      if (this.totalTime < 0) return "Running indefinitely";
+      if (this.totalTime < 0) return "No time limit";
       let h = Math.floor(this.timeRemaining / 3600);
       let m = Math.floor((this.timeRemaining - h * 3600) / 60);
       let s = this.timeRemaining - h * 3600 - m * 60;

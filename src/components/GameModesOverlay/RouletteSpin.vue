@@ -1,6 +1,6 @@
 <template>
   <v-container fluid class="noPadding">
-    <v-row no-gutters v-if="targets <= 2">
+    <v-row no-gutters v-if="targets <= 3">
       <v-col v-for="(target, index) in data.currentSpin.targetConditions" :key="index">
         <TallRouletteCondition :target="target"></TallRouletteCondition>
       </v-col>
@@ -21,6 +21,7 @@
 <style scoped>
   .noPadding {
     padding: 0;
+    height: 400px;
   }
 </style>
 

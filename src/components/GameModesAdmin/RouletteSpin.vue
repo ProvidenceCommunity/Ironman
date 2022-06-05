@@ -1,7 +1,4 @@
 <template>
-  <h1>{{ details.currentSpin.mission.name }}</h1>
-  <v-btn @click="respin">Respin</v-btn><br>
-  <RouletteCondition v-for="(target, index) in details.currentSpin.targetConditions" :key="index" :condition="target"></RouletteCondition>
   <v-list>
     <v-list-item v-for="(player, index) in players" :key="index" lines="two">
       <v-list-item-header>
@@ -14,6 +11,9 @@
       </template>
     </v-list-item>
   </v-list>
+  <h1>{{ details.currentSpin.mission.name }}</h1>
+  <v-btn @click="respin">Respin</v-btn><br>
+  <RouletteCondition v-for="(target, index) in details.currentSpin.targetConditions" :key="index" :condition="target"></RouletteCondition>
 </template>
 
 <script lang="ts">
