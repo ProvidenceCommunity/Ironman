@@ -12,7 +12,8 @@
     </v-list-item>
   </v-list>
   <v-text-field v-model="newCard" label="Card"></v-text-field><v-btn @click="sendNewCard">New card</v-btn>
-  <BingoCard :card="this.details.card" :claimedTiles="this.details.claimedTiles" :mode="this.details.mode"></BingoCard>
+  <BingoCard :card="this.details.card" :claimedTiles="this.details.claimedTiles" :mode="this.details.mode" @click="toggleTile"></BingoCard>
+  <v-select :items="players" v-model="deselectPlayer" label="Toggle tiles for player"></v-select>
 </template>
 
 <script lang="ts">
@@ -27,7 +28,8 @@ export default defineComponent({
   props: [ 'players', 'details', 'matchId' ],
   data() {
     return {
-      newCard: ""
+      newCard: "",
+      deselectPlayer: undefined
     }
   },
   methods: {
@@ -54,6 +56,9 @@ export default defineComponent({
     },
     async sendNewCard() {
       await post(`/api/match/admin/${this.matchId}/newCard`, {card: this.newCard});
+    },
+    async toggleTile(x: number, y: number) {
+      await post(`/api/match/player/${this.matchId}/${this.deselectPlayer}/tile`, {tile: ((y-1)*5+x-1)});
     }
   }
 })
