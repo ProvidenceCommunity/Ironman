@@ -2,8 +2,8 @@
   <table>
     <tr v-for="y in 5" :key="y">
       <td v-for="x in 5" :key="x" @click="click(x,y)" :style="`height: ${tileHeight || '88' }px;`">
-        <div :class="getClaimClass('red')" v-if="isTileClaimed(x,y,0)"></div>
-        <div :class="getClaimClass('green')" v-if="isTileClaimed(x,y,1)"></div>
+        <div :class="getClaimClass('orange')" v-if="isTileClaimed(x,y,0)"></div>
+        <div :class="getClaimClass('blue')" v-if="isTileClaimed(x,y,1)"></div>
         <div class="textField">{{ getTile(x,y) }}</div>
       </td>
     </tr>
@@ -50,14 +50,14 @@ td {
   font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
 }
 
-.redSquare {
-  background-image: linear-gradient(#891B26, #4C1117);
-  background-color: #4C1117;
+.orangeSquare {
+  background-image: linear-gradient(#FF9C12, #F98E1E 60%, #D0800F);
+  background-color: #F98E1E;
 }
 
-.greenSquare {
-  background-image: linear-gradient(#2D802C, #2B5D2A);
-  background-color: #2B5D2A;
+.blueSquare {
+  background-image: linear-gradient(#409CFF, #37A1DE 60%, #088CBD);
+  background-color: #37A1DE;
 }
 
 .coloredSquare {

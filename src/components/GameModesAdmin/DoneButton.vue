@@ -23,6 +23,7 @@ import {DateTime} from "luxon";
 export default defineComponent({
   name: "DoneButtonAdmin",
   props: [ 'players', 'details', 'matchId' ],
+  emits: [ 'error' ],
   data() {
     return {}
   },
@@ -40,13 +41,19 @@ export default defineComponent({
       return this.details.doneStatus[index] === 1;
     },
     timestampToLocale(timestamp: number): string {
-      return DateTime.fromMillis(timestamp).toLocaleString(DateTime.DATETIME_SHORT);
+      return DateTime.fromMillis(timestamp).toLocaleString(DateTime.DATETIME_SHORT_WITH_SECONDS);
     },
     async acceptRun(player: number) {
-      await post("/api/match/admin/" + this.matchId + "/acceptDone", {playerIndex: player});
+      const resp = await post("/api/match/admin/" + this.matchId + "/acceptDone", {playerIndex: player});
+      if (resp.status !== 204) {
+        this.$emit("error", "An error occurred while accepting the player's run.");
+      }
     },
     async rejectRun(player: number) {
-      await post("/api/match/admin/" + this.matchId + "/rejectDone", {playerIndex: player});
+      const resp = await post("/api/match/admin/" + this.matchId + "/rejectDone", {playerIndex: player});
+      if (resp.status !== 204) {
+        this.$emit("error", "An error occurred while rejecting the player's run.");
+      }
     }
   }
 })

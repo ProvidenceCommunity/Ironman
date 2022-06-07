@@ -26,6 +26,7 @@ export default defineComponent({
   name: "BingoAdmin",
   components: {BingoCard},
   props: [ 'players', 'details', 'matchId' ],
+  emits: [ 'error' ],
   data() {
     return {
       newCard: "",
@@ -46,19 +47,31 @@ export default defineComponent({
       return this.details.doneStatus[index] === 1;
     },
     timestampToLocale(timestamp: number): string {
-      return DateTime.fromMillis(timestamp).toLocaleString(DateTime.DATETIME_SHORT);
+      return DateTime.fromMillis(timestamp).toLocaleString(DateTime.DATETIME_SHORT_WITH_SECONDS);
     },
     async acceptRun(player: number) {
-      await post("/api/match/admin/" + this.matchId + "/acceptDone", {playerIndex: player});
+      const resp = await post("/api/match/admin/" + this.matchId + "/acceptDone", {playerIndex: player});
+      if (resp.status !== 204) {
+        this.$emit("error", "An error occurred while accepting the player's run.");
+      }
     },
     async rejectRun(player: number) {
-      await post("/api/match/admin/" + this.matchId + "/rejectDone", {playerIndex: player});
+      const resp = await post("/api/match/admin/" + this.matchId + "/rejectDone", {playerIndex: player});
+      if (resp.status !== 204) {
+        this.$emit("error", "An error occurred while rejecting the player's run.");
+      }
     },
     async sendNewCard() {
-      await post(`/api/match/admin/${this.matchId}/newCard`, {card: this.newCard});
+      const resp = await post(`/api/match/admin/${this.matchId}/newCard`, {card: this.newCard});
+      if (resp.status !== 204) {
+        this.$emit("error", "An error occurred while setting a new card.");
+      }
     },
     async toggleTile(x: number, y: number) {
-      await post(`/api/match/player/${this.matchId}/${this.deselectPlayer}/tile`, {tile: ((y-1)*5+x-1)});
+      const resp = await post(`/api/match/player/${this.matchId}/${this.deselectPlayer}/tile`, {tile: ((y-1)*5+x-1)});
+      if (resp.status !== 204) {
+        this.$emit("error", "An error occurred while trying to toggle the selected tile.");
+      }
     }
   }
 })

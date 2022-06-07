@@ -8,11 +8,6 @@ export class DoneButtonGameMode implements GameMode {
     getGeneratorOptions(): GeneratorOption[] {
         return [
             {
-                id: "title",
-                type: "string",
-                caption: "Round title"
-            },
-            {
                 id: "additional_info",
                 type: "string",
                 caption: "Additional info for the players"
@@ -22,7 +17,6 @@ export class DoneButtonGameMode implements GameMode {
 
     generate(options: GeneratorOptions, players: string[]): GameModeDetails {
         return {
-            title: options['title'],
             additionalInfo: options['additional_info'],
             doneStatus: players.map(() => { return 0 }),
             lastDone: players.map(() => { return -1 })
@@ -50,7 +44,6 @@ export class DoneButtonGameMode implements GameMode {
 
     getPlayerDetails(player: number, currentState: GameModeDetails): GameModeDetails {
         return {
-            title: currentState['title'],
             additionalInfo: currentState['additionalInfo'],
             doneStatus: (currentState['doneStatus'] as number[])[player],
             lastDone: (currentState['lastDone'] as number[])[player],

@@ -1,6 +1,7 @@
 import { DoneButtonGameMode } from "./GameModes/simpleDone";
 import { RouletteSpinGameMode } from "./GameModes/rouletteSpin";
 import { BingoGameMode } from "./GameModes/bingo";
+import {TimerGameMode} from "./GameModes/timer";
 
 export interface IronmanMatch {
     id: string;
@@ -24,6 +25,7 @@ export enum IronmanScoringType {
 
 export interface IronmanRound {
     mode: string;
+    title: string;
     additionalDetails: GameModeDetails;
     arrivingTimestamp: number;
     leavingTimestamp: number;
@@ -56,6 +58,7 @@ export const GameModes: { [key: string]: GameMode } = {
     "simpleDoneButton": new DoneButtonGameMode(),
     "rouletteSpin": new RouletteSpinGameMode(),
     "bingo": new BingoGameMode(),
+    "timer": new TimerGameMode(),
 }
 
 declare module 'express-session' {

@@ -9,16 +9,7 @@ export async function get(path: string) {
         headers: {
             "Content-type": "application/json",
         },
-        validateStatus: () => true,
-        withCredentials: true
-    });
-}
-export async function patch(path: string, data: any) {
-    return await Axios.patch(url + path, data, {
-        headers: {
-            "Content-type": "application/json",
-        },
-        validateStatus: () => true,
+        validateStatus: () => { return true },
         withCredentials: true
     });
 }

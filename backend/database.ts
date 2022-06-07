@@ -2,24 +2,29 @@ import {IronmanMatch, IronmanScoringType, SimplifiedIronmanMatch} from "./model"
 import session from 'express-session';
 import { randomUUID } from 'crypto';
 import { readFile, writeFile } from 'fs/promises';
+import debug from "debug";
 
 interface MatchList {
     [id: string]: IronmanMatch;
 }
 
+const dbg = debug("ironman:database");
 let matches: MatchList = {}
 
 export async function loadDatabase(): Promise<void> {
     try {
         const file = await readFile("./database.json", 'utf8');
         matches = JSON.parse(file);
+        dbg("Loaded %d matches", Object.keys(matches).length);
     } catch {
+        dbg("Failed to load database, assuming empty");
         matches = {};
     }
 }
 
 export async function writeDatabase(): Promise<void> {
     await writeFile('./database.json', JSON.stringify(matches), 'utf8');
+    dbg("Wrote %d matches to disk", Object.keys(matches).length);
 }
 
 export function getMatch(id: string): IronmanMatch {

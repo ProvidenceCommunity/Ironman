@@ -1,9 +1,12 @@
 import { Router } from 'express';
 import { sessionStore } from "./database";
 import axios from 'axios';
+import debug from 'debug';
 
 export const authRouter = Router();
 authRouter.use(sessionStore);
+
+const dbg = debug("ironman:authenticator");
 
 function getRedirectURI(): string {
     return encodeURIComponent(`${process.env.PUBLIC_ORIGIN}/auth/discord_callback`);
@@ -23,7 +26,7 @@ authRouter.get("/discord_callback", async (req, res) => {
     const code = req.query.code;
     const state = req.query.state;
     if (state !== req.sessionID) {
-        console.log("Bad state");
+        dbg("Discord callback - bad state");
         res.sendStatus(400);
         return;
     }
@@ -34,7 +37,7 @@ authRouter.get("/discord_callback", async (req, res) => {
                 `redirect_uri=${getRedirectURI()}`
     const request = await axios.post("https://discord.com/api/oauth2/token", data, { validateStatus: () => { return true } });
     if (request.status !== 200) {
-        console.log(request);
+        dbg("Discord callback - non 200 token code: %d: %o", request.status, request.data);
         res.sendStatus(400);
         return;
     }
@@ -55,6 +58,7 @@ authRouter.get("/discord_callback", async (req, res) => {
         }
     }
     if (hasAccess) {
+        dbg("Discord callback - User %s login successful", username);
         req.session.isAdmin = true;
         req.session.username = username;
         req.session.avatarURI = avatar;
@@ -64,12 +68,14 @@ authRouter.get("/discord_callback", async (req, res) => {
 
 authRouter.post("/local_login", (req, res) => {
     if (req.body.password === process.env.LOCAL_PASSWORD && process.env.LOCAL_PASSWORD !== undefined) {
+        dbg("Local login - successful");
         req.session.isAdmin = true;
         req.session.username = "local_root";
         req.session.avatarURI = "";
         res.sendStatus(204);
         return;
     }
+    dbg("Local login - failed");
     res.sendStatus(403);
     return;
 });

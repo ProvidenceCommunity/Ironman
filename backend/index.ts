@@ -13,6 +13,8 @@ async function main() {
 
     await loadDatabase();
 
+    setInterval(writeDatabase, 1000 * 60 * 15); // 15 minute interval to save db
+
     app.use(bodyParser.json());
     app.use(cors({
         origin: 'http://localhost:8080',
@@ -28,7 +30,7 @@ async function main() {
 
     app.listen(parseInt(process.env.PORT as string), process.env.HOSTNAME as string, () => {
         console.log(`Server listening on ${process.env.HOSTNAME}:${process.env.PORT}`);
-    })
+    });
 }
 
 process.on('SIGINT', async () => {

@@ -1,5 +1,15 @@
 <template>
   <v-container fluid>
+    <v-row>
+      <v-spacer></v-spacer>
+      <v-col cols="10">
+        <v-alert type="error" v-model="errorShown" border="start" closable>{{error}}</v-alert>
+        <v-alert type="error" v-if="connectionIssues" border="start">
+          No connection to the server. Make sure you have a stable network connection and refresh the page / contact your match admin if the issue persists.
+        </v-alert>
+      </v-col>
+      <v-spacer></v-spacer>
+    </v-row>
     <v-row v-for="i in Math.ceil(matchInfo.players.length/2)" :key="i">
       <v-spacer></v-spacer>
       <v-col cols="3"><b style="font-size: 20pt;">{{ matchInfo.scores[2*(i-1)] }} - {{ matchInfo.players[2*(i-1)] }}</b></v-col>
@@ -12,13 +22,14 @@
       <v-col cols="10">
         <div v-if="this.matchInfo.roundLive">
           <CountdownBar :total-time="this.matchInfo.totalMatchTime" :time-remaining="this.matchInfo.countdown"></CountdownBar>
-          <DoneButtonPlayer v-if="matchInfo.currentGameMode === 'simpleDoneButton'" :matchId="this.matchId" :player="this.player" :details="this.matchInfo.round"></DoneButtonPlayer>
-          <RouletteSpinPlayer v-else-if="matchInfo.currentGameMode === 'rouletteSpin'" :matchId="this.matchId" :player="this.player" :details="this.matchInfo.round"></RouletteSpinPlayer>
-          <BingoPlayer v-else-if="matchInfo.currentGameMode === 'bingo'" :matchId="this.matchId" :player="this.player" :details="this.matchInfo.round"></BingoPlayer>
+          <DoneButtonPlayer v-if="matchInfo.currentGameMode === 'simpleDoneButton'" :matchId="this.matchId" :player="this.player" :details="this.matchInfo.round" @error="onError"></DoneButtonPlayer>
+          <RouletteSpinPlayer v-else-if="matchInfo.currentGameMode === 'rouletteSpin'" :matchId="this.matchId" :player="this.player" :details="this.matchInfo.round" @error="onError"></RouletteSpinPlayer>
+          <BingoPlayer v-else-if="matchInfo.currentGameMode === 'bingo'" :matchId="this.matchId" :player="this.player" :details="this.matchInfo.round" @error="onError"></BingoPlayer>
+          <TimerPlayer v-else-if="matchInfo.currentGameMode === 'timer'" :details="this.matchInfo.round"></TimerPlayer>
         </div>
         <div v-else>
           <h1>Waiting for match info...</h1>
-          <h3 v-if="matchInfo.countdown">Next mode: {{ matchInfo.currentGameMode }}</h3>
+          <h3 v-if="matchInfo.countdown">Next mode: {{ matchInfo.roundTitle }}</h3>
           <h3 v-if="matchInfo.countdown">Arriving in: {{ countdown }}</h3>
         </div>
       </v-col>
@@ -34,10 +45,12 @@ import RouletteSpinPlayer from '@/components/GameModesPlayer/RouletteSpin.vue';
 import {get} from '@/http';
 import BingoPlayer from "@/components/GameModesPlayer/Bingo.vue";
 import CountdownBar from "@/components/CountdownBar.vue";
+import TimerPlayer from "@/components/GameModesPlayer/Timer.vue";
 
 export default defineComponent({
   name: "PlayerClient",
   components: {
+    TimerPlayer,
     CountdownBar,
     BingoPlayer,
     DoneButtonPlayer,
@@ -52,7 +65,10 @@ export default defineComponent({
         players: [],
         scores: [],
         countdown: 0
-      }
+      },
+      error: "",
+      errorShown: false,
+      connectionIssues: false
     }
   },
   async created() {
@@ -66,7 +82,21 @@ export default defineComponent({
   },
   methods: {
     async update() {
-      this.matchInfo = (await get("/api/match/player/" + this.matchId + "/" + this.player)).data;
+      try {
+        const resp = await get("/api/match/player/" + this.matchId + "/" + this.player);
+        if (resp.status !== 200) {
+          this.connectionIssues = true;
+        } else {
+          this.connectionIssues = false;
+          this.matchInfo = resp.data;
+        }
+      } catch {
+        this.connectionIssues = true;
+      }
+    },
+    onError(error: string) {
+      this.error = error;
+      this.errorShown = true;
     }
   },
   computed: {

@@ -10,10 +10,10 @@
 
     <div class="spinBox">
       <template v-if="matchInfo.roundLive === false">
-        <CountdownOverlay v-if="matchInfo.countdown !== undefined" :next-mode="matchInfo.round.mode" :time="matchInfo.countdown"></CountdownOverlay>
+        <CountdownOverlay v-if="matchInfo.countdown !== undefined" :next-mode="matchInfo.round.title" :time="matchInfo.countdown"></CountdownOverlay>
       </template>
       <template v-if="matchInfo.roundLive">
-        <DoneButtonOverlay v-if="matchInfo.round.mode === 'simpleDoneButton'" :data="matchInfo.round.additionalDetails"></DoneButtonOverlay>
+        <DoneButtonOverlay v-if="matchInfo.round.mode === 'simpleDoneButton' || matchInfo.round.mode === 'timer'" :data="matchInfo.round.additionalDetails"></DoneButtonOverlay>
         <RouletteSpinOverlay v-if="matchInfo.round.mode === 'rouletteSpin'" :data="matchInfo.round.additionalDetails"></RouletteSpinOverlay>
         <BingoOverlay v-if="matchInfo.round.mode === 'bingo'" :data="matchInfo.round.additionalDetails"></BingoOverlay>
       </template>
@@ -68,11 +68,11 @@
   }
   .lpName {
     left: 160px;
-    top: 0px;
+    top: -5px;
   }
   .rpName {
     right: 160px;
-    top: 0px;
+    top: -5px;
     text-align: right;
   }
   .score {
@@ -81,6 +81,7 @@
     color: white;
     font-weight: bold;
     position: absolute;
+    -webkit-text-stroke: 1px black;
   }
   .lpScore {
     left: 280px;

@@ -3,6 +3,7 @@
     <v-card>
       <v-card-title>Adding Round - {{ game_mode }}</v-card-title>
       <v-card-text>
+        <v-text-field v-model="title" label="Round title"></v-text-field>
         <GeneratorOption v-for="(item, index) in fields" :option="item" :key="index" @change="updateValue"></GeneratorOption>
       </v-card-text>
       <v-card-actions>
@@ -26,7 +27,8 @@ export default defineComponent({
     return {
       fields: [],
       show: true,
-      values: {}
+      values: {},
+      title: ""
     };
   },
   async created() {
@@ -36,11 +38,11 @@ export default defineComponent({
   methods: {
     cancel() {
       this.show = false;
-      this.$emit('done', undefined);
+      this.$emit('done', undefined, undefined);
     },
     addRound() {
       this.show = false;
-      this.$emit('done', this.values);
+      this.$emit('done', this.values, this.title);
     },
     updateValue(id: string, value: any) {
       (this.values as {[key: string]: unknown})[id] = value;

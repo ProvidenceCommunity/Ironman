@@ -13,6 +13,7 @@ import RouletteCondition from "@/components/RouletteCondition.vue";
 export default defineComponent({
   name: "RouletteSpinPlayer",
   props: ['matchId', 'player', 'details'],
+  emits: ['error'],
   components: {
     RouletteCondition
   },
@@ -31,7 +32,10 @@ export default defineComponent({
   },
   methods: {
     async done() {
-      await post('/api/match/player/' + this.matchId + '/' + this.player + '/done', {});
+      const resp = await post('/api/match/player/' + this.matchId + '/' + this.player + '/done', {});
+      if (resp.status !== 204) {
+        this.$emit("error", "An error occurred while sending the 'done' signal. Please inform your match admin via discord.");
+      }
       setTimeout(() => { this.sentDone = true }, 500);
     },
     rejectionTimer() {

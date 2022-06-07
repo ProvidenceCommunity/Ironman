@@ -41,11 +41,11 @@ export default defineComponent({
     hint() {
       if (this.password === "") {
         this.incorrectPassword = false;
-        return true;
+        return "";
       } else if (this.incorrectPassword) {
         return "Incorrect password";
       } else {
-        return true;
+        return "";
       }
     }
   }

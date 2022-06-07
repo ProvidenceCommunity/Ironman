@@ -15,6 +15,7 @@ export default defineComponent({
     BingoCard
   },
   props: ['matchId', 'player', 'details'],
+  emits: ['error'],
   data() {
     return {
       sentDone: false,
@@ -30,7 +31,10 @@ export default defineComponent({
   },
   methods: {
     async done() {
-      await post('/api/match/player/' + this.matchId + '/' + this.player + '/done', {});
+      const resp = await post('/api/match/player/' + this.matchId + '/' + this.player + '/done', {});
+      if (resp.status !== 204) {
+        this.$emit("error", "An error occurred while sending the 'done' signal. Please inform your match admin via discord.");
+      }
       setTimeout(() => { this.sentDone = true }, 500);
     },
     rejectionTimer() {
@@ -43,7 +47,10 @@ export default defineComponent({
       }
     },
     async clickTile(x: number, y: number) {
-      await post(`/api/match/player/${this.matchId}/${this.player}/tile`, {tile: ((y-1)*5+x-1)});
+      const resp = await post(`/api/match/player/${this.matchId}/${this.player}/tile`, {tile: ((y-1)*5+x-1)});
+      if (resp.status !== 204) {
+        this.$emit("error", "An error occurred while toggling a tile. Please inform your match admin via discord.");
+      }
     }
   },
   computed: {

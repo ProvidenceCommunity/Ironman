@@ -1,6 +1,9 @@
 import { Router } from 'express';
 import {createMatch, getMatch, sessionStore, setMatch} from "./database";
 import {GameModeDetails, GameModes, IronmanRound, IronmanScoringType} from "./model";
+import debug from 'debug';
+
+const dbg = debug("ironman:api");
 
 export const apiRouter = Router();
 apiRouter.use(sessionStore);
@@ -11,6 +14,7 @@ apiRouter.post('/match/create', (req, res) => {
         return;
     }
     const uuid = createMatch(req.body.players, req.body.scoringType);
+    dbg("Creating match %s", uuid);
     res.send(uuid);
 });
 
@@ -46,14 +50,22 @@ apiRouter.post('/match/admin/:mID/addRound', async (req, res) => {
         res.sendStatus(404);
         return;
     }
-    match.rounds.push({
-        mode: req.body.game_mode,
-        additionalDetails: await GameModes[req.body.game_mode].generate(req.body.generatorOptions, match.players),
-        arrivingTimestamp: -1,
-        leavingTimestamp: -1
-    });
-    setMatch(req.params.mID as string, match);
-    res.sendStatus(204);
+    try {
+        const details = await GameModes[req.body.game_mode].generate(req.body.generatorOptions, match.players);
+        match.rounds.push({
+            title: req.body.title,
+            mode: req.body.game_mode,
+            additionalDetails: details,
+            arrivingTimestamp: -1,
+            leavingTimestamp: -1
+        });
+        dbg("(%s) Added round %s [%s]: %o", match.id, req.body.title, req.body.game_mode, details);
+        setMatch(req.params.mID as string, match);
+        res.sendStatus(204);
+    } catch {
+        dbg("(%s) Error while adding round %s [%s]: %o", match.id, req.body.title, req.body.game_mode, req.body.generatorOptions);
+        res.sendStatus(500);
+    }
 });
 
 apiRouter.post('/match/admin/:mID/:event', async (req, res) => {
@@ -67,8 +79,14 @@ apiRouter.post('/match/admin/:mID/:event', async (req, res) => {
         return;
     }
     const round = match.rounds[match.rounds.length - 1];
-    round.additionalDetails = await GameModes[round.mode].handleAdminEvent(req.params['event'] as string, req.body, round.additionalDetails);
-    res.sendStatus(204);
+    try {
+        round.additionalDetails = await GameModes[round.mode].handleAdminEvent(req.params['event'] as string, req.body, round.additionalDetails);
+        dbg("(%s)[%s] Admin event %s: %o", match.id, round.mode, req.params['event'], req.body);
+        res.sendStatus(204);
+    } catch {
+        dbg("(%s)[%s] Error while processing admin event %s: %o", match.id, round.mode, req.params['event'], req.body);
+        res.sendStatus(500);
+    }
 });
 
 apiRouter.get('/match/player/:mID/:player', (req, res) => {
@@ -83,7 +101,7 @@ apiRouter.get('/match/player/:mID/:player', (req, res) => {
         return;
     }
     const roundIndex = match.rounds.length - 1;
-    const result: {players:string[];scores:number[];scoringType:IronmanScoringType;round?:GameModeDetails;currentGameMode?:string;countdown?:number;totalMatchTime?:number;roundLive:boolean} = {
+    const result: {players:string[];scores:number[];scoringType:IronmanScoringType;round?:GameModeDetails;currentGameMode?:string;countdown?:number;totalMatchTime?:number;roundLive:boolean;roundTitle?:string} = {
         players: match.players,
         scores: match.scores,
         scoringType: match.scoringType,
@@ -92,6 +110,7 @@ apiRouter.get('/match/player/:mID/:player', (req, res) => {
     if (roundIndex >= 0) {
         const round = match.rounds[roundIndex];
         result.currentGameMode = round.mode;
+        result.roundTitle = round.title;
         if (Date.now() < round.arrivingTimestamp) {
             result.countdown = Math.floor((round.arrivingTimestamp - Date.now()) / 1000 );
         } else if (Date.now() < round.leavingTimestamp || round.leavingTimestamp < 0) {
@@ -116,8 +135,14 @@ apiRouter.post('/match/player/:mID/:player/:event', (req, res) => {
         return;
     }
     const round = match.rounds[match.rounds.length - 1];
-    round.additionalDetails = GameModes[round.mode].handleUserEvent(req.params.event as string, playerIndex, req.body, round.additionalDetails);
-    res.sendStatus(204);
+    try {
+        dbg("(%s)[%s] Player(%s) event %s: %o", match.id, round.mode, req.params.player, req.params['event'], req.body);
+        round.additionalDetails = GameModes[round.mode].handleUserEvent(req.params.event as string, playerIndex, req.body, round.additionalDetails);
+        res.sendStatus(204);
+    } catch {
+        dbg("(%s) Error while Player(%s) event %s: %o", match.id, round.mode, req.params.player, req.params['event'], req.body);
+        res.sendStatus(500);
+    }
 });
 
 apiRouter.get('/match/overlay/:mID', (req, res) => {
