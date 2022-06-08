@@ -67,12 +67,12 @@ td {
   position: absolute;
 }
 
-.redSquareNonLock {
+.orangeSquareNonLock {
   transform: skew(-45deg) translateX(0%);
   transform-origin: 0px 0px;
 }
 
-.greenSquareNonLock {
+.blueSquareNonLock {
   transform: skew(-45deg) translateX(0%);
   transform-origin: 0px 96px;
 }

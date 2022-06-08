@@ -113,7 +113,7 @@ apiRouter.get('/match/player/:mID/:player', (req, res) => {
         result.roundTitle = round.title;
         if (Date.now() < round.arrivingTimestamp) {
             result.countdown = Math.floor((round.arrivingTimestamp - Date.now()) / 1000 );
-        } else if (Date.now() < round.leavingTimestamp || round.leavingTimestamp < 0) {
+        } else if ((Date.now() < round.leavingTimestamp || round.leavingTimestamp < 0) && round.arrivingTimestamp > 0) {
             result.totalMatchTime = Math.floor((round.leavingTimestamp - round.arrivingTimestamp) / 1000);
             result.countdown = Math.floor((round.leavingTimestamp - Date.now()) / 1000);
             result.round = GameModes[round.mode].getPlayerDetails(playerIndex, round.additionalDetails);
