@@ -6,7 +6,8 @@
     "serve": "vue-cli-service serve --port 8080",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "backend": "DEBUG=ironman:* ts-node --project ./node.tsconfig.json ./backend/index.ts"
+    "backend": "DEBUG=ironman:* ts-node --project ./node.tsconfig.json ./backend/index.ts",
+    "backend-win": "@powershell -Command $env:DEBUG='ironman:*';ts-node --project ./node.tsconfig.json ./backend/index.ts"
   },
   "dependencies": {
     "@mdi/font": "5.9.55",

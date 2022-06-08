@@ -68,7 +68,7 @@
               <v-text-field label="Round starts" v-model="arrivingTimestamp" dense type="datetime-local"></v-text-field>
             </v-col>
             <v-col>
-              <v-text-field label="Round ends" v-model="leavingTimestamp" dense type="datetime-local"></v-text-field>
+              <v-text-field label="Round duration" v-model="leavingTimestamp" dense type="number" suffix="min"></v-text-field>
             </v-col>
           </v-row>
         </v-container>
@@ -131,7 +131,7 @@ export default defineComponent({
       addingRound: false,
       refreshTask: -1,
       arrivingTimestamp: "",
-      leavingTimestamp: "",
+      leavingTimestamp: 0,
       matchDoneDialog: false,
       playerScores: [] as number[],
       players: [],
@@ -174,7 +174,7 @@ export default defineComponent({
           this.onError("An error occured while creating the round.");
         }
         this.arrivingTimestamp = "";
-        this.leavingTimestamp = "";
+        this.leavingTimestamp = 0;
         await this.updateData();
       }
       this.addingRound = false;
@@ -213,10 +213,11 @@ export default defineComponent({
         const arrivingTS = DateTime.fromISO(this.arrivingTimestamp).toMillis();
         if (!isNaN(arrivingTS)) {
           (this.matchInfo as any).rounds[roundIndex].arrivingTimestamp = arrivingTS;
-        }
-        const leavingTS = DateTime.fromISO(this.leavingTimestamp).toMillis();
-        if (!isNaN(leavingTS)) {
-          (this.matchInfo as any).rounds[roundIndex].leavingTimestamp = leavingTS;
+          if (this.leavingTimestamp === 0) {
+            (this.matchInfo as any).rounds[roundIndex].leavingTimestamp = -1;
+          } else {
+            (this.matchInfo as any).rounds[roundIndex].leavingTimestamp = arrivingTS + (this.leavingTimestamp * 1000 * 60);
+          }
         }
         await this.sendData();
       }
