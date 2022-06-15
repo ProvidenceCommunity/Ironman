@@ -90,10 +90,12 @@
       <v-spacer></v-spacer>
       <v-col cols="10">
 
+        <h1>{{currentRound.title}}</h1>
         <DoneButtonAdmin v-if="currentRound.mode === 'simpleDoneButton'" :players="matchInfo.players" :details="currentRound.additionalDetails" :matchId="this.matchId" @error="onError"></DoneButtonAdmin>
         <RouletteSpinAdmin v-if="currentRound.mode === 'rouletteSpin'" :players="matchInfo.players" :details="currentRound.additionalDetails" :matchId="this.matchId" @error="onError"></RouletteSpinAdmin>
         <BingoAdmin v-if="currentRound.mode === 'bingo'" :players="matchInfo.players" :details="currentRound.additionalDetails" :matchId="this.matchId" @error="onError"></BingoAdmin>
         <TimerAdmin v-if="currentRound.mode === 'timer'" :details="currentRound.additionalDetails"></TimerAdmin>
+        <RelayAdmin v-if="currentRound.mode === 'relay'" :players="matchInfo.players" :details="currentRound.additionalDetails" :matchId="this.matchId" @error="onError"></RelayAdmin>
 
       </v-col>
       <v-spacer></v-spacer>
@@ -110,10 +112,12 @@ import RouletteSpinAdmin from "@/components/GameModesAdmin/RouletteSpin.vue";
 import BingoAdmin from "@/components/GameModesAdmin/Bingo.vue";
 import TimerAdmin from "@/components/GameModesAdmin/Timer.vue";
 import { DateTime } from "luxon";
+import RelayAdmin from "@/components/GameModesAdmin/Relay.vue";
 
 export default defineComponent({
   name: 'AdminInterface',
   components: {
+    RelayAdmin,
     TimerAdmin,
     RouletteSpinAdmin,
     DoneButtonAdmin,
@@ -213,7 +217,7 @@ export default defineComponent({
         const arrivingTS = DateTime.fromISO(this.arrivingTimestamp).toMillis();
         if (!isNaN(arrivingTS)) {
           (this.matchInfo as any).rounds[roundIndex].arrivingTimestamp = arrivingTS;
-          if (this.leavingTimestamp === 0) {
+          if (this.leavingTimestamp === 0 || this.leavingTimestamp === undefined) {
             (this.matchInfo as any).rounds[roundIndex].leavingTimestamp = -1;
           } else {
             (this.matchInfo as any).rounds[roundIndex].leavingTimestamp = arrivingTS + (this.leavingTimestamp * 1000 * 60);

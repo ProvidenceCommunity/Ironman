@@ -26,6 +26,7 @@
           <RouletteSpinPlayer v-else-if="matchInfo.currentGameMode === 'rouletteSpin'" :matchId="this.matchId" :player="this.player" :details="this.matchInfo.round" @error="onError"></RouletteSpinPlayer>
           <BingoPlayer v-else-if="matchInfo.currentGameMode === 'bingo'" :matchId="this.matchId" :player="this.player" :details="this.matchInfo.round" @error="onError"></BingoPlayer>
           <TimerPlayer v-else-if="matchInfo.currentGameMode === 'timer'" :details="this.matchInfo.round"></TimerPlayer>
+          <RelayPlayer v-else-if="matchInfo.currentGameMode === 'relay'" :details="this.matchInfo.round" :matchId="this.matchId" :player="this.player" @error="onError"></RelayPlayer>
         </div>
         <div v-else>
           <h1>Waiting for match info...</h1>
@@ -46,10 +47,12 @@ import {get} from '@/http';
 import BingoPlayer from "@/components/GameModesPlayer/Bingo.vue";
 import CountdownBar from "@/components/CountdownBar.vue";
 import TimerPlayer from "@/components/GameModesPlayer/Timer.vue";
+import RelayPlayer from "@/components/GameModesPlayer/Relay.vue";
 
 export default defineComponent({
   name: "PlayerClient",
   components: {
+    RelayPlayer,
     TimerPlayer,
     CountdownBar,
     BingoPlayer,

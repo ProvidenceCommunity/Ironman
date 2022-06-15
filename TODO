@@ -1,0 +1,5 @@
+- Relay stuff
+- Clean up types (especially frontend)
+- Current round != last added round - dynamically via timestamps
+- RNG? at least for map selects
+- Match = Class, Timer = Class, to be manipulated from everywhere

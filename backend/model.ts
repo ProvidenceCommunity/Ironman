@@ -2,6 +2,7 @@ import { DoneButtonGameMode } from "./GameModes/simpleDone";
 import { RouletteSpinGameMode } from "./GameModes/rouletteSpin";
 import { BingoGameMode } from "./GameModes/bingo";
 import {TimerGameMode} from "./GameModes/timer";
+import {RelayGameMode} from "./GameModes/relay";
 
 export interface IronmanMatch {
     id: string;
@@ -36,22 +37,22 @@ export interface GameModeDetails {
 }
 
 export interface GeneratorOption {
-    type: "string" | "number" | "select" | "boolean";
+    type: "string" | "number" | "select" | "boolean" | "list";
     id: string;
     caption: string;
-    options?: string[] | number[];
+    options?: string[] | number[] | GeneratorOption;
 }
 
 export interface GeneratorOptions {
-    [id: string]: string | number | boolean;
+    [id: string]: string | number | boolean | string[] | number[] | boolean[];
 }
 
 export interface GameMode {
     getGeneratorOptions(): GeneratorOption[];
     generate(options: GeneratorOptions, players: string[]): Promise<GameModeDetails> | GameModeDetails;
     handleUserEvent(event: string, player: number, payload: unknown, currentState: GameModeDetails): GameModeDetails;
-    handleAdminEvent(event: string, payload: unknown, currentState: GameModeDetails): Promise<GameModeDetails> | GameModeDetails;
-    getPlayerDetails(player: number, currentState: GameModeDetails): GameModeDetails;
+    handleAdminEvent(event: string, payload: unknown, currentState: GameModeDetails, roundStartingTimestamp: number): Promise<GameModeDetails> | GameModeDetails;
+    getPlayerDetails(player: number, currentState: GameModeDetails, roundStartingTimestamp: number): GameModeDetails;
 }
 
 export const GameModes: { [key: string]: GameMode } = {
@@ -59,6 +60,7 @@ export const GameModes: { [key: string]: GameMode } = {
     "rouletteSpin": new RouletteSpinGameMode(),
     "bingo": new BingoGameMode(),
     "timer": new TimerGameMode(),
+    "relay": new RelayGameMode(),
 }
 
 declare module 'express-session' {

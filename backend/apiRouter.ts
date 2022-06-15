@@ -80,7 +80,7 @@ apiRouter.post('/match/admin/:mID/:event', async (req, res) => {
     }
     const round = match.rounds[match.rounds.length - 1];
     try {
-        round.additionalDetails = await GameModes[round.mode].handleAdminEvent(req.params['event'] as string, req.body, round.additionalDetails);
+        round.additionalDetails = await GameModes[round.mode].handleAdminEvent(req.params['event'] as string, req.body, round.additionalDetails, round.arrivingTimestamp);
         dbg("(%s)[%s] Admin event %s: %o", match.id, round.mode, req.params['event'], req.body);
         res.sendStatus(204);
     } catch {
@@ -116,7 +116,7 @@ apiRouter.get('/match/player/:mID/:player', (req, res) => {
         } else if ((Date.now() < round.leavingTimestamp || round.leavingTimestamp < 0) && round.arrivingTimestamp > 0) {
             result.totalMatchTime = Math.floor((round.leavingTimestamp - round.arrivingTimestamp) / 1000);
             result.countdown = Math.floor((round.leavingTimestamp - Date.now()) / 1000);
-            result.round = GameModes[round.mode].getPlayerDetails(playerIndex, round.additionalDetails);
+            result.round = GameModes[round.mode].getPlayerDetails(playerIndex, round.additionalDetails, round.arrivingTimestamp);
             result.roundLive = true;
         }
     }

@@ -1,5 +1,5 @@
 import {GameMode, GameModeDetails, GeneratorOption, GeneratorOptions} from "../model";
-import axios from 'axios';
+import axios from "axios";
 
 interface SpinGeneratorOptions {
     missionPool: string[];
@@ -38,8 +38,11 @@ interface Spin {
 }
 
 interface AdminEventPayload {
-    playerIndex: number;
+    playerIndex?: number;
+    mapIndex?: number;
 }
+
+const FORFEIT_TIME = 1800000;
 
 const missionIdToSlug: {[key: string]: string} = {
     "Freeform Training (ICA Facility)": "hitman|ica-facility|freeform-training|professional",
@@ -77,88 +80,94 @@ const missionIdToSlug: {[key: string]: string} = {
     "Untouchable (Carpathian Mountains)": "hitman3|carpathian-mountains|untouchable|professional"
 }
 
-export class RouletteSpinGameMode implements GameMode {
+export class RelayGameMode implements GameMode {
     getGeneratorOptions(): GeneratorOption[] {
         return [
             {
-                id: "mission",
-                caption: "Mission",
-                type: "select",
-                options: Object.keys(missionIdToSlug)
+                id: "timelimit",
+                type: "number",
+                caption: "Timelimit per map (in minutes)"
             },
             {
-                id: "noTargets",
-                caption: "No Targets (Freestyle Mode)",
-                type: "boolean"
-            },
-            {
-                id: "noDisguise",
-                caption: "No Disguise",
-                type: "boolean"
-            },
-            {
-                id: "noMelee",
-                caption: "No Melee",
-                type: "boolean"
-            },
-            {
-                id: "noFirearms",
-                caption: "No Firearms",
-                type: "boolean"
-            },
-            {
-                id: "noAccidents",
-                caption: "No Accidents",
-                type: "boolean"
-            },
-            {
-                id: "uniqueTargetKills",
-                caption: "Allow unique target kills",
-                type: "boolean"
-            },
-            {
-                id: "genericKills",
-                caption: "Allow generic kills",
-                type: "boolean"
+                id: "maps",
+                type: "list",
+                caption: "Maps",
+                options: {
+                    id: "map_list_item",
+                    type: "select",
+                    caption: "Map",
+                    options: Object.keys(missionIdToSlug)
+                }
             }
         ];
     }
 
     async generate(options: GeneratorOptions, players: string[]): Promise<GameModeDetails> {
-        const spinGenOptions: SpinGeneratorOptions = {
-            missionPool: [missionIdToSlug[options['mission'] as string]],
-            criteriaFilters: {
-                specificDisguise: !options['noDisguise'] as boolean,
-                specificMelee: !options['noMelee'] as boolean,
-                specificFirearms: !options['noFirearms'] as boolean,
-                specificAccidents: !options['noAccidents'] as boolean,
-                uniqueTargetKills: options['uniqueTargetKills'] as boolean,
-                genericKills: options['genericKills'] as boolean,
-                rrBannedKills: false
+        const spinGenOptions: SpinGeneratorOptions[] = [];
+        const spins: Spin[] = [];
+
+        for (const map of options['maps'] as string[]) {
+            const options: SpinGeneratorOptions = {
+                missionPool: [missionIdToSlug[map]],
+                criteriaFilters: {
+                    specificDisguise: true,
+                    specificMelee: true,
+                    specificAccidents: true,
+                    specificFirearms: true,
+                    uniqueTargetKills: false,
+                    genericKills: false,
+                    rrBannedKills: false
+                }
             }
+            spinGenOptions.push(options);
+            spins.push(await this.generateSpin(options))
         }
 
-        const spin = await this.generateSpin(spinGenOptions, options['noTargets'] as boolean);
-
         return {
-            currentSpin: spin,
-            generatorOptions: spinGenOptions,
-            noTargets: options['noTargets'],
+            timelimit: options['timelimit'],
             doneStatus: players.map(() => { return 0 }),
-            lastDone: players.map(() => { return -1 })
+            lastDone: players.map(() => { return -1 }),
+            currentSpin: players.map(() => { return 0 }),
+            rta: players.map(() => { return (options['maps'] as string[]).map(() => { return 0 }) }),
+            currentSpinStart: players.map(() => { return -1 }),
+            maps: spins,
+            spinGenOptions: spinGenOptions,
         };
     }
 
-    async handleAdminEvent(event: string, payload: AdminEventPayload, currentState: GameModeDetails): Promise<GameModeDetails> {
+    async handleAdminEvent(event: string, payload: AdminEventPayload, currentState: GameModeDetails, roundStartingTimestamp: number): Promise<GameModeDetails> {
         if (event === "acceptDone") {
-            (currentState['doneStatus'] as number[])[payload.playerIndex] = 2;
+            if ((currentState['currentSpinStart'] as number[])[payload.playerIndex as number] === -1) {
+                (currentState['rta'] as number[][])[payload.playerIndex as number][(currentState['currentSpin'] as number[])[payload.playerIndex as number]] = (currentState['lastDone'] as number[])[payload.playerIndex as number] - roundStartingTimestamp;
+            } else {
+                (currentState['rta'] as number[][])[payload.playerIndex as number][(currentState['currentSpin'] as number[])[payload.playerIndex as number]] = (currentState['lastDone'] as number[])[payload.playerIndex as number] - (currentState['currentSpinStart'] as number[])[payload.playerIndex as number];
+            }
+            (currentState['currentSpin'] as number[])[payload.playerIndex as number] += 1
+            if ((currentState['currentSpin'] as number[])[payload.playerIndex as number] == (currentState['maps'] as string[]).length) {
+                (currentState['doneStatus'] as number[])[payload.playerIndex as number] = 2;
+            } else {
+                (currentState['currentSpinStart'] as number[])[payload.playerIndex as number] = Date.now();
+                (currentState['doneStatus'] as number[])[payload.playerIndex as number] = 0;
+                (currentState['lastDone'] as number[])[payload.playerIndex as number] = -1;
+            }
         }
-        if (event === "rejectDone") {
-            (currentState['doneStatus'] as number[])[payload.playerIndex] = 0;
-            (currentState['lastDone'] as number[])[payload.playerIndex] = -1;
+        if (event === "rejectDone" || event === "rejectForfeit") {
+            (currentState['doneStatus'] as number[])[payload.playerIndex as number] = 0;
+            (currentState['lastDone'] as number[])[payload.playerIndex as number] = -1;
+        }
+        if (event === "acceptForfeit") {
+            (currentState['rta'] as number[][])[payload.playerIndex as number][(currentState['currentSpin'] as number[])[payload.playerIndex as number]] = FORFEIT_TIME;
+            (currentState['currentSpin'] as number[])[payload.playerIndex as number] += 1
+            if ((currentState['currentSpin'] as number[])[payload.playerIndex as number] == (currentState['maps'] as string[]).length) {
+                (currentState['doneStatus'] as number[])[payload.playerIndex as number] = 4;
+            } else {
+                (currentState['currentSpinStart'] as number[])[payload.playerIndex as number] = Date.now();
+                (currentState['doneStatus'] as number[])[payload.playerIndex as number] = 0;
+                (currentState['lastDone'] as number[])[payload.playerIndex as number] = -1;
+            }
         }
         if (event === "respin") {
-            currentState['currentSpin'] = await this.generateSpin(currentState['generatorOptions'] as SpinGeneratorOptions, currentState['noTargets'] as boolean);
+            (currentState['maps'] as Spin[])[payload.mapIndex as number] = await this.generateSpin((currentState['spinGenOptions'] as SpinGeneratorOptions[])[payload.mapIndex as number]);
         }
         return currentState;
     }
@@ -167,35 +176,37 @@ export class RouletteSpinGameMode implements GameMode {
         if (event === "done") {
             (currentState['doneStatus'] as number[])[player] = 1;
             (currentState['lastDone'] as number[])[player] = Date.now();
+        } if (event === "forfeit") {
+            (currentState['doneStatus'] as number[])[player] = 3;
+            (currentState['lastDone'] as number[])[player] = Date.now();
         }
         return currentState;
     }
 
-    getPlayerDetails(player: number, currentState: GameModeDetails): GameModeDetails {
+    getPlayerDetails(player: number, currentState: GameModeDetails, roundStartingTimestamp: number): GameModeDetails {
+        let countdown = 0;
+        if ((currentState['currentSpinStart'] as number[])[player] === -1) {
+            countdown = Date.now() - roundStartingTimestamp;
+        } else {
+            countdown = Date.now() - (currentState['currentSpinStart'] as number[])[player];
+        }
+
+        // TODO: Next spin automatically, somehow?
+
         return {
-            currentSpin: currentState['currentSpin'],
             doneStatus: (currentState['doneStatus'] as number[])[player],
             lastDone: (currentState['lastDone'] as number[])[player],
+            map: (currentState['maps'] as string[])[(currentState['currentSpin'] as number[])[player]],
+            currentMapIndex: (currentState['currentSpin'] as number[])[player],
+            totalMaps: (currentState['maps'] as string[]).length,
+            countdown
         };
     }
 
-    async generateSpin(options: SpinGeneratorOptions, freestyleMode: boolean): Promise<Spin> {
+    async generateSpin(options: SpinGeneratorOptions): Promise<Spin> {
         try {
             const spin = await axios.post('https://roulette.hitmaps.com/api/spins', options, { validateStatus: () => { return true } });
-            const result = spin.data;
-            if (freestyleMode) {
-                (result.targetConditions as {target: {name: string;tileUrl: string}}[]).forEach((e, index) => {
-                    e.target.name = "Target #" + (index+1);
-                    e.target.tileUrl = "https://media.hitmaps.com/img/hitmaps-roulette/berlin-target.png";
-                });
-            }
-            if (!options.criteriaFilters.specificDisguise) {
-                (result.targetConditions as {disguise: {name: string;tileUrl: string}}[]).forEach((e, index) => {
-                    e.disguise.name = "Any disguise";
-                    e.disguise.tileUrl = "";
-                });
-            }
-            return result;
+            return spin.data;
         } catch(e) {
             return {
                 mission: {

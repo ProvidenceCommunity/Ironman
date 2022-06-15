@@ -1,6 +1,6 @@
 <template>
   <v-dialog v-model="show" persistent>
-    <v-card>
+    <v-card width="600px">
       <v-card-title>Adding Round - {{ game_mode }}</v-card-title>
       <v-card-text>
         <v-text-field v-model="title" label="Round title"></v-text-field>
