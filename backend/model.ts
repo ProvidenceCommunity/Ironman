@@ -52,7 +52,7 @@ export interface GameMode {
     generate(options: GeneratorOptions, players: string[]): Promise<GameModeDetails> | GameModeDetails;
     handleUserEvent(event: string, player: number, payload: unknown, currentState: GameModeDetails): GameModeDetails;
     handleAdminEvent(event: string, payload: unknown, currentState: GameModeDetails, roundStartingTimestamp: number): Promise<GameModeDetails> | GameModeDetails;
-    getPlayerDetails(player: number, currentState: GameModeDetails, roundStartingTimestamp: number): GameModeDetails;
+    getPlayerDetails(player: number, currentState: GameModeDetails, match: IronmanMatch): GameModeDetails;
 }
 
 export const GameModes: { [key: string]: GameMode } = {

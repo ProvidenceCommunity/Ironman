@@ -1,15 +1,29 @@
 <template>
-  <v-progress-linear v-model="percentage" height="50" :color="computeColor">
+  <v-progress-linear v-model="percentage" :height="height" :color="computeColor">
     <b style="color: white;">{{ formattedTimeRemaining }}</b>
   </v-progress-linear>
 </template>
 
 <script lang="ts">
 import {defineComponent} from "vue";
+import {Duration} from "luxon";
 
 export default defineComponent({
   name: "CountdownBar",
-  props: ['totalTime', 'timeRemaining'],
+  props: {
+    totalTime: {
+      type: Number,
+      required: true
+    },
+    timeRemaining: {
+      type: Number,
+      required: true
+    },
+    height: {
+      type: Number,
+      default: 50
+    }
+  },
   data() {
     return {}
   },
@@ -26,26 +40,12 @@ export default defineComponent({
     },
     formattedTimeRemaining() {
       if (this.totalTime < 0) return "No time limit";
-      let h = Math.floor(this.timeRemaining / 3600);
-      let m = Math.floor((this.timeRemaining - h * 3600) / 60);
-      let s = this.timeRemaining - h * 3600 - m * 60;
-      let result = "";
-      if (h < 10) {
-        result += "0" + h.toString() + ":";
-      } else if (h > 0) {
-        result += h.toString() + ":";
-      }
-      if (m < 10) {
-        result += "0" + m.toString() + ":";
+      const dur = Duration.fromMillis(this.timeRemaining * 1000);
+      if (dur.hours > 0) {
+        return dur.toFormat("hh:mm:ss");
       } else {
-        result += m.toString() + ":";
+        return dur.toFormat("mm:ss");
       }
-      if (s < 10)  {
-        result += "0" + s.toString();
-      } else {
-        result += s.toString();
-      }
-      return result;
     }
   }
 })

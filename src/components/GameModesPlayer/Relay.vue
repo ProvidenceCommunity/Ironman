@@ -1,24 +1,33 @@
 <template>
 
-  <h3>Map #{{details.currentMapIndex + 1}}/{{details.totalMaps}}</h3>
-  <RouletteCondition v-if="details.map !== undefined" v-for="(target, index) in details.map.targetConditions" :key="index" :condition="target"></RouletteCondition>
-  <h5>Please click the done button upon finishing!</h5>
-  <v-btn @click="done" x-large>{{ buttonText }}</v-btn><br><br>
-  Warning! Forfeiting will add 30 minutes of RTA to your time.<br>
-  Forfeits must be accepted by the match admin.
-  <v-btn @click="forfeit" x-large color="red">{{ forfeitText }}</v-btn>
+  <div v-if="details.currentMapIndex < details.totalMaps">
+    <h3>Map #{{details.currentMapIndex + 1}}/{{details.totalMaps}}</h3>
+    <CountdownBar :total-time="details.timelimit / 1000" :time-remaining="details.countdown / 1000"></CountdownBar>
+    <RouletteCondition v-if="details.map !== undefined" v-for="(target, index) in details.map.targetConditions" :key="index" :condition="target"></RouletteCondition>
+    <h5>Please click the done button upon finishing!</h5>
+    <v-btn @click="done" x-large>{{ buttonText }}</v-btn><br><br>
+    Warning! Forfeiting will add 30 minutes of RTA to your time.<br>
+    Forfeits must be accepted by the match admin.
+    <v-btn @click="forfeit" x-large color="red">{{ forfeitText }}</v-btn>
+  </div>
+  <div v-else>
+    <h1>You're through with all maps!</h1>
+  </div>
 </template>
 
 <script lang="ts">
 import {defineComponent} from "vue";
 import {post} from "@/http";
 import RouletteCondition from "@/components/RouletteCondition.vue";
+import { Duration } from "luxon";
+import CountdownBar from "@/components/CountdownBar.vue";
 
 export default defineComponent({
   name: "RelayPlayer",
   props: ['matchId', 'player', 'details'],
   emits: ['error'],
   components: {
+    CountdownBar,
     RouletteCondition
   },
   data() {
@@ -69,7 +78,7 @@ export default defineComponent({
         this.rejectedFor = 0;
         this.sentDone = false;
       }
-    }
+    },
   },
   computed: {
     buttonText() {

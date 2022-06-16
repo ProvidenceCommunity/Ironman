@@ -5,7 +5,7 @@
     <v-list-item v-for="(player, index) in players" :key="index" lines="three">
       <v-list-item-header>
         <v-list-item-title>{{ player }}</v-list-item-title>
-        <v-list-item-subtitle>Current status: {{ getPlayerStatus(index) }}</v-list-item-subtitle>
+        <v-list-item-subtitle>Current status: {{ timeRemaining[index] }}</v-list-item-subtitle>
         <v-list-item-subtitle>Current RTA: {{ formatRTA(index) }}</v-list-item-subtitle>
       </v-list-item-header>
       <template v-slot:append v-if="isPlayerDone(index)">
@@ -33,20 +33,37 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import {post} from "@/http";
-import {DateTime} from "luxon";
+import {DateTime, Duration} from "luxon";
 import RouletteCondition from '@/components/RouletteCondition.vue';
 
 export default defineComponent({
   name: "RelayAdmin",
-  props: [ 'players', 'details', 'matchId' ],
+  props: [ 'players', 'details', 'matchId', 'arrivalTimestamp' ],
   emits: [ 'error' ],
   components: {
     RouletteCondition
   },
   data() {
-    return {}
+    return {
+      updateInterval: -1,
+      timeRemaining: [] as string[]
+    }
+  },
+  created() {
+    this.updateInterval = setInterval(this.updateTimers, 1000);
+  },
+  beforeUnmount() {
+    for (const player in this.players) {
+      this.timeRemaining.push("");
+    }
+    clearInterval(this.updateInterval);
   },
   methods: {
+    updateTimers() {
+      for (let i = 0; i < this.players.length; i++) {
+        this.timeRemaining[i] = this.getPlayerStatus(i);
+      }
+    },
     getPlayerStatus(index: number): string {
       if (this.details.doneStatus[index] === 1) {
         return `Player pressed done @${this.timestampToLocale(this.details.lastDone[index])}`;
@@ -57,7 +74,13 @@ export default defineComponent({
       } else if (this.details.doneStatus[index] === 4) {
         return `Player's forfeit @${this.timestampToLocale(this.details.lastDone[index])} was accepted.`;
       } else {
-        return `running on Map ${this.details.currentSpin[index]} / ${this.details.maps.length}`;
+        let countdown = Duration.fromMillis(0);
+        if (this.details.currentSpinStart[index] === -1) {
+          countdown = Duration.fromMillis((this.arrivalTimestamp + this.details.timelimit) - Date.now());
+        } else {
+          countdown = Duration.fromMillis((this.details.currentSpinStart[index] + this.details.timelimit) - Date.now());
+        }
+        return `running on Map ${this.details.currentSpin[index] + 1} / ${this.details.maps.length} with ${countdown.toFormat("mm:ss")} remaining`;
       }
     },
     formatRTA(index: number): string {
@@ -68,13 +91,7 @@ export default defineComponent({
       return r;
     },
     millisecondsToFormat(ms: number): string {
-      const seconds = Math.floor(ms / 1000);
-      const minutes = Math.floor(seconds / 60);
-      if (minutes < 10) {
-        return "0" + minutes + ":" + (seconds % 60);
-      } else {
-        return minutes + ":" + (seconds % 60);
-      }
+      return Duration.fromMillis(ms).toFormat("mm:ss");
     },
     isPlayerDone(index: number): boolean {
       return this.details.doneStatus[index] === 1;

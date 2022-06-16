@@ -17,10 +17,10 @@ export default defineComponent({
   },
   computed: {
     getTheme() {
-      return this.$route.name === "overlay" ? 'light' : 'dark';
+      return (this.$route.name === "relayoverlay" || this.$route.name === "overlay") ? 'light' : 'dark';
     },
     getStyle() {
-      return this.$route.name === "overlay" ? "background: none;" : "";
+      return (this.$route.name === "relayoverlay" || this.$route.name === "overlay") ? "background: none;" : "";
     }
   }
 })

@@ -1,37 +1,36 @@
 <template>
-  <v-container fluid style="padding: 0;">
-    <v-row no-gutters>
+  <v-container fluid style="padding: 0; height: 100%;">
+    <v-row no-gutters style="height: 100%;">
       <v-col>
         <v-sheet class="target" :style="'background: url(' + target.target.tileUrl + ') center center / cover no-repeat;'" :height="dataHeight">
           <div class="targetName">{{ target.target.name }}</div>
         </v-sheet>
       </v-col>
       <v-col>
-        <v-sheet :height="dataHeight / 4">
-          <span class="conditionTitle">Eliminate using</span><br>
-          <span class="conditionDetail">{{ buildKillMethod() }}</span>
+        <v-sheet style="height: 33%">
+          <div class="conditionTitle">Eliminate using</div>
+          <div class="conditionDetail">{{ buildKillMethod() }}</div>
         </v-sheet>
-        <v-sheet :height="dataHeight / 4">
-          <span class="conditionTitle">Wear disguise</span><br>
-          <span class="conditionDetail">{{ target.disguise.name }}</span>
+        <v-sheet style="height: 33%">
+          <div class="conditionTitle">Wear disguise</div>
+          <div class="conditionDetail">{{ target.disguise.name }}</div>
         </v-sheet>
-        <v-row no-gutters>
-          <v-col>
-            <img :src="target.killMethod.tileUrl" class="float-right" :style="`height: ${dataHeight / 2}px; object-fit: cover; width: 100%;`">
-          </v-col>
-          <v-col>
-            <img :src="target.disguise.tileUrl" class="float-right" :style="`height: ${dataHeight / 2}px; object-fit: cover; width: 100%;`">
-          </v-col>
-        </v-row>
+        <v-sheet style="height: 34%">
+          <div class="conditionImage" :style="`background: url(${target.killMethod.tileUrl}) center center / cover no-repeat;`"></div>
+          <div class="conditionImage" :style="`background: url(${target.disguise.tileUrl}) center center / cover no-repeat;`"></div>
+        </v-sheet>
       </v-col>
     </v-row>
   </v-container>
 </template>
 
 <style scoped>
+.target {
+  height: 100%;
+}
 .targetName {
-  font-size: 25px;
-  top: 80%;
+  font-size: 120%;
+  top: 75%;
   left: 10px;
   position: relative;
   font-weight: bold;
@@ -39,16 +38,19 @@
 }
 .conditionTitle {
   color: red;
-  margin-top: 10px;
-  margin-left: 10px;
-  font-size: 16px;
+  margin-left: 5px;
+  font-size: 90%;
 }
 .conditionDetail {
-  position: relative;
-  margin-left: 10px;
-  top: -8px;
-  font-size: 23px;
+  margin-left: 5px;
+  margin-top: -5px;
+  font-size: 110%;
   font-weight: bold;
+}
+.conditionImage {
+  height: 100%;
+  width: 50%;
+  display: inline-block;
 }
 </style>
 
@@ -57,7 +59,7 @@ import {defineComponent} from "vue";
 
 export default defineComponent({
   name: "OverlayRouletteCondition",
-  props: [ 'target', 'dataHeight' ],
+  props: [ 'target' ],
   data() {
     return {}
   },

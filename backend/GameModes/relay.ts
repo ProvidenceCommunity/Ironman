@@ -1,5 +1,6 @@
-import {GameMode, GameModeDetails, GeneratorOption, GeneratorOptions} from "../model";
+import {GameMode, GameModeDetails, GeneratorOption, GeneratorOptions, IronmanMatch} from "../model";
 import axios from "axios";
+import {setMatch} from "../database";
 
 interface SpinGeneratorOptions {
     missionPool: string[];
@@ -124,7 +125,7 @@ export class RelayGameMode implements GameMode {
         }
 
         return {
-            timelimit: options['timelimit'],
+            timelimit: (options['timelimit'] as number) * 60 * 1000,
             doneStatus: players.map(() => { return 0 }),
             lastDone: players.map(() => { return -1 }),
             currentSpin: players.map(() => { return 0 }),
@@ -183,15 +184,26 @@ export class RelayGameMode implements GameMode {
         return currentState;
     }
 
-    getPlayerDetails(player: number, currentState: GameModeDetails, roundStartingTimestamp: number): GameModeDetails {
+    getPlayerDetails(player: number, currentState: GameModeDetails, match: IronmanMatch): GameModeDetails {
         let countdown = 0;
         if ((currentState['currentSpinStart'] as number[])[player] === -1) {
-            countdown = Date.now() - roundStartingTimestamp;
+            countdown = (match.rounds[match.rounds.length - 1].arrivingTimestamp + (currentState['timelimit'] as number)) - Date.now();
         } else {
-            countdown = Date.now() - (currentState['currentSpinStart'] as number[])[player];
+            countdown = ((currentState['currentSpinStart'] as number[])[player] + (currentState['timelimit'] as number)) - Date.now();
         }
 
-        // TODO: Next spin automatically, somehow?
+        if (countdown <= 0 && (currentState['doneStatus'] as number[])[player] === 0) {
+            (currentState['rta'] as number[][])[player][(currentState['currentSpin'] as number[])[player]] = FORFEIT_TIME;
+            (currentState['currentSpin'] as number[])[player] += 1
+            if ((currentState['currentSpin'] as number[])[player] == (currentState['maps'] as string[]).length) {
+                (currentState['doneStatus'] as number[])[player] = 4;
+            } else {
+                (currentState['currentSpinStart'] as number[])[player] = Date.now();
+            }
+
+            match.rounds[match.rounds.length - 1].additionalDetails = currentState;
+            setMatch(match.id, match);
+        }
 
         return {
             doneStatus: (currentState['doneStatus'] as number[])[player],
@@ -199,13 +211,14 @@ export class RelayGameMode implements GameMode {
             map: (currentState['maps'] as string[])[(currentState['currentSpin'] as number[])[player]],
             currentMapIndex: (currentState['currentSpin'] as number[])[player],
             totalMaps: (currentState['maps'] as string[]).length,
-            countdown
+            countdown,
+            timelimit: currentState['timelimit']
         };
     }
 
     async generateSpin(options: SpinGeneratorOptions): Promise<Spin> {
         try {
-            const spin = await axios.post('https://roulette.hitmaps.com/api/spins', options, { validateStatus: () => { return true } });
+            const spin = await axios.post('https://roulette.hitmaps.com/api/spins', options);
             return spin.data;
         } catch(e) {
             return {

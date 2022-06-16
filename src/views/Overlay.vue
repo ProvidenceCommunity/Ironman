@@ -14,7 +14,7 @@
       </template>
       <template v-if="matchInfo.roundLive">
         <DoneButtonOverlay v-if="matchInfo.round.mode === 'simpleDoneButton' || matchInfo.round.mode === 'timer'" :data="matchInfo.round.additionalDetails"></DoneButtonOverlay>
-        <RouletteSpinOverlay v-if="matchInfo.round.mode === 'rouletteSpin'" :data="matchInfo.round.additionalDetails"></RouletteSpinOverlay>
+        <RouletteSpinOverlay v-if="matchInfo.round.mode === 'rouletteSpin'" :data="matchInfo.round.additionalDetails.currentSpin"></RouletteSpinOverlay>
         <BingoOverlay v-if="matchInfo.round.mode === 'bingo'" :data="matchInfo.round.additionalDetails"></BingoOverlay>
       </template>
     </div>

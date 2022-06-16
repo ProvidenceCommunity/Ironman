@@ -1,49 +1,64 @@
 <template>
-  <v-sheet class="target" :style="`background: url(${ target.target.tileUrl }) center -50px no-repeat;`">
+  <v-sheet class="target" :style="`background: url(${ target.target.tileUrl }) center -30px no-repeat; background-size: cover;`">
     <span class="targetName">{{ target.target.name }}</span>
   </v-sheet>
-  <v-sheet class="condition">
-    <img :src="target.killMethod.tileUrl" class="conditionImg float-right">
-    <span class="conditionTitle">Eliminate using</span><br>
-    <span class="conditionDetail">{{ buildKillMethod() }}</span>
+  <v-sheet class="conditions">
+    <v-sheet class="condition">
+      <div class="conditionTitle">Eliminate using</div>
+      <div class="conditionDetail">{{ buildKillMethod() }}</div>
+    </v-sheet>
+    <v-sheet class="condition">
+      <div class="conditionTitle">Wear disguise</div>
+      <div class="conditionDetail">{{ target.disguise.name }}</div>
+    </v-sheet>
   </v-sheet>
-  <v-sheet class="condition">
-    <img :src="target.disguise.tileUrl" class="conditionImg float-right">
-    <span class="conditionTitle">Wear disguise</span><br>
-    <span class="conditionDetail">{{ target.disguise.name }}</span>
+  <v-sheet class="images">
+    <div class="conditionImage" :style="`background: url(${target.killMethod.tileUrl}) center -20px / cover no-repeat;`"></div>
+    <div class="conditionImage" :style="`background: url(${target.disguise.tileUrl}) center -20px / cover no-repeat;`"></div>
   </v-sheet>
 </template>
 
 <style scoped>
   .target {
-    height: 240px;
+    height: 34%;
+    max-height: 198px;
+  }
+  .conditions {
+    height: 33%;
+    width: 100%;
+    max-height: 198px;
   }
   .condition {
     width: 100%;
-    height: 80px;
-  }
-  .conditionImg {
-    height: 80px;
+    height: 50%;
   }
   .conditionTitle {
     color: red;
-    margin-top: 10px;
-    margin-left: 10px;
-    font-size: 16px;
+    margin-left: 5px;
+    font-size: 90%;
   }
   .conditionDetail {
-    margin-left: 10px;
-    margin-top: 10px;
-    font-size: 23px;
+    margin-left: 5px;
+    margin-top: -5px;
+    font-size: 130%;
     font-weight: bold;
   }
   .targetName {
-    font-size: 25px;
-    top: 80%;
+    font-size: 120%;
+    top: 70%;
     left: 10px;
     position: relative;
     font-weight: bold;
     color: white;
+  }
+  .images {
+    height: 33%;
+    max-height: 198px;
+  }
+  .conditionImage {
+    height: 100%;
+    width: 50%;
+    display: inline-block;
   }
 </style>
 

@@ -95,7 +95,7 @@
         <RouletteSpinAdmin v-if="currentRound.mode === 'rouletteSpin'" :players="matchInfo.players" :details="currentRound.additionalDetails" :matchId="this.matchId" @error="onError"></RouletteSpinAdmin>
         <BingoAdmin v-if="currentRound.mode === 'bingo'" :players="matchInfo.players" :details="currentRound.additionalDetails" :matchId="this.matchId" @error="onError"></BingoAdmin>
         <TimerAdmin v-if="currentRound.mode === 'timer'" :details="currentRound.additionalDetails"></TimerAdmin>
-        <RelayAdmin v-if="currentRound.mode === 'relay'" :players="matchInfo.players" :details="currentRound.additionalDetails" :matchId="this.matchId" @error="onError"></RelayAdmin>
+        <RelayAdmin v-if="currentRound.mode === 'relay'" :players="matchInfo.players" :details="currentRound.additionalDetails" :matchId="this.matchId" @error="onError" :arrivalTimestamp="currentRound.arrivingTimestamp"></RelayAdmin>
 
       </v-col>
       <v-spacer></v-spacer>
@@ -165,7 +165,7 @@ export default defineComponent({
       return `${window.location.origin}/client/${this.matchId}/${playerName}`
     },
     getOverlayLink(): string {
-      return `${window.location.origin}/overlay/${this.matchId}`
+      return `${window.location.origin}/relay-overlay/${this.matchId}`
     },
     async doneAddingRound(values: any, title: string) {
       if (values) {
