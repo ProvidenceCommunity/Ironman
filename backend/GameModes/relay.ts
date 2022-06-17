@@ -186,20 +186,19 @@ export class RelayGameMode implements GameMode {
 
     getPlayerDetails(player: number, currentState: GameModeDetails, match: IronmanMatch): GameModeDetails {
         let countdown = 0;
-        if ((currentState['currentSpinStart'] as number[])[player] === -1) {
+
+        if ((currentState['currentSpin'] as number[])[player]+1 === (currentState['maps'] as string[]).length) {
+            countdown = -1;
+        } else if ((currentState['currentSpinStart'] as number[])[player] === -1) {
             countdown = (match.rounds[match.rounds.length - 1].arrivingTimestamp + (currentState['timelimit'] as number)) - Date.now();
         } else {
             countdown = ((currentState['currentSpinStart'] as number[])[player] + (currentState['timelimit'] as number)) - Date.now();
         }
 
-        if (countdown <= 0 && (currentState['doneStatus'] as number[])[player] === 0) {
+        if (countdown <= 0 && (currentState['doneStatus'] as number[])[player] === 0 && (currentState['currentSpin'] as number[])[player]+1 !== (currentState['maps'] as string[]).length) {
             (currentState['rta'] as number[][])[player][(currentState['currentSpin'] as number[])[player]] = FORFEIT_TIME;
-            (currentState['currentSpin'] as number[])[player] += 1
-            if ((currentState['currentSpin'] as number[])[player] == (currentState['maps'] as string[]).length) {
-                (currentState['doneStatus'] as number[])[player] = 4;
-            } else {
-                (currentState['currentSpinStart'] as number[])[player] = Date.now();
-            }
+            (currentState['currentSpin'] as number[])[player] += 1;
+            (currentState['currentSpinStart'] as number[])[player] = Date.now();
 
             match.rounds[match.rounds.length - 1].additionalDetails = currentState;
             setMatch(match.id, match);

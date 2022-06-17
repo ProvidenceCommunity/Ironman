@@ -39,8 +39,7 @@
   }
   .conditionDetail {
     margin-left: 5px;
-    margin-top: -5px;
-    font-size: 130%;
+    font-size: 80%;
     font-weight: bold;
   }
   .targetName {

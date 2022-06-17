@@ -2,7 +2,7 @@
 
   <div v-if="details.currentMapIndex < details.totalMaps">
     <h3>Map #{{details.currentMapIndex + 1}}/{{details.totalMaps}}</h3>
-    <CountdownBar :total-time="details.timelimit / 1000" :time-remaining="details.countdown / 1000"></CountdownBar>
+    <CountdownBar :total-time="totalTime" :time-remaining="details.countdown / 1000"></CountdownBar>
     <RouletteCondition v-if="details.map !== undefined" v-for="(target, index) in details.map.targetConditions" :key="index" :condition="target"></RouletteCondition>
     <h5>Please click the done button upon finishing!</h5>
     <v-btn @click="done" x-large>{{ buttonText }}</v-btn><br><br>
@@ -100,6 +100,13 @@ export default defineComponent({
     forfeitText() {
       if (this.details.doneStatus === 0 && !this.sentDone) return "Forfeit this map";
       return this.buttonText;
+    },
+    totalTime() {
+      if (this.details.countdown <= -1) {
+        return -1;
+      } else {
+        return this.details.timelimit / 1000;
+      }
     }
   }
 })

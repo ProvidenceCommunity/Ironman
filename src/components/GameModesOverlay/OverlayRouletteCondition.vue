@@ -43,8 +43,7 @@
 }
 .conditionDetail {
   margin-left: 5px;
-  margin-top: -5px;
-  font-size: 110%;
+  font-size: 80%;
   font-weight: bold;
 }
 .conditionImage {

@@ -12,8 +12,8 @@
     <div v-if="matchInfo.roundLive">
       <RouletteSpinOverlay class="lpSpin spin" v-if="matchInfo.round.additionalDetails.maps[matchInfo.round.additionalDetails.currentSpin[0]] !== undefined" :data="matchInfo.round.additionalDetails.maps[matchInfo.round.additionalDetails.currentSpin[0]]"></RouletteSpinOverlay>
       <RouletteSpinOverlay class="rpSpin spin" v-if="matchInfo.round.additionalDetails.maps[matchInfo.round.additionalDetails.currentSpin[1]] !== undefined" :data="matchInfo.round.additionalDetails.maps[matchInfo.round.additionalDetails.currentSpin[1]]"></RouletteSpinOverlay>
-      <CountdownBar class="lpCountdown" v-if="matchInfo.round.additionalDetails.maps[matchInfo.round.additionalDetails.currentSpin[0]] !== undefined" :timeRemaining="leftSpinTimeRemaining" :totalTime="matchInfo.round.additionalDetails.timelimit / 1000" height="57"></CountdownBar>
-      <CountdownBar class="rpCountdown" v-if="matchInfo.round.additionalDetails.maps[matchInfo.round.additionalDetails.currentSpin[1]] !== undefined" :timeRemaining="rightSpinTimeRemaining" :totalTime="matchInfo.round.additionalDetails.timelimit / 1000" height="57"></CountdownBar>
+      <CountdownBar class="lpCountdown" v-if="matchInfo.round.additionalDetails.maps[matchInfo.round.additionalDetails.currentSpin[0]] !== undefined" :timeRemaining="leftSpinTimeRemaining" :totalTime="leftSpinTotalTime" height="57"></CountdownBar>
+      <CountdownBar class="rpCountdown" v-if="matchInfo.round.additionalDetails.maps[matchInfo.round.additionalDetails.currentSpin[1]] !== undefined" :timeRemaining="rightSpinTimeRemaining" :totalTime="rightSpinTotalTime" height="57"></CountdownBar>
     </div>
   </div>
 </template>
@@ -153,7 +153,7 @@ export default defineComponent({
             timelimit: 0,
             currentSpin: [0, 0],
             currentSpinStart: [-1, -1],
-            spins: []
+            maps: []
           }
         },
         players: ["", ""]
@@ -331,6 +331,19 @@ export default defineComponent({
           return "ChrisX3 / GKPunk / Gunther";
       }
       return "";
+    },
+    leftSpinTotalTime(): number {
+      if (this.matchInfo.round.additionalDetails.currentSpin[0] + 1 === this.matchInfo.round.additionalDetails.maps.length) {
+        return -1;
+      }
+      return this.matchInfo.round.additionalDetails.timelimit / 1000
+    },
+    rightSpinTotalTime(): number {
+
+      if (this.matchInfo.round.additionalDetails.currentSpin[1] + 1 === this.matchInfo.round.additionalDetails.maps.length) {
+        return -1;
+      }
+      return this.matchInfo.round.additionalDetails.timelimit / 1000
     }
   }
 })

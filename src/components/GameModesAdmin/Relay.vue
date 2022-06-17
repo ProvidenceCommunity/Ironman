@@ -80,7 +80,11 @@ export default defineComponent({
         } else {
           countdown = Duration.fromMillis((this.details.currentSpinStart[index] + this.details.timelimit) - Date.now());
         }
-        return `running on Map ${this.details.currentSpin[index] + 1} / ${this.details.maps.length} with ${countdown.toFormat("mm:ss")} remaining`;
+        if (this.details.currentSpin[index] + 1 === this.details.maps.length) {
+          return `running on Map ${this.details.currentSpin[index] + 1} / ${this.details.maps.length} with unlimited time remaining`;
+        } else {
+          return `running on Map ${this.details.currentSpin[index] + 1} / ${this.details.maps.length} with ${countdown.toFormat("mm:ss")} remaining`;
+        }
       }
     },
     formatRTA(index: number): string {
