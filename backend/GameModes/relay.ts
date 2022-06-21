@@ -99,6 +99,28 @@ export class RelayGameMode implements GameMode {
                     caption: "Map",
                     options: Object.keys(missionIdToSlug)
                 }
+            },
+            {
+                id: "team1Players",
+                type: "list",
+                caption: "Team 1 - Players",
+                options: {
+                    id: "team1_player_select",
+                    type: "select",
+                    caption: "Player",
+                    options: ["Player 1", "Player 2", "Player 3"]
+                }
+            },
+            {
+                id: "team2Players",
+                type: "list",
+                caption: "Team 2 - Players",
+                options: {
+                    id: "team2_player_select",
+                    type: "select",
+                    caption: "Player",
+                    options: ["Player 1", "Player 2", "Player 3"]
+                }
             }
         ];
     }
@@ -131,6 +153,7 @@ export class RelayGameMode implements GameMode {
             currentSpin: players.map(() => { return 0 }),
             rta: players.map(() => { return (options['maps'] as string[]).map(() => { return 0 }) }),
             currentSpinStart: players.map(() => { return -1 }),
+            activePlayers: [options['team1Players'], options['team2Players']],
             maps: spins,
             spinGenOptions: spinGenOptions,
         };

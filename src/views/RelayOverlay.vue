@@ -2,8 +2,16 @@
   <div class="container">
     <span class="lpName playerName">{{ matchInfo.players[0].toUpperCase() }}</span>
     <span class="rpName playerName">{{ matchInfo.players[1].toUpperCase() }}</span>
-    <span class="lpPlayers playerNames">{{ leftPlayers.toUpperCase() }}</span>
-    <span class="rpPlayers playerNames">{{ rightPlayers.toUpperCase() }}</span>
+    <span class="lpPlayers playerNames">
+      <span :class="leftPlayersFirstClass">{{ leftPlayers[0].toUpperCase() }}</span>  /
+      <span :class="leftPlayersSecondClass">{{ leftPlayers[1].toUpperCase() }}</span>  /
+      <span :class="leftPlayersThirdClass">{{ leftPlayers[2].toUpperCase() }}</span>
+    </span>
+    <span class="rpPlayers playerNames">
+      <span :class="rightPlayersFirstClass">{{ rightPlayers[0].toUpperCase() }}</span>  /
+      <span :class="rightPlayersSecondClass">{{ rightPlayers[1].toUpperCase() }}</span>  /
+      <span :class="rightPlayersThirdClass">{{ rightPlayers[2].toUpperCase() }}</span>
+    </span>
     <div class="bar lpBar" id="leftBar" style="width: 0px;"></div>
     <div class="bar rpBar" id="rightBar" style="width: 0px;"></div>
     <div class="runner lpRunner" id="leftRunner" style="left: 760px;"></div>
@@ -127,6 +135,10 @@
     top: 1023px;
     width: 740px;
   }
+  .activePlayer {
+    font-weight: bold;
+    text-decoration: underline;
+  }
 </style>
 
 <script lang="ts">
@@ -153,7 +165,8 @@ export default defineComponent({
             timelimit: 0,
             currentSpin: [0, 0],
             currentSpinStart: [-1, -1],
-            maps: []
+            maps: [],
+            activePlayers: [[],[]]
           }
         },
         players: ["", ""]
@@ -290,47 +303,113 @@ export default defineComponent({
       }
       return Math.floor(countdown / 1000);
     },
-    leftPlayers(): string {
+    leftPlayers(): string[] {
+      let playersArray: string[] = [];
       switch (this.matchInfo.players[0]) {
         case "NezukoXPenguinXSoviet":
-          return "Nezuko Chan / linux_penguin / Soviet";
+          playersArray = ["Nezuko Chan","linux_penguin","Soviet"];
+          break;
         case "Average RR Enjoyers":
-          return "jokerj / k-kaneta / Phanium"
+          playersArray = ["jokerj","k-kaneta","Phanium"];
+          break;
         case "Gordiniroy Fanclub":
-          return "Moo / Papierfresse / DaniButa";
+          playersArray = ["Moo","Papierfresse","DaniButa"];
+          break;
         case "AMF":
-          return "Ashton / MattySpice / Redfox";
+          playersArray = ["Ashton","MattySpice","Redfox"];
+          break;
         case "Penguins of Madagascar":
-          return "ChromeX / Rocky / lewis";
+          playersArray = ["ChromeX","Rocky","lewis"];
+          break;
         case "Sheets enthusiasts":
-          return "Yannini / In4Fun / CurryMaker";
+          playersArray = ["Yannini","In4Fun","CurryMaker"];
+          break;
         case "BURLY MEN":
-          return "Meekah / GiggsRH / Ducknorriss";
+          playersArray = ["Meekah","GiggsRH","Ducknorriss"];
+          break;
         case "Team USA":
-          return "ChrisX3 / GKPunk / Gunther";
+          playersArray = ["ChrisX3","GKPunk","Gunther"];
+          break;
+        default:
+          playersArray = ["", "", ""];
+          break;
       }
-      return "";
+      return playersArray;
+    },
+    leftPlayersFirstClass() {
+      if (this.matchInfo.round.additionalDetails.activePlayers[0][this.matchInfo.round.additionalDetails.currentSpin[0]] === 'Player 1') {
+        return "activePlayer";
+      } else {
+        return "";
+      }
+    },
+    leftPlayersSecondClass() {
+      if (this.matchInfo.round.additionalDetails.activePlayers[0][this.matchInfo.round.additionalDetails.currentSpin[0]] === 'Player 2') {
+        return "activePlayer";
+      } else {
+        return "";
+      }
+    },
+    leftPlayersThirdClass() {
+      if (this.matchInfo.round.additionalDetails.activePlayers[0][this.matchInfo.round.additionalDetails.currentSpin[0]] === 'Player 3') {
+        return "activePlayer";
+      } else {
+        return "";
+      }
     },
     rightPlayers() {
+      let playersArray: string[] = [];
       switch (this.matchInfo.players[1]) {
         case "NezukoXPenguinXSoviet":
-          return "Nezuko Chan / linux_penguin / Soviet";
+          playersArray = ["Nezuko Chan","linux_penguin","Soviet"];
+          break;
         case "Average RR Enjoyers":
-          return "jokerj / k-kaneta / Phanium"
+          playersArray = ["jokerj","k-kaneta","Phanium"];
+          break;
         case "Gordiniroy Fanclub":
-          return "Moo / Papierfresse / DaniButa";
+          playersArray = ["Moo","Papierfresse","DaniButa"];
+          break;
         case "AMF":
-          return "Ashton / MattySpice / Redfox";
+          playersArray = ["Ashton","MattySpice","Redfox"];
+          break;
         case "Penguins of Madagascar":
-          return "ChromeX / Rocky / lewis";
+          playersArray = ["ChromeX","Rocky","lewis"];
+          break;
         case "Sheets enthusiasts":
-          return "Yannini / In4Fun / CurryMaker";
+          playersArray = ["Yannini","In4Fun","CurryMaker"];
+          break;
         case "BURLY MEN":
-          return "Meekah / GiggsRH / Ducknorriss";
+          playersArray = ["Meekah","GiggsRH","Ducknorriss"];
+          break;
         case "Team USA":
-          return "ChrisX3 / GKPunk / Gunther";
+          playersArray = ["ChrisX3","GKPunk","Gunther"];
+          break;
+        default:
+          playersArray = ["", "", ""];
+          break;
       }
-      return "";
+      return playersArray;
+    },
+    rightPlayersFirstClass() {
+      if (this.matchInfo.round.additionalDetails.activePlayers[1][this.matchInfo.round.additionalDetails.currentSpin[1]] === 'Player 1') {
+        return "activePlayer";
+      } else {
+        return "";
+      }
+    },
+    rightPlayersSecondClass() {
+      if (this.matchInfo.round.additionalDetails.activePlayers[1][this.matchInfo.round.additionalDetails.currentSpin[1]] === 'Player 2') {
+        return "activePlayer";
+      } else {
+        return "";
+      }
+    },
+    rightPlayersThirdClass() {
+      if (this.matchInfo.round.additionalDetails.activePlayers[1][this.matchInfo.round.additionalDetails.currentSpin[1]] === 'Player 3') {
+        return "activePlayer";
+      } else {
+        return "";
+      }
     },
     leftSpinTotalTime(): number {
       if (this.matchInfo.round.additionalDetails.currentSpin[0] + 1 === this.matchInfo.round.additionalDetails.maps.length) {
