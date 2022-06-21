@@ -292,8 +292,8 @@ export default defineComponent({
     },
     leftPlayers(): string {
       switch (this.matchInfo.players[0]) {
-        case "NezukoXPenguinXCrewdy":
-          return "Nezuko Chan / linux_penguin / Crewdy";
+        case "NezukoXPenguinXSoviet":
+          return "Nezuko Chan / linux_penguin / Soviet";
         case "Average RR Enjoyers":
           return "jokerj / k-kaneta / Phanium"
         case "Gordiniroy Fanclub":
@@ -313,8 +313,8 @@ export default defineComponent({
     },
     rightPlayers() {
       switch (this.matchInfo.players[1]) {
-        case "NezukoXPenguinXCrewdy":
-          return "Nezuko Chan / linux_penguin / Crewdy";
+        case "NezukoXPenguinXSoviet":
+          return "Nezuko Chan / linux_penguin / Soviet";
         case "Average RR Enjoyers":
           return "jokerj / k-kaneta / Phanium"
         case "Gordiniroy Fanclub":
