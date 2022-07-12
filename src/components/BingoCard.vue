@@ -25,7 +25,6 @@ td {
   padding: 0;
   border: 1px solid #666666;
   width: 96px;
-  height: 88px;
   max-width: 96px;
   max-height: 88px;
   display: inline-block;

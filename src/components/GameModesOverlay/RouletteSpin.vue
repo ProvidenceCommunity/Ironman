@@ -21,10 +21,10 @@
 </template>
 
 <style scoped>
-  .noPadding {
-    padding: 0;
-    height: 100%;
-  }
+.noPadding {
+  padding: 0;
+  height: 100%;
+}
 </style>
 
 <script lang="ts">
@@ -34,7 +34,7 @@ import OverlayRouletteCondition from "@/components/GameModesOverlay/OverlayRoule
 import BerlinRouletteCondition from "@/components/GameModesOverlay/BerlinRouletteCondition.vue";
 
 export default defineComponent({
-  name: 'RouletteSpinOverlay',
+  name: 'SpinOverlay',
   components: {BerlinRouletteCondition, OverlayRouletteCondition, TallRouletteCondition},
   props: ['data'],
   data() {

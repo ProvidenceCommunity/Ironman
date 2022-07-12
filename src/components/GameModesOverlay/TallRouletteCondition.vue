@@ -19,46 +19,46 @@
 </template>
 
 <style scoped>
-  .target {
-    height: 34%;
-    max-height: 198px;
-  }
-  .conditions {
-    height: 33%;
-    width: 100%;
-    max-height: 198px;
-  }
-  .condition {
-    width: 100%;
-    height: 50%;
-  }
-  .conditionTitle {
-    color: red;
-    margin-left: 5px;
-    font-size: 90%;
-  }
-  .conditionDetail {
-    margin-left: 5px;
-    font-size: 80%;
-    font-weight: bold;
-  }
-  .targetName {
-    font-size: 120%;
-    top: 70%;
-    left: 10px;
-    position: relative;
-    font-weight: bold;
-    color: white;
-  }
-  .images {
-    height: 33%;
-    max-height: 198px;
-  }
-  .conditionImage {
-    height: 100%;
-    width: 50%;
-    display: inline-block;
-  }
+.target {
+  height: 34%;
+  max-height: 198px;
+}
+.conditions {
+  height: 33%;
+  width: 100%;
+  max-height: 198px;
+}
+.condition {
+  width: 100%;
+  height: 50%;
+}
+.conditionTitle {
+  color: red;
+  margin-left: 5px;
+  font-size: 120%;
+}
+.conditionDetail {
+  margin-left: 5px;
+  font-size: 150%;
+  font-weight: bold;
+}
+.targetName {
+  font-size: 220%;
+  top: 70%;
+  left: 10px;
+  position: relative;
+  font-weight: bold;
+  color: white;
+}
+.images {
+  height: 33%;
+  max-height: 198px;
+}
+.conditionImage {
+  height: 100%;
+  width: 50%;
+  display: inline-block;
+}
 </style>
 
 <script lang="ts">

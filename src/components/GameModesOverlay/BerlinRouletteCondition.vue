@@ -30,15 +30,15 @@
 .conditionTitle {
   color: red;
   margin-left: 5px;
-  font-size: 90%;
+  font-size: 120%;
 }
 .conditionDetail {
   margin-left: 5px;
-  font-size: 80%;
+  font-size: 140%;
   font-weight: bold;
 }
 .targetName {
-  font-size: 110%;
+  font-size: 220%;
   top: 30%;
   left: 5px;
   position: relative;

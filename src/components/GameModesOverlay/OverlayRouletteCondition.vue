@@ -29,7 +29,7 @@
   height: 100%;
 }
 .targetName {
-  font-size: 120%;
+  font-size: 220%;
   top: 75%;
   left: 10px;
   position: relative;
@@ -39,11 +39,11 @@
 .conditionTitle {
   color: red;
   margin-left: 5px;
-  font-size: 90%;
+  font-size: 120%;
 }
 .conditionDetail {
   margin-left: 5px;
-  font-size: 80%;
+  font-size: 140%;
   font-weight: bold;
 }
 .conditionImage {

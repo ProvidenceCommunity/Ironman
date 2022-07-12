@@ -33,7 +33,7 @@
                   <b>{{player}}:</b> <a :href="getPlayerLink(player)">{{ getPlayerLink(player) }}</a>
                 </li>
                 <li>
-                  <b>Shoutcast-Overlay:</b> <a :href="getOverlayLink()">{{ getOverlayLink() }}</a>
+                  <b>Shoutcast-Overlay:</b> <a :href="getOverlayLink()">{{ getOverlayLink() }} (1300px x 600px)</a>
                 </li>
               </ul>
             </v-expansion-panel-text>
@@ -95,7 +95,6 @@
         <RouletteSpinAdmin v-if="currentRound.mode === 'rouletteSpin'" :players="matchInfo.players" :details="currentRound.additionalDetails" :matchId="this.matchId" @error="onError"></RouletteSpinAdmin>
         <BingoAdmin v-if="currentRound.mode === 'bingo'" :players="matchInfo.players" :details="currentRound.additionalDetails" :matchId="this.matchId" @error="onError"></BingoAdmin>
         <TimerAdmin v-if="currentRound.mode === 'timer'" :details="currentRound.additionalDetails"></TimerAdmin>
-        <RelayAdmin v-if="currentRound.mode === 'relay'" :players="matchInfo.players" :details="currentRound.additionalDetails" :matchId="this.matchId" @error="onError" :arrivalTimestamp="currentRound.arrivingTimestamp"></RelayAdmin>
 
       </v-col>
       <v-spacer></v-spacer>
@@ -112,12 +111,10 @@ import RouletteSpinAdmin from "@/components/GameModesAdmin/RouletteSpin.vue";
 import BingoAdmin from "@/components/GameModesAdmin/Bingo.vue";
 import TimerAdmin from "@/components/GameModesAdmin/Timer.vue";
 import { DateTime } from "luxon";
-import RelayAdmin from "@/components/GameModesAdmin/Relay.vue";
 
 export default defineComponent({
   name: 'AdminInterface',
   components: {
-    RelayAdmin,
     TimerAdmin,
     RouletteSpinAdmin,
     DoneButtonAdmin,
@@ -165,7 +162,7 @@ export default defineComponent({
       return `${window.location.origin}/client/${this.matchId}/${playerName}`
     },
     getOverlayLink(): string {
-      return `${window.location.origin}/relay-overlay/${this.matchId}`
+      return `${window.location.origin}/overlay/${this.matchId}`
     },
     async doneAddingRound(values: any, title: string) {
       if (values) {

@@ -1,6 +1,6 @@
 <template>
   <div class="bingoContainer">
-    <BingoCard :card="data.card" :claimedTiles="data.claimedTiles" :mode="data.mode" tile-height="79"></BingoCard>
+    <BingoCard :card="data.additionalDetails.card" :claimedTiles="data.additionalDetails.claimedTiles" :mode="data.additionalDetails.mode" tile-height="110" class="card"></BingoCard>
   </div>
 </template>
 
@@ -8,6 +8,11 @@
   .bingoContainer {
     margin: auto;
     width: fit-content;
+  }
+  .card {
+    transform: scale(1.2);
+    margin-top: 52px;
+    margin-bottom: 52px;
   }
 </style>
 

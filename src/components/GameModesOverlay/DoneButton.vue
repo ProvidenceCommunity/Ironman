@@ -2,20 +2,21 @@
   <div class="doneButtonContainer">
     <br><br>
     <h1 class="text">{{ data.title }}</h1>
-    <h3 class="subtext">{{ data.additionalInfo }}</h3>
+    <h3 class="subtext">{{ data.additionalDetails.additionalInfo }}</h3>
   </div>
 </template>
 
 <style scoped>
   .doneButtonContainer {
-    width: 1100px;
-    height: 400px;
+    width: 1300px;
+    height: 550px;
   }
   .text {
     width: 100%;
     text-align: center;
     color: white;
     font-size: 60px;
+    margin-top: 100px;
   }
   .subtext {
     width: 100%;

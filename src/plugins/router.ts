@@ -3,9 +3,8 @@ import IndexView from '../views/Index.vue'
 import MatchListView from '../views/MatchList.vue'
 import AdminInterfaceView from '../views/AdminInterface.vue'
 import PlayerClientView from '../views/PlayerClient.vue';
-import OverlayView from '../views/Overlay.vue';
+import OverlayView from '../views/StandardOverlay.vue';
 import LocalLoginView from '../views/LocalLogin.vue';
-import RelayOverlay from '../views/RelayOverlay.vue';
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -32,11 +31,6 @@ const routes: Array<RouteRecordRaw> = [
     path: '/overlay/:matchID',
     name: 'overlay',
     component: OverlayView
-  },
-  {
-    path: '/relay-overlay/:matchID',
-    name: 'relayoverlay',
-    component: RelayOverlay
   },
   {
     path: '/login',
