@@ -33,7 +33,10 @@
                   <b>{{player}}:</b> <a :href="getPlayerLink(player)">{{ getPlayerLink(player) }}</a>
                 </li>
                 <li>
-                  <b>Shoutcast-Overlay:</b> <a :href="getOverlayLink()">{{ getOverlayLink() }} (1300px x 600px)</a>
+                  <b>Rivals Pro Shoutcast-Overlay:</b> <a :href="getEventOverlayLink()">{{ getEventOverlayLink() }}</a> (1920px x 1080px)
+                </li>
+                <li>
+                  <b>Shoutcast-Overlay:</b> <a :href="getOverlayLink()">{{ getOverlayLink() }}</a> (1300px x 600px)
                 </li>
               </ul>
             </v-expansion-panel-text>
@@ -163,6 +166,9 @@ export default defineComponent({
     },
     getOverlayLink(): string {
       return `${window.location.origin}/overlay/${this.matchId}`
+    },
+    getEventOverlayLink(): string {
+      return `${window.location.origin}/pro-overlay/${this.matchId}`
     },
     async doneAddingRound(values: any, title: string) {
       if (values) {

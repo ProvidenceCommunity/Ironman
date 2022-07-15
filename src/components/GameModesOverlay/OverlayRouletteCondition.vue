@@ -2,7 +2,7 @@
   <v-container fluid style="padding: 0; height: 100%;">
     <v-row no-gutters style="height: 100%;">
       <v-col>
-        <v-sheet class="target" :style="'background: url(' + target.target.tileUrl + ') center center / cover no-repeat;'" :height="dataHeight">
+        <v-sheet class="target" :style="'background: url(' + target.target.tileUrl + ') center center / cover no-repeat;'">
           <div class="targetName">{{ target.target.name }}</div>
         </v-sheet>
       </v-col>

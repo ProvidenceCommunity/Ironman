@@ -72,7 +72,6 @@ export default defineComponent({
   methods: {
     async update() {
       const request = await get(`/api/match/overlay/${this.matchId}`);
-      console.log(request.data);
       this.matchData = request.data;
     },
     formatTimer(seconds: number): string {
