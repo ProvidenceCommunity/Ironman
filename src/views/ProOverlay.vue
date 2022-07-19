@@ -16,10 +16,12 @@
         <BingoOverlay :data="currentRound" v-if="currentRound.mode === 'bingo'"></BingoOverlay>
         <CountdownBar :timeRemaining="matchData.countdown" :totalTime="matchData.totalMatchTime"></CountdownBar>
       </div>
-      <div class="container" v-else-if="currentRound.arrivingTimestamp > new Date() || currentRound.arrivingTimestamp <= 0">
-        <div class="container">
-          <h1 class="centeredText topSpace">Up next: {{ currentRound.title }}</h1>
-          <h1 class="centeredText" v-if="matchData.countdown">Arriving in: {{ formatTimer(matchData.countdown) }}</h1>
+      <div class="spincontainerbackground" v-else>
+        <div class="container countdownbackgrounddim" v-if="currentRound.arrivingTimestamp > new Date() || currentRound.arrivingTimestamp <= 0">
+          <div class="container">
+            <h1 class="centeredText topSpace">Up next: {{ currentRound.title }}</h1>
+            <h1 class="centeredText" v-if="matchData.countdown">Arriving in: {{ formatTimer(matchData.countdown) }}</h1>
+          </div>
         </div>
       </div>
     </div>
@@ -45,7 +47,7 @@ body.overlay::-webkit-scrollbar {
 .playername {
   font-family: playerNames;
   letter-spacing: 8px;
-  font-size: 55pt;
+  font-size: 53pt;
   position: absolute;
   color: white;
 }
@@ -109,6 +111,17 @@ body.overlay::-webkit-scrollbar {
   left: 300px;
   background-color: #070F3C;
   transform: scale(0.67);
+}
+.spincontainerbackground {
+  background-image: url("~@/assets/RivalsPro_logo_white.png");
+  background-size: 450px;
+  background-position: center;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+.countdownbackgrounddim {
+  background-color: rgba(7,15,60,0.7);
 }
 .spin {
   height: 550px;
