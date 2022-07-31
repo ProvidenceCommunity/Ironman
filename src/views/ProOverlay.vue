@@ -5,9 +5,11 @@
 
     <div :class="'scoreDot p1_1 ' + getDotImage(0,1)"></div>
     <div :class="'scoreDot p1_2 ' + getDotImage(0,2)"></div>
+    <div :class="'scoreDot p1_3 ' + getDotImage(0,3)"></div>
 
     <div :class="'scoreDot p2_1 ' + getDotImage(1,1)"></div>
     <div :class="'scoreDot p2_2 ' + getDotImage(1,2)"></div>
+    <div :class="'scoreDot p2_3 ' + getDotImage(1,3)"></div>
 
     <div class="spincontainer container">
       <div class="container" v-if="matchData.roundLive">
@@ -78,19 +80,27 @@ body.overlay::-webkit-scrollbar {
 }
 .p1_1 {
   left: 408px;
-  top: 773px;
+  top: 749px;
 }
 .p1_2 {
   left: 408px;
-  top: 912px;
+  top: 843px;
+}
+.p1_3 {
+  left: 408px;
+  top: 937px;
 }
 .p2_1 {
   right: 423px;
-  top: 773px;
+  top: 749px;
 }
 .p2_2 {
   right: 423px;
-  top: 912px;
+  top: 843px;
+}
+.p2_3 {
+  right: 423px;
+  top: 937px;
 }
 .background {
   position: absolute;
