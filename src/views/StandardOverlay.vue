@@ -15,6 +15,17 @@
   </div>
 </template>
 
+<style>
+body.overlay {
+  overflow: hidden;
+  height: 1080px;
+  width: 1920px;
+}
+body.overlay::-webkit-scrollbar {
+  display: none;
+}
+</style>
+
 <style scoped>
 .container {
   position: absolute;
@@ -68,6 +79,10 @@ export default defineComponent({
   },
   beforeUnmount() {
     clearInterval(this.updateInterval);
+    document.body.className = "";
+  },
+  beforeCreate() {
+    document.body.className = "overlay";
   },
   methods: {
     async update() {
