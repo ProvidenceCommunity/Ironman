@@ -4,21 +4,26 @@ import axios from 'axios';
 interface SpinGeneratorOptions {
     missionPool: string[];
     criteriaFilters: {
-        specificDisguise: boolean;
+        specificDisguises: boolean;
         specificMelee: boolean;
         specificFirearms: boolean;
         specificAccidents: boolean;
         uniqueTargetKills: boolean;
         genericKills: boolean;
-        rrBannedKills: boolean;
+        impossibleOrDifficultKills: boolean;
     }
 }
 
 interface Spin {
     mission: {
         slug: string;
+        publicIdPrefix: number;
+        targets: {
+            name: string;
+            tileUrl: string;
+        }[];
         name: string;
-        locationTileUrl: string;
+        backgroundTile: string;
     },
     targetConditions: {
         target: {
@@ -42,39 +47,40 @@ interface AdminEventPayload {
 }
 
 const missionIdToSlug: {[key: string]: string} = {
-    "Freeform Training (ICA Facility)": "hitman|ica-facility|freeform-training|professional",
-    "The Final Test (ICA Facility)": "hitman|ica-facility|the-final-test|professional",
-    "The Showstopper (Paris)": "hitman|paris|the-showstopper|professional",
-    "World of Tomorrow (Sapienza)": "hitman|sapienza|world-of-tomorrow|professional",
-    "The Icon (Sapienza)": "hitman|sapienza|the-icon|professional",
-    "Landslide (Sapienza)": "hitman|sapienza|landslide|professional",
-    "The Author (Sapienza)": "hitman|sapienza|the-author|professional",
-    "A Gilded Cage (Marrakesh)": "hitman|marrakesh|a-gilded-cage|professional",
-    "A House Built on Sand (Marrakesh)": "hitman|marrakesh|a-house-built-on-sand|professional",
-    "Club 27 (Bangkok)": "hitman|bangkok|club-27|professional",
-    "The Source (Bangkok)": "hitman|bangkok|the-source|professional",
-    "Freedom Fighters (Colorado)": "hitman|colorado|freedom-fighters|professional",
-    "Situs Inversus (Hokkaido)": "hitman|hokkaido|situs-inversus|professional",
-    "Hokkaido Snow Festival (Hokkaido)": "hitman|hokkaido|hokkaido-snow-festival|professional",
-    "Patient Zero (Hokkaido)": "hitman|hokkaido|patient-zero|professional",
-    "Nightcall (Hawke's Bay)": "hitman2|hawkes-bay|nightcall|professional",
-    "The Finish Line (Miami)": "hitman2|miami|finish-line|professional",
-    "A Silver Tongue (Miami)": "hitman2|miami|a-silver-tongue|professional",
-    "Three-Headed Serpent (Santa Fortuna)": "hitman2|santa-fortuna|three-headed-serpent|professional",
-    "Embrace of the Serpent (Santa Fortuna)": "hitman2|santa-fortuna|embrace-of-the-serpent|professional",
-    "Chasing a Ghost (Mumbai)": "hitman2|mumbai|chasing-a-ghost|professional",
-    "Illusions of Grandeur (Mumbai)": "hitman2|mumbai|illusions-of-grandeur|professional",
-    "Another Life (Whittleton Creek)": "hitman2|whittleton-creek|another-life|professional",
-    "A Bitter Pill (Whittleton Creek)": "hitman2|whittleton-creek|a-bitter-pill|professional",
-    "The Ark Society (Isle of Sgàil)": "hitman2|isle-of-sgail|ark-society|professional",
-    "Golden Handshake (New York)": "hitman2|new-york|golden-handshake|professional",
-    "The Last Resort (Haven Island)": "hitman2|haven-island|the-last-resort|professional",
-    "On Top Of The World (Dubai)": "hitman3|dubai|on-top-of-the-world|professional",
-    "Death In The Family (Dartmoor)": "hitman3|dartmoor|death-in-the-family|professional",
-    "Apex Predator (Berlin)": "hitman3|berlin|apex-predator|professional",
-    "End Of An Era (Chongqing)": "hitman3|chongqing|end-of-an-era|professional",
-    "The Farewell (Mendoza)": "hitman3|mendoza|the-farewell|professional",
-    "Untouchable (Carpathian Mountains)": "hitman3|carpathian-mountains|untouchable|professional"
+    "Freeform Training (ICA Facility)": "hitman|ica-facility|freeform-training",
+    "The Final Test (ICA Facility)": "hitman|ica-facility|the-final-test",
+    "The Showstopper (Paris)": "hitman|paris|the-showstopper",
+    "World of Tomorrow (Sapienza)": "hitman|sapienza|world-of-tomorrow",
+    "The Icon (Sapienza)": "hitman|sapienza|the-icon",
+    "Landslide (Sapienza)": "hitman|sapienza|landslide",
+    "The Author (Sapienza)": "hitman|sapienza|the-author",
+    "A Gilded Cage (Marrakesh)": "hitman|marrakesh|a-gilded-cage",
+    "A House Built on Sand (Marrakesh)": "hitman|marrakesh|a-house-built-on-sand",
+    "Club 27 (Bangkok)": "hitman|bangkok|club-27",
+    "The Source (Bangkok)": "hitman|bangkok|the-source",
+    "Freedom Fighters (Colorado)": "hitman|colorado|freedom-fighters",
+    "Situs Inversus (Hokkaido)": "hitman|hokkaido|situs-inversus",
+    "Hokkaido Snow Festival (Hokkaido)": "hitman|hokkaido|hokkaido-snow-festival",
+    "Patient Zero (Hokkaido)": "hitman|hokkaido|patient-zero",
+    "Nightcall (Hawke's Bay)": "hitman2|hawkes-bay|nightcall",
+    "The Finish Line (Miami)": "hitman2|miami|finish-line",
+    "A Silver Tongue (Miami)": "hitman2|miami|a-silver-tongue",
+    "Three-Headed Serpent (Santa Fortuna)": "hitman2|santa-fortuna|three-headed-serpent",
+    "Embrace of the Serpent (Santa Fortuna)": "hitman2|santa-fortuna|embrace-of-the-serpent",
+    "Chasing a Ghost (Mumbai)": "hitman2|mumbai|chasing-a-ghost",
+    "Illusions of Grandeur (Mumbai)": "hitman2|mumbai|illusions-of-grandeur",
+    "Another Life (Whittleton Creek)": "hitman2|whittleton-creek|another-life",
+    "A Bitter Pill (Whittleton Creek)": "hitman2|whittleton-creek|a-bitter-pill",
+    "The Ark Society (Isle of Sgàil)": "hitman2|isle-of-sgail|ark-society",
+    "Golden Handshake (New York)": "hitman2|new-york|golden-handshake",
+    "The Last Resort (Haven Island)": "hitman2|haven-island|the-last-resort",
+    "On Top Of The World (Dubai)": "hitman3|dubai|on-top-of-the-world",
+    "Death In The Family (Dartmoor)": "hitman3|dartmoor|death-in-the-family",
+    "Apex Predator (Berlin)": "hitman3|berlin|apex-predator",
+    "End Of An Era (Chongqing)": "hitman3|chongqing|end-of-an-era",
+    "The Farewell (Mendoza)": "hitman3|mendoza|the-farewell",
+    "Untouchable (Carpathian Mountains)": "hitman3|carpathian-mountains|untouchable",
+    "Shadows in the Water (Ambrose Island)": "hitman3|ambrose-island|shadows-in-the-water"
 }
 
 export class RouletteSpinGameMode implements GameMode {
@@ -128,13 +134,13 @@ export class RouletteSpinGameMode implements GameMode {
         const spinGenOptions: SpinGeneratorOptions = {
             missionPool: [missionIdToSlug[options['mission'] as string]],
             criteriaFilters: {
-                specificDisguise: !options['noDisguise'] as boolean,
+                specificDisguises: !options['noDisguise'] as boolean,
                 specificMelee: !options['noMelee'] as boolean,
                 specificFirearms: !options['noFirearms'] as boolean,
                 specificAccidents: !options['noAccidents'] as boolean,
                 uniqueTargetKills: options['uniqueTargetKills'] as boolean,
                 genericKills: options['genericKills'] as boolean,
-                rrBannedKills: false
+                impossibleOrDifficultKills: false
             }
         }
 
@@ -181,7 +187,7 @@ export class RouletteSpinGameMode implements GameMode {
 
     async generateSpin(options: SpinGeneratorOptions, freestyleMode: boolean): Promise<Spin> {
         try {
-            const spin = await axios.post('https://roulette.hitmaps.com/api/spins', options, { validateStatus: () => { return true } });
+            const spin = await axios.post('https://rouletteapi.hitmaps.com/api/spins', options, { validateStatus: () => { return true } });
             const result = spin.data;
             if (freestyleMode) {
                 (result.targetConditions as {target: {name: string;tileUrl: string}}[]).forEach((e, index) => {
@@ -189,19 +195,27 @@ export class RouletteSpinGameMode implements GameMode {
                     e.target.tileUrl = "https://media.hitmaps.com/img/hitmaps-roulette/berlin-target.png";
                 });
             }
-            if (!options.criteriaFilters.specificDisguise) {
-                (result.targetConditions as {disguise: {name: string;tileUrl: string}}[]).forEach((e, index) => {
-                    e.disguise.name = "Any disguise";
-                    e.disguise.tileUrl = "";
-                });
-            }
-            return result;
+            // if (!options.criteriaFilters.specificDisguises) {
+            //     (result.targetConditions as {disguise: {name: string;tileUrl: string}}[]).forEach((e, index) => {
+            //         e.disguise.name = "Any disguise";
+            //         e.disguise.tileUrl = "";
+            //     });
+            // }
+
+            const splittedSlug = options.missionPool[0].split("|");
+            const missionInfo = await axios.get(`https://www.hitmaps.com/api/v1/games/${splittedSlug[0]}/locations/${splittedSlug[1]}/missions/${splittedSlug[2]}`);
+
+            return Object.assign(result, { mission: { name: missionInfo.data[0].name, backgroundTile: missionInfo.data[0].backgroundUrl } });
+
+            // return result;
         } catch(e) {
             return {
                 mission: {
                     slug: "error",
+                    publicIdPrefix: -1,
+                    targets: [],
                     name: "Error in spin generation.",
-                    locationTileUrl: "",
+                    backgroundTile: "",
                 },
                 targetConditions: [{
                     target: {

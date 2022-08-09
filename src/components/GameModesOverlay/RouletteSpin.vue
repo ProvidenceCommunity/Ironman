@@ -1,5 +1,5 @@
 <template>
-  <div :style="'background-image: url(' + data.mission.locationTileUrl + '); background-size: cover;'">
+  <div :style="'background-image: url(' + data.mission.backgroundTile + '); background-size: cover;'">
     <v-container fluid class="noPadding">
       <v-row no-gutters v-if="targets <= 2" style="height: 100%;">
         <v-col v-for="(target, index) in data.targetConditions" :key="index" style="max-width: 50%;">
