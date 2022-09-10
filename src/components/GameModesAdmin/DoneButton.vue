@@ -32,7 +32,7 @@ export default defineComponent({
       if (this.details.doneStatus[index] === 1) {
         return `Player pressed done @${this.timestampToLocale(this.details.lastDone[index])}`;
       } else if (this.details.doneStatus[index] === 2) {
-        return `Player's done @${this.timestampToLocale(this.details.lastDone[index])} was accepted.`;
+        return `Player's done @${this.timestampToLocale(this.details.lastDone[index])} was accepted. Position: ${this.formatPlayerPosition(this.details.finishingOrder[index])}`;
       } else {
         return "running";
       }
@@ -42,6 +42,18 @@ export default defineComponent({
     },
     timestampToLocale(timestamp: number): string {
       return DateTime.fromMillis(timestamp).toLocaleString(DateTime.DATETIME_SHORT_WITH_SECONDS);
+    },
+    formatPlayerPosition(position: number): string {
+      if (position % 10 === 1 && position !== 11) {
+        return position + "st";
+      }
+      if (position % 10 === 2 && position !== 12) {
+        return position + "nd";
+      }
+      if (position % 10 === 3 && position !== 13) {
+        return position + "rd";
+      }
+      return position + "th";
     },
     async acceptRun(player: number) {
       const resp = await post("/api/match/admin/" + this.matchId + "/acceptDone", {playerIndex: player});

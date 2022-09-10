@@ -11,6 +11,11 @@ export class DoneButtonGameMode implements GameMode {
                 id: "additional_info",
                 type: "string",
                 caption: "Additional info for the players"
+            },
+            {
+                id: "display_done_order",
+                type: "boolean",
+                caption: "Display to players in which position they finished after admin verification"
             }
         ];
     }
@@ -19,13 +24,18 @@ export class DoneButtonGameMode implements GameMode {
         return {
             additionalInfo: options['additional_info'],
             doneStatus: players.map(() => { return 0 }),
-            lastDone: players.map(() => { return -1 })
+            lastDone: players.map(() => { return -1 }),
+            finishingOrder: players.map(() => { return -1 }),
+            displayFinish: options['display_done_order'],
+            nextFinish: 1,
         };
     }
 
     handleAdminEvent(event: string, payload: AdminEventPayload, currentState: GameModeDetails): GameModeDetails {
         if (event === "acceptDone") {
             (currentState['doneStatus'] as number[])[payload.playerIndex] = 2;
+            (currentState['finishingOrder'] as number[])[payload.playerIndex] = currentState['nextFinish'] as number;
+            (currentState['nextFinish'] as number) += 1
         }
         if (event === "rejectDone") {
             (currentState['doneStatus'] as number[])[payload.playerIndex] = 0;
@@ -47,6 +57,7 @@ export class DoneButtonGameMode implements GameMode {
             additionalInfo: currentState['additionalInfo'],
             doneStatus: (currentState['doneStatus'] as number[])[player],
             lastDone: (currentState['lastDone'] as number[])[player],
+            donePosition: currentState['displayFinish'] ? (currentState['finishingOrder'] as number[])[player] : -1,
         };
     }
 
