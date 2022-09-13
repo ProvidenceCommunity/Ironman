@@ -5,7 +5,7 @@ import AdminInterfaceView from '../views/AdminInterface.vue'
 import PlayerClientView from '../views/PlayerClient.vue';
 import OverlayView from '../views/StandardOverlay.vue';
 import LocalLoginView from '../views/LocalLogin.vue';
-import ProOverlay from "@/views/ProOverlay.vue";
+import ProOverlay from "@/views/TPCOverlay.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -34,7 +34,7 @@ const routes: Array<RouteRecordRaw> = [
     component: OverlayView
   },
   {
-    path: '/pro-overlay/:matchID',
+    path: '/tpc-overlay/:matchID',
     name: 'prooverlay',
     component: ProOverlay
   },
