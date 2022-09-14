@@ -2,22 +2,22 @@
   <div class="background">
     <!-- <span class="playername p1">{{ matchData.players[0].toUpperCase() }}</span> -->
     <span class="playername p1">
-      INNIT BRUV<br>
-      <span class="players">MANDO & CREWDY</span>
+      {{ matchData.players[0].toUpperCase() }}<br>
+      <span class="players">{{ getTeamPlayers(matchData.players[0]).join(" & ").toUpperCase() }}</span>
     </span>
     <!-- <span class="playername p2">{{ matchData.players[1].toUpperCase() }}</span> -->
     <span class="playername p2">
-      GEOMETRY DASH REFUGEES<br>
-      <span class="players">MEEKAH & ZRUNE</span>
+      {{ matchData.players[1].toUpperCase() }}<br>
+      <span class="players">{{ getTeamPlayers(matchData.players[1]).join(" & ").toUpperCase() }}</span>
     </span>
 
-    <span class="score s1">0</span>
-    <span class="score s2">0</span>
+    <span class="score s1">{{ matchData.scores[0] }}</span>
+    <span class="score s2">{{ matchData.scores[1] }}</span>
 
-    <OverlayProfilePicture class="pfp l1" player="Yannini" width="128" height="128"></OverlayProfilePicture>
-    <OverlayProfilePicture class="pfp l2" player="Yannini" width="128" height="128"></OverlayProfilePicture>
-    <OverlayProfilePicture class="pfp r1" player="Yannini" width="128" height="128"></OverlayProfilePicture>
-    <OverlayProfilePicture class="pfp r2" player="Yannini" width="128" height="128"></OverlayProfilePicture>
+    <OverlayProfilePicture class="pfp l1" :player="getTeamPlayers(matchData.players[0])[0]" width="128" height="128"></OverlayProfilePicture>
+    <OverlayProfilePicture class="pfp l2" :player="getTeamPlayers(matchData.players[0])[1]" width="128" height="128"></OverlayProfilePicture>
+    <OverlayProfilePicture class="pfp r1" :player="getTeamPlayers(matchData.players[1])[0]" width="128" height="128"></OverlayProfilePicture>
+    <OverlayProfilePicture class="pfp r2" :player="getTeamPlayers(matchData.players[1])[1]" width="128" height="128"></OverlayProfilePicture>
 
     <div class="spincontainer container">
       <div class="container" v-if="matchData.roundLive">
@@ -187,6 +187,38 @@ export default defineComponent({
     formatTimer(seconds: number): string {
       return Duration.fromMillis(this.matchData.countdown * 1000).toFormat("mm:ss");
     },
+    getTeamPlayers(team: string): string[] {
+      switch(team) {
+        case "2x RR Champions":
+          return ["Jokerj", "Phanium"];
+        case "Stuffers Turned Builders":
+          return ["Papierfresse", "Moo"];
+        case "CX Punk MkIII":
+          return ["ChrisX3", "GKPunk"];
+        case "Roulette unprofessionals":
+          return ["Nezuko Chan", "Rocky"];
+        case "Formulads":
+          return ["In4Fun", "ThatObserver"];
+        case "Boreal Forest":
+          return ["Some Random Person", "ChromeX"];
+        case "The Improv Royalty":
+          return ["Blithe", "Meme Junkie"];
+        case "Bad Laptop and Bad Wifi":
+          return ["MattySpice", "Redfox"];
+        case "Xbox Master Race":
+          return ["Soviet", "lewis"];
+        case "Geometry Dash Refugees":
+          return ["Meekah", "zRune"];
+        case "Innit Bruv":
+          return ["Mando", "Crewdy"];
+        case "RustyRbram":
+          return ["Fe2o3", "Ebramahdi"];
+        case "SLOWMEGALUL":
+          return ["Zionicle", "Sparkles"];
+        default:
+          return ["", ""]
+      }
+    }
   },
   computed: {
     currentRound(): any {
