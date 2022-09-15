@@ -19,6 +19,7 @@
     "dotenv": "^16.0.1",
     "express-session": "^1.17.3",
     "luxon": "^2.4.0",
+    "memorystore": "^1.6.7",
     "roboto-fontface": "*",
     "vue": "^3.2.13",
     "vue-router": "^4.0.3",

@@ -3,6 +3,9 @@ import session from 'express-session';
 import { randomUUID } from 'crypto';
 import { readFile, writeFile } from 'fs/promises';
 import debug from "debug";
+import createMemoryStore from 'memorystore';
+
+const MemoryStore = createMemoryStore(session);
 
 interface MatchList {
     [id: string]: IronmanMatch;
@@ -60,4 +63,5 @@ export function getMatches(): SimplifiedIronmanMatch[] {
     });
 }
 
-export const sessionStore = session({ secret: randomUUID(), cookie: { maxAge: 1800000 }, rolling: true });
+export const sessions = new MemoryStore({ checkPeriod: 1800000 });
+export const sessionStore = session({ secret: randomUUID(), cookie: { maxAge: 1800000 }, rolling: true, store: sessions });

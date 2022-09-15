@@ -1,12 +1,14 @@
 import { Router } from 'express';
-import { sessionStore } from "./database";
+import { sessions, sessionStore } from "./database";
 import axios from 'axios';
 import debug from 'debug';
+import { SessionData } from 'express-session';
 
 export const authRouter = Router();
 authRouter.use(sessionStore);
 
 const dbg = debug("ironman:authenticator");
+let isLocalAuthEnabled = true;
 
 function getRedirectURI(): string {
     return encodeURIComponent(`${process.env.PUBLIC_ORIGIN}/auth/discord_callback`);
@@ -67,7 +69,7 @@ authRouter.get("/discord_callback", async (req, res) => {
 })
 
 authRouter.post("/local_login", (req, res) => {
-    if (req.body.password === process.env.LOCAL_PASSWORD && process.env.LOCAL_PASSWORD !== undefined) {
+    if (req.body.password === process.env.LOCAL_PASSWORD && process.env.LOCAL_PASSWORD !== undefined && isLocalAuthEnabled) {
         dbg("Local login - successful");
         req.session.isAdmin = true;
         req.session.username = "local_root";
@@ -78,4 +80,55 @@ authRouter.post("/local_login", (req, res) => {
     dbg("Local login - failed");
     res.sendStatus(403);
     return;
+});
+
+authRouter.get("/super_secret_localauth_toggle", (req, res) => {
+    if (isLocalAuthEnabled) {
+        // Disabling local auth, invalidating any local sessions that existed
+        isLocalAuthEnabled = false;
+
+        let disabled = 0;
+        if (req.session.isAdmin && req.session.username === "local_root" && req.session.avatarURI === "") {
+            req.session.destroy((err) => {
+                if (err) {
+                    dbg("Error destroying caller session %o", err);
+                }
+            });
+            disabled++;
+        }
+
+        sessions.all((err, allSessions) => {
+            if (err) {
+                dbg("Local_auth toggle - %s", err);
+            }
+            if (allSessions === null || allSessions === undefined) {
+                dbg("local_auth toggle - no sessions to invalidate");
+            }
+            const promises = [] as Promise<void>[];
+            for (const sid in allSessions) {
+                const session = allSessions[sid];
+                if (session.isAdmin && session.username === "local_root" && session.avatarURI === "") {
+                    dbg("%s", sid);
+                    promises.push(new Promise<void>((resolve, reject) => { sessions.destroy(sid, (err) => {
+                        if (err) {
+                            dbg("Err in sessions.destroy: %o", err);
+                            reject();
+                        } else {
+                            resolve();
+                        }
+                    })}));
+                    disabled++;
+                }
+            }
+            Promise.all(promises).then(() => {
+                dbg("Local auth deactivated & %d local sessions invalidated.", disabled);
+                res.send("Local auth deactivated & all local sessions invalidated.");
+            });
+        });
+    } else {
+        // We're just reactivating local auth
+        isLocalAuthEnabled = true;
+        dbg("Local auth re-enabled.");
+        res.send("Local auth re-enabled.");
+    }
 });
