@@ -215,6 +215,8 @@ export default defineComponent({
           return ["Fe2o3", "Ebramahdi"];
         case "SLOWMEGALUL":
           return ["Zionicle", "Sparkles"];
+        case "Gumidifier 2.0":
+          return ["Rommel of the Far East", "The_Rieper_47"];
         default:
           return ["", ""]
       }

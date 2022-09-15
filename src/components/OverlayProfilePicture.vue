@@ -35,7 +35,9 @@ export default defineComponent({
         "Some Random Person": "https://cdn.discordapp.com/guilds/928821020738084965/users/247360708562518016/avatars/30230ae2dd832bb86984c7ab9e1e3401.png",
         "ChromeX": "https://cdn.discordapp.com/avatars/326411676511502351/8f3a99f50603f3f550745dde2cc17a66.png",
         "Blithe": "https://cdn.discordapp.com/avatars/495197209147605012/1aaa052d16b4a84a83e3dc62c548f733.png",
-        "Meme Junkie": "https://cdn.discordapp.com/avatars/211380658029854720/6deba9af3920f47aad9315f0daf5dfaf.png"
+        "Meme Junkie": "https://cdn.discordapp.com/avatars/211380658029854720/6deba9af3920f47aad9315f0daf5dfaf.png",
+        "Rommel of the Far East": "https://cdn.discordapp.com/avatars/438469962147954688/1158f013eafb4f2db3f36031eb47ee37.png",
+        "The_Rieper_47": "https://cdn.discordapp.com/avatars/965361108103876698/0eb24c362b6f54997bc3eb022fb3856a.png",
       } as {[player: string]: string}
     }
   },
