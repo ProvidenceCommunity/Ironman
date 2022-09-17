@@ -21,7 +21,7 @@ export default defineComponent({
         "Nezuko Chan": "https://cdn.discordapp.com/avatars/577924506471890976/4782401624b7ff59facbc60cf853aa8b.png",
         "Rocky": "https://cdn.discordapp.com/avatars/294104724469448704/77668832574283cf7dddf43134aa97f5.png",
         "Meekah": "https://cdn.discordapp.com/avatars/201065244297003008/d1a38a627535b9a00caab255f165d55e.png",
-        "zRune": "https://cdn.discordapp.com/avatars/540007236055859200/aa4ea5991ad33d97f5890d4119e59608.png",
+        "zRune": "https://cdn.discordapp.com/avatars/540007236055859200/e20451c335a2be5c180d14e94203cde2.png",
         "Zionicle": "https://cdn.discordapp.com/avatars/176819898066927616/7dbdae89da5a9155cd6bae510d188b18.png",
         "Sparkles": "https://cdn.discordapp.com/avatars/289099568384180225/2e2702c01bf8781a47426dfd60ca3513.png",
         "Fe2o3": "https://cdn.discordapp.com/avatars/961718533811736587/de18b3d1931a7d248f360d2e5aefe4e5.png",

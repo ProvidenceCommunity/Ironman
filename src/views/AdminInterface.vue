@@ -35,6 +35,9 @@
                 <li>
                   <b>Shoutcast-Overlay:</b> <a :href="getOverlayLink()">{{ getOverlayLink() }}</a> (1300px x 600px)
                 </li>
+                <li>
+                  <b>TPC-Overlay:</b> <a :href="getEventOverlayLink()">{{ getEventOverlayLink() }}</a> (1300px x 600px)
+                </li>
               </ul>
             </v-expansion-panel-text>
           </v-expansion-panel>
@@ -165,8 +168,8 @@ export default defineComponent({
       return `${window.location.origin}/overlay/${this.matchId}`
     },
     getEventOverlayLink(): string {
-      //return `${window.location.origin}/pro-overlay/${this.matchId}`
-      return "";
+      return `${window.location.origin}/tpc-overlay/${this.matchId}`
+      // return "";
     },
     async doneAddingRound(values: any, title: string) {
       if (values) {
