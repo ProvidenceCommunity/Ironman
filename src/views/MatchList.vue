@@ -1,6 +1,6 @@
 <template>
   <v-dialog v-model="creationDialog">
-    <v-card>
+    <v-card width="500px">
       <v-card-title>Create match</v-card-title>
       <v-card-text>
         Players: (One per line)
