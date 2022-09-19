@@ -211,7 +211,7 @@ export default defineComponent({
           return ["Meekah", "zRune"];
         case "Innit Bruv":
           return ["Mando", "Crewdy"];
-        case "RustyRbram":
+        case "RustyEbram":
           return ["Fe2o3", "Ebramahdi"];
         case "SLOWMEGALUL":
           return ["Zionicle", "Sparkles"];

@@ -64,4 +64,4 @@ export function getMatches(): SimplifiedIronmanMatch[] {
 }
 
 export const sessions = new MemoryStore({ checkPeriod: 1800000 });
-export const sessionStore = session({ secret: randomUUID(), cookie: { maxAge: 1800000 }, rolling: true, store: sessions });
+export const sessionStore = session({ secret: randomUUID(), cookie: { maxAge: 1800000 }, rolling: true, store: sessions, name: "providence-ironman" });

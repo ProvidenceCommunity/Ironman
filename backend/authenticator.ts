@@ -2,7 +2,6 @@ import { Router } from 'express';
 import { sessions, sessionStore } from "./database";
 import axios from 'axios';
 import debug from 'debug';
-import { SessionData } from 'express-session';
 
 export const authRouter = Router();
 authRouter.use(sessionStore);
