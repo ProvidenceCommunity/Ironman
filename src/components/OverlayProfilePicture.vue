@@ -10,7 +10,7 @@ export default defineComponent({
   data() {
     return {
       imageMap: {
-        "Jokerj": "https://cdn.discordapp.com/avatars/700245922722087012/97e09925a4b2ea113919420b64a2ee1a.png",
+        "Jokerj": "https://cdn.discordapp.com/avatars/700245922722087012/69248c920f78ee1bbe4bfee2a3ffdc29.png",
         "Phanium": "https://cdn.discordapp.com/avatars/708231270341148744/b443bc1b200b7a9aab95c43faddda269.png",
         "Papierfresse": "https://cdn.discordapp.com/avatars/795428895284396052/1a05601b4eb3bb7e093ac5555aeffd69.png",
         "Moo": "https://cdn.discordapp.com/avatars/168470987031969792/ac51942a287af7c674f0a862dfacf464.png",
