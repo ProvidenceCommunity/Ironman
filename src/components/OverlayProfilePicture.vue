@@ -31,7 +31,7 @@ export default defineComponent({
         "In4Fun": "https://cdn.discordapp.com/avatars/412288950854746113/fe17ca7bff8b8f2d3bf11380ce4911d1.png",
         "ThatObserver": "https://cdn.discordapp.com/avatars/247092196874911744/1c850ff9f96c2927c8ec278ff3f86267.png",
         "ChrisX3": "https://cdn.discordapp.com/avatars/355182845141975042/f8911b311cea855e89fdd30ac267e982.png",
-        "GKPunk": "https://cdn.discordapp.com/avatars/171011576822890497/1438421db4e65d6c0b4428c18b81cd27.png",
+        "GKPunk": "https://cdn.discordapp.com/avatars/171011576822890497/62a817fd4fdec2ae8162232cff3a228d.png",
         "Some Random Person": "https://cdn.discordapp.com/guilds/928821020738084965/users/247360708562518016/avatars/30230ae2dd832bb86984c7ab9e1e3401.png",
         "ChromeX": "https://cdn.discordapp.com/avatars/326411676511502351/8f3a99f50603f3f550745dde2cc17a66.png",
         "Blithe": "https://cdn.discordapp.com/avatars/495197209147605012/1aaa052d16b4a84a83e3dc62c548f733.png",
