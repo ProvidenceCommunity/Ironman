@@ -14,17 +14,20 @@
     <span class="score s1">{{ matchData.scores[0] }}</span>
     <span class="score s2">{{ matchData.scores[1] }}</span>
 
-    <OverlayProfilePicture class="pfp l1" :player="getTeamPlayers(matchData.players[0])[0]" width="128" height="128"></OverlayProfilePicture>
-    <OverlayProfilePicture class="pfp l2" :player="getTeamPlayers(matchData.players[0])[1]" width="128" height="128"></OverlayProfilePicture>
-    <OverlayProfilePicture class="pfp r1" :player="getTeamPlayers(matchData.players[1])[0]" width="128" height="128"></OverlayProfilePicture>
-    <OverlayProfilePicture class="pfp r2" :player="getTeamPlayers(matchData.players[1])[1]" width="128" height="128"></OverlayProfilePicture>
+    <OverlayProfilePicture class="pfp l1" :player="getTeamPlayers(matchData.players[0])[0]" width="100" height="100"></OverlayProfilePicture>
+    <OverlayProfilePicture class="pfp l2" :player="getTeamPlayers(matchData.players[0])[1]" width="100" height="100"></OverlayProfilePicture>
+    <OverlayProfilePicture class="pfp r1" :player="getTeamPlayers(matchData.players[1])[0]" width="100" height="100"></OverlayProfilePicture>
+    <OverlayProfilePicture class="pfp r2" :player="getTeamPlayers(matchData.players[1])[1]" width="100" height="100"></OverlayProfilePicture>
 
     <div class="spincontainer container">
       <div class="container" v-if="matchData.roundLive">
         <SpinOverlay :data="currentDetails.currentSpin" class="spin" v-if="currentRound.mode === 'rouletteSpin'"></SpinOverlay>
+        <SpinOverlay :data="currentDetails.currentSpins[0]" class="top spin" v-if="currentRound.mode === 'twoSpins'"></SpinOverlay>
         <DoneButtonOverlay :data="currentRound" v-if="currentRound.mode === 'simpleDoneButton' || currentRound.mode === 'timer'"></DoneButtonOverlay>
         <BingoOverlay :data="currentRound" v-if="currentRound.mode === 'bingo'"></BingoOverlay>
         <CountdownBar :timeRemaining="matchData.countdown" :totalTime="matchData.totalMatchTime"></CountdownBar>
+        <SpinOverlay :data="currentDetails.currentSpins[1]" class="botspin spin" v-if="currentRound.mode === 'twoSpins'"></SpinOverlay>
+        <CountdownBar :timeRemaining="matchData.countdown" :totalTime="matchData.totalMatchTime" v-if="currentRound.mode === 'twoSpins'" class="countdownBar"></CountdownBar>
       </div>
       <div class="container" v-else-if="currentRound.arrivingTimestamp > new Date() || currentRound.arrivingTimestamp <= 0">
         <div class="container">
@@ -93,20 +96,20 @@ body.overlay::-webkit-scrollbar {
   position: absolute;
 }
 .l1 {
-  left: 60px;
-  top: 316px;
+  left: 719px;
+  top: 276px;
 }
 .l2 {
-  left: 60px;
-  top: 460px;
+  left: 837px;
+  top: 346px;
 }
 .r1 {
-  right: 63px;
-  top: 324px;
+  right: 710px;
+  top: 279px;
 }
 .r2 {
-  right: 63px;
-  top: 468px;
+  right: 828px;
+  top: 346px;
 }
 .background {
   position: absolute;
@@ -123,12 +126,20 @@ body.overlay::-webkit-scrollbar {
   background-size: cover;
 }
 .spincontainer {
-  top: 586px;
+  top: 335px;
   left: 311px;
   transform: scale(0.385);
 }
 .spin {
   height: 550px;
+}
+.botspin {
+  top: 50px;
+  position: relative;
+}
+.countdownBar {
+  top: 50px;
+  position: relative;
 }
 .centeredText {
   width: 100%;

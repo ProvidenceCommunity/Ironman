@@ -26,6 +26,7 @@
           <RouletteSpinPlayer v-else-if="matchInfo.currentGameMode === 'rouletteSpin'" :matchId="this.matchId" :player="this.player" :details="this.matchInfo.round" @error="onError"></RouletteSpinPlayer>
           <BingoPlayer v-else-if="matchInfo.currentGameMode === 'bingo'" :matchId="this.matchId" :player="this.player" :details="this.matchInfo.round" @error="onError"></BingoPlayer>
           <TimerPlayer v-else-if="matchInfo.currentGameMode === 'timer'" :details="this.matchInfo.round"></TimerPlayer>
+          <TwoSpinsPlayer v-else-if="matchInfo.currentGameMode === 'twoSpins'" :matchId="this.matchId" :player="this.player" :details="this.matchInfo.round" @error="onError"></TwoSpinsPlayer>
         </div>
         <div v-else>
           <h1>Waiting for match info...</h1>
@@ -46,6 +47,7 @@ import {get} from '@/http';
 import BingoPlayer from "@/components/GameModesPlayer/Bingo.vue";
 import CountdownBar from "@/components/CountdownBar.vue";
 import TimerPlayer from "@/components/GameModesPlayer/Timer.vue";
+import TwoSpinsPlayer from "@/components/GameModesPlayer/TwoSpins.vue";
 
 export default defineComponent({
   name: "PlayerClient",
@@ -54,7 +56,8 @@ export default defineComponent({
     CountdownBar,
     BingoPlayer,
     DoneButtonPlayer,
-    RouletteSpinPlayer
+    RouletteSpinPlayer,
+    TwoSpinsPlayer,
   },
   data() {
     return {

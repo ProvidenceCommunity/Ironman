@@ -36,7 +36,7 @@
                   <b>Shoutcast-Overlay:</b> <a :href="getOverlayLink()">{{ getOverlayLink() }}</a> (1300px x 600px)
                 </li>
                 <li>
-                  <b>TPC-Overlay:</b> <a :href="getEventOverlayLink()">{{ getEventOverlayLink() }}</a> (1300px x 600px)
+                  <b>TPC-Overlay:</b> <a :href="getEventOverlayLink()">{{ getEventOverlayLink() }}</a> (1920px x 1080px)
                 </li>
               </ul>
             </v-expansion-panel-text>
@@ -98,6 +98,7 @@
         <RouletteSpinAdmin v-if="currentRound.mode === 'rouletteSpin'" :players="matchInfo.players" :details="currentRound.additionalDetails" :matchId="this.matchId" @error="onError"></RouletteSpinAdmin>
         <BingoAdmin v-if="currentRound.mode === 'bingo'" :players="matchInfo.players" :details="currentRound.additionalDetails" :matchId="this.matchId" @error="onError"></BingoAdmin>
         <TimerAdmin v-if="currentRound.mode === 'timer'" :details="currentRound.additionalDetails"></TimerAdmin>
+        <TwoSpinsAdmin v-if="currentRound.mode === 'twoSpins'" :players="matchInfo.players" :details="currentRound.additionalDetails" :matchId="this.matchId" @error="onError"></TwoSpinsAdmin>
 
       </v-col>
       <v-spacer></v-spacer>
@@ -111,6 +112,7 @@ import { get, post } from '@/http';
 import AddRoundDialog from '@/components/AddRoundDialog.vue';
 import DoneButtonAdmin from "@/components/GameModesAdmin/DoneButton.vue";
 import RouletteSpinAdmin from "@/components/GameModesAdmin/RouletteSpin.vue";
+import TwoSpinsAdmin from "@/components/GameModesAdmin/TwoSpins.vue";
 import BingoAdmin from "@/components/GameModesAdmin/Bingo.vue";
 import TimerAdmin from "@/components/GameModesAdmin/Timer.vue";
 import { DateTime } from "luxon";
@@ -122,7 +124,8 @@ export default defineComponent({
     RouletteSpinAdmin,
     DoneButtonAdmin,
     BingoAdmin,
-    AddRoundDialog
+    AddRoundDialog,
+    TwoSpinsAdmin,
   },
   data() {
     return {
