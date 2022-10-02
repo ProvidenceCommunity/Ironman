@@ -10,7 +10,7 @@ export default defineComponent({
   data() {
     return {
       imageMap: {
-        "Jokerj": "https://cdn.discordapp.com/avatars/700245922722087012/69248c920f78ee1bbe4bfee2a3ffdc29.png",
+        "Jokerj": "https://cdn.discordapp.com/avatars/700245922722087012/fb1033c2168314ff3a9c67da4c312069.png",
         "Phanium": "https://cdn.discordapp.com/avatars/708231270341148744/b443bc1b200b7a9aab95c43faddda269.png",
         "Papierfresse": "https://cdn.discordapp.com/avatars/795428895284396052/1a05601b4eb3bb7e093ac5555aeffd69.png",
         "Moo": "https://cdn.discordapp.com/avatars/168470987031969792/ac51942a287af7c674f0a862dfacf464.png",
@@ -20,7 +20,7 @@ export default defineComponent({
         "lewis": "https://cdn.discordapp.com/avatars/603668006358351872/07e574fd499d46d1ae06698113d83b0a.png",
         "Nezuko Chan": "https://cdn.discordapp.com/avatars/577924506471890976/4782401624b7ff59facbc60cf853aa8b.png",
         "Rocky": "https://cdn.discordapp.com/avatars/294104724469448704/77668832574283cf7dddf43134aa97f5.png",
-        "Meekah": "https://cdn.discordapp.com/avatars/201065244297003008/d1a38a627535b9a00caab255f165d55e.png",
+        "Meekah": "https://cdn.discordapp.com/avatars/201065244297003008/f440551f2b695c295e93116c4b85a1d1.png",
         "zRune": "https://cdn.discordapp.com/avatars/540007236055859200/e20451c335a2be5c180d14e94203cde2.png",
         "Zionicle": "https://cdn.discordapp.com/avatars/176819898066927616/7dbdae89da5a9155cd6bae510d188b18.png",
         "Sparkles": "https://cdn.discordapp.com/avatars/289099568384180225/2e2702c01bf8781a47426dfd60ca3513.png",
