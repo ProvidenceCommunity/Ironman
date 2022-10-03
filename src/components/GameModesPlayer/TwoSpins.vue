@@ -1,5 +1,5 @@
 <template>
-  <h1>{{ details.currentSpin.mission.name }}</h1>
+  <h1>{{ details.currentSpins[0].mission.name }}</h1>
   <h3>Spin 1:</h3>
   <RouletteCondition v-for="(target, index) in details.currentSpins[0].targetConditions" :key="index" :condition="target"></RouletteCondition>
   <v-divider></v-divider>
