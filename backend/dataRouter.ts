@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import {getMatches, sessionStore} from "./database";
+import {getConfig, getMatches, sessionStore} from "./database";
 import {GameModes} from "./model";
 
 export const dataRouter = Router();
@@ -41,3 +41,11 @@ dataRouter.get('/matches', (req, res) => {
         matches: getMatches()
     });
 });
+
+dataRouter.get('/schema', (req, res) => {
+    if (!req.session.isAdmin) {
+        res.sendStatus(403);
+        return;
+    }
+    res.json(getConfig().matchSchema);
+})

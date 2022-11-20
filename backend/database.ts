@@ -1,4 +1,4 @@
-import {IronmanMatch, IronmanScoringType, SimplifiedIronmanMatch} from "./model";
+import {IronmanMatch, MatchField, SimplifiedIronmanMatch} from "./model";
 import session from 'express-session';
 import { randomUUID } from 'crypto';
 import { readFile, writeFile } from 'fs/promises';
@@ -11,8 +11,20 @@ interface MatchList {
     [id: string]: IronmanMatch;
 }
 
+interface GlobalConfig {
+    tournamentName: string;
+    matchSchema: MatchField[];
+    discord: {
+        enableMatchupChannel: boolean;
+        guildId: string;
+        channelId: string;
+        botToken: string;
+    }
+}
+
 const dbg = debug("ironman:database");
 let matches: MatchList = {}
+let config: GlobalConfig;
 
 export async function loadDatabase(): Promise<void> {
     try {
@@ -23,9 +35,28 @@ export async function loadDatabase(): Promise<void> {
         dbg("Failed to load database, assuming empty");
         matches = {};
     }
+
+    try {
+        const file = await readFile("./config.json", "utf8");
+        config = JSON.parse(file);
+        dbg("Loaded global config.");
+    } catch {
+        dbg("Failed to load global config, reverting to default");
+        config = {
+            tournamentName: "Untitled tournament",
+            matchSchema: [],
+            discord: {
+                enableMatchupChannel: false,
+                botToken: "",
+                channelId: "",
+                guildId: ""
+            }
+        }
+    }
 }
 
 export async function writeDatabase(): Promise<void> {
+    await writeFile("./config.json", JSON.stringify(config), 'utf8');
     await writeFile('./database.json', JSON.stringify(matches), 'utf8');
     dbg("Wrote %d matches to disk", Object.keys(matches).length);
 }
@@ -38,7 +69,7 @@ export function setMatch(id: string, match: IronmanMatch): void {
     matches[id] = match;
 }
 
-export function createMatch(players: string[], scoringType: IronmanScoringType): string {
+export function createMatch(players: string[]): string {
     let uuid = randomUUID();
     while (matches[uuid] !== undefined) {
         uuid = randomUUID();
@@ -46,9 +77,10 @@ export function createMatch(players: string[], scoringType: IronmanScoringType):
     matches[uuid] = {
         id: uuid,
         players,
-        scoringType,
         scores: players.map((e) => { return 0 }),
-        rounds: []
+        rounds: [],
+        schedulingData: {},
+        timestamp: -1
     };
     return uuid;
 }
@@ -58,9 +90,15 @@ export function getMatches(): SimplifiedIronmanMatch[] {
         return {
             id: e.id,
             players: e.players,
-            finished: e.finished
+            finished: e.finished,
+            schedulingData: e.schedulingData,
+            timestamp: e.timestamp
         }
     });
+}
+
+export function getConfig(): GlobalConfig {
+    return config;
 }
 
 export const sessions = new MemoryStore({ checkPeriod: 1800000 });
