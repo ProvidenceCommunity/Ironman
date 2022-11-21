@@ -23,7 +23,21 @@ apiRouter.post('/match/update/:mID', (req, res) => {
         res.sendStatus(403);
         return;
     }
-    setMatch(req.params.mID as string, req.body);
+    const match = getMatch(req.params.mID);
+    Object.assign(match, req.body);
+    setMatch(req.params.mID as string, match);
+    res.sendStatus(204);
+});
+
+apiRouter.post('/match/schedule/:mID', (req, res) => {
+    if (!req.session.isAdmin) {
+        res.sendStatus(403);
+        return;
+    }
+    const match = getMatch(req.params.mID);
+    Object.assign(match, req.body);
+    setMatch(req.params.mID as string, match);
+    // Discord scheduling dispatch
     res.sendStatus(204);
 });
 

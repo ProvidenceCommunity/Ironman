@@ -44,7 +44,7 @@
               </thead>
               <tbody>
                 <tr v-for="match of displayedMatches" :key="match.id">
-                  <td>{{ match.timestamp }}</td>
+                  <td>{{ getTimestamp(match.timestamp) }}</td>
                   <td>{{ match.players.join(", ") }}</td>
                   <td v-for="column in schemaHeaders" :key="column.name">{{ match.schedulingData[column.name] }}</td>
                   <td>
@@ -65,6 +65,7 @@
 <script>
 import { defineComponent } from "vue";
 import { get, post } from '@/http';
+import { DateTime } from 'luxon';
 import MatchEditDialog from "@/components/MatchEditDialog.vue";
 
 export default defineComponent({
@@ -114,16 +115,23 @@ export default defineComponent({
       this.creationDialog = true;
     },
     editMatch(matchId) {
-      console.log(`Editing ${matchId}`);
       this.currentlyScheduling = this.matches.filter(e => {return e.id === matchId})[0];
     },
-    saveEdit(matchId, data) {
-      console.log(`Saving edit for ${matchId}`);
+    async saveEdit(matchId, data) {
       console.log(data);
+      await post("/api/match/schedule/" + matchId, data);
+      await this.updateList();
       this.currentlyScheduling = null;
     },
     cancelEdit() {
       this.currentlyScheduling = null;
+    },
+    getTimestamp(ts) {
+      if (ts <= 0) {
+        return "Not scheduled";
+      } else {
+        return DateTime.fromMillis(ts).toLocaleString(DateTime.DATETIME_SHORT);
+      }
     }
   },
   computed: {

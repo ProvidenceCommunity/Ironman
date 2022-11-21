@@ -4362,10 +4362,10 @@ lru-cache@^6.0.0:
   dependencies:
     yallist "^4.0.0"
 
-luxon@^2.4.0:
-  version "2.5.0"
-  resolved "https://registry.yarnpkg.com/luxon/-/luxon-2.5.0.tgz#098090f67d690b247e83c090267a60b1aa8ea96c"
-  integrity sha512-IDkEPB80Rb6gCAU+FEib0t4FeJ4uVOuX1CQ9GsvU3O+JAGIgu0J7sf1OarXKaKDygTZIoJyU6YdZzTFRu+YR0A==
+luxon@^3.1.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/luxon/-/luxon-3.1.0.tgz#9ac33d7142b7ea18d4ec8583cdeb0b079abef60d"
+  integrity sha512-7w6hmKC0/aoWnEsmPCu5Br54BmbmUp5GfcqBxQngRcXJ+q5fdfjEzn7dxmJh2YdDhgW8PccYtlWKSv4tQkrTQg==
 
 magic-string@^0.25.7:
   version "0.25.9"
@@ -6233,7 +6233,7 @@ vary@^1, vary@~1.1.2:
   resolved "https://registry.yarnpkg.com/vary/-/vary-1.1.2.tgz#2299f02c6ded30d4a5961b0b9f74524a18f634fc"
   integrity sha512-BNGbWLfd0eUPabhkXUVm0j8uuvREyTh5ovRa/dyow/BqAbZJyC+5fU+IzQOzmAKzYqYRAISoRhdQr3eIZ/PXqg==
 
-vue-cli-plugin-vuetify@~2.5.0:
+vue-cli-plugin-vuetify@~2.5.8:
   version "2.5.8"
   resolved "https://registry.yarnpkg.com/vue-cli-plugin-vuetify/-/vue-cli-plugin-vuetify-2.5.8.tgz#a67ef81375fb2cd9f4f912e665e5190de105f2f6"
   integrity sha512-uqi0/URJETJBbWlQHD1l0pnY7JN8Ytu+AL1fw50HFlGByPa8/xx+mq19GkFXA9FcwFT01IqEc/TkxMPugchomg==
@@ -6414,7 +6414,7 @@ webpack-merge@^5.7.3:
     clone-deep "^4.0.1"
     wildcard "^2.0.0"
 
-webpack-plugin-vuetify@^2.0.0-alpha.0:
+webpack-plugin-vuetify@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/webpack-plugin-vuetify/-/webpack-plugin-vuetify-2.0.0.tgz#93c878eb051c7401e661e15f02194eb72073002f"
   integrity sha512-GMAlZPLZfuCOtbw480pncEcDtQjB937qZTp4eiTOqOAM81ManquZDsSbSnTgBHmO9ERbgYRJx0TqucXookTGUg==

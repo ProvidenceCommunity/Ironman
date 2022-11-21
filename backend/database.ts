@@ -66,6 +66,14 @@ export function getMatch(id: string): IronmanMatch {
 }
 
 export function setMatch(id: string, match: IronmanMatch): void {
+    // Because players may change, we need to make the scores array longer
+    // It's jank that that's done here, but everything is jank, really
+    while (match.players.length > match.scores.length) {
+        match.scores.push(0);
+    }
+    while (match.players.length < match.scores.length) {
+        match.scores.pop();
+    }
     matches[id] = match;
 }
 
