@@ -140,6 +140,13 @@ export default class DiscordConnector {
     }
 
     static shouldAnnounceSchedule(matchOne: IronmanMatch, matchTwo: IronmanMatch): boolean {
-        return true;
+        if (matchOne.players !== matchTwo.players) return true;
+        if (matchOne.timestamp !== matchTwo.timestamp) return true;
+        for (const field of getConfig().matchSchema) {
+            if (!field.announceInDiscord) continue;
+
+            if (JSON.stringify(matchOne.schedulingData[field.name]) !== JSON.stringify(matchTwo.schedulingData[field.name])) return true;
+        }
+        return false;
     }
 }
