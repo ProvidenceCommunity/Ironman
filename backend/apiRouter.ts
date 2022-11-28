@@ -30,15 +30,18 @@ apiRouter.post('/match/update/:mID', (req, res) => {
     res.sendStatus(204);
 });
 
-apiRouter.post('/match/schedule/:mID', (req, res) => {
+apiRouter.post('/match/schedule/:mID', async (req, res) => {
     if (!req.session.isAdmin) {
         res.sendStatus(403);
         return;
     }
     const match = getMatch(req.params.mID);
+    const shouldAnnounce = DiscordConnector.shouldAnnounceSchedule(match, Object.assign({}, match, req.body));
     Object.assign(match, req.body);
     setMatch(req.params.mID as string, match);
-    // Discord scheduling dispatch
+    if (shouldAnnounce) {
+        await DiscordConnector.getInstance().sendSchedulingMessage(match);
+    }
     res.sendStatus(204);
 });
 
