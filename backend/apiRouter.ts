@@ -2,6 +2,7 @@ import { Router } from 'express';
 import {createMatch, getMatch, sessionStore, setMatch} from "./database";
 import {GameModeDetails, GameModes, IronmanRound} from "./model";
 import debug from 'debug';
+import DiscordConnector from './discordConnector';
 
 const dbg = debug("ironman:api");
 
@@ -41,7 +42,7 @@ apiRouter.post('/match/schedule/:mID', (req, res) => {
     res.sendStatus(204);
 });
 
-apiRouter.get('/match/admin/:mID', (req, res) => {
+apiRouter.get('/match/admin/:mID', async (req, res) => {
     if (!req.session.isAdmin) {
         res.sendStatus(403);
         return;
@@ -103,7 +104,7 @@ apiRouter.post('/match/admin/:mID/:event', async (req, res) => {
     }
 });
 
-apiRouter.get('/match/player/:mID/:player', (req, res) => {
+apiRouter.get('/match/player/:mID/:player', async (req, res) => {
     const match = getMatch(req.params.mID as string);
     if (!match) {
         res.sendStatus(404);
@@ -115,8 +116,12 @@ apiRouter.get('/match/player/:mID/:player', (req, res) => {
         return;
     }
     const roundIndex = match.rounds.length - 1;
+    const players = [] as string[];
+    for (const player of match.players) {
+        players.push(await DiscordConnector.getInstance().resolvePlayer(player));
+    }
     const result: {players:string[];scores:number[];round?:GameModeDetails;currentGameMode?:string;countdown?:number;totalMatchTime?:number;roundLive:boolean;roundTitle?:string} = {
-        players: match.players,
+        players,
         scores: match.scores,
         roundLive: false
     };

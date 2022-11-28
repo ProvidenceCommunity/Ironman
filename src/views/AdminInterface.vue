@@ -29,8 +29,8 @@
             <v-expansion-panel-title>Player links</v-expansion-panel-title>
             <v-expansion-panel-text>
               <ul>
-                <li v-for="player of matchInfo.players" :key="player">
-                  <b>{{player}}:</b> <a :href="getPlayerLink(player)">{{ getPlayerLink(player) }}</a>
+                <li v-for="(player, index) of matchInfo.players" :key="player">
+                  <b>{{sanetizedPlayers[index]}}:</b> <a :href="getPlayerLink(player)">{{ getPlayerLink(player) }}</a>
                 </li>
                 <li>
                   <b>Shoutcast-Overlay:</b> <a :href="getOverlayLink()">{{ getOverlayLink() }}</a> (1300px x 600px)
@@ -49,7 +49,7 @@
             <v-expansion-panel-title>Player scores</v-expansion-panel-title>
             <v-expansion-panel-text>
               <ul>
-                <li v-for="(player, index) of players" :key="index">
+                <li v-for="(player, index) of sanetizedPlayers" :key="index">
                   <v-text-field v-model="playerScores[index]" hide-details="true" density="compact" :label="player" @change="updateScores" type="number"></v-text-field>
                 </li>
               </ul>
@@ -94,11 +94,11 @@
       <v-col cols="10">
 
         <h1>{{currentRound.title}}</h1>
-        <DoneButtonAdmin v-if="currentRound.mode === 'simpleDoneButton'" :players="matchInfo.players" :details="currentRound.additionalDetails" :matchId="this.matchId" @error="onError"></DoneButtonAdmin>
-        <RouletteSpinAdmin v-if="currentRound.mode === 'rouletteSpin'" :players="matchInfo.players" :details="currentRound.additionalDetails" :matchId="this.matchId" @error="onError"></RouletteSpinAdmin>
-        <BingoAdmin v-if="currentRound.mode === 'bingo'" :players="matchInfo.players" :details="currentRound.additionalDetails" :matchId="this.matchId" @error="onError"></BingoAdmin>
+        <DoneButtonAdmin v-if="currentRound.mode === 'simpleDoneButton'" :players="sanetizedPlayers" :details="currentRound.additionalDetails" :matchId="this.matchId" @error="onError"></DoneButtonAdmin>
+        <RouletteSpinAdmin v-if="currentRound.mode === 'rouletteSpin'" :players="sanetizedPlayers" :details="currentRound.additionalDetails" :matchId="this.matchId" @error="onError"></RouletteSpinAdmin>
+        <BingoAdmin v-if="currentRound.mode === 'bingo'" :players="sanetizedPlayers" :details="currentRound.additionalDetails" :matchId="this.matchId" @error="onError"></BingoAdmin>
         <TimerAdmin v-if="currentRound.mode === 'timer'" :details="currentRound.additionalDetails"></TimerAdmin>
-        <TwoSpinsAdmin v-if="currentRound.mode === 'twoSpins'" :players="matchInfo.players" :details="currentRound.additionalDetails" :matchId="this.matchId" @error="onError"></TwoSpinsAdmin>
+        <TwoSpinsAdmin v-if="currentRound.mode === 'twoSpins'" :players="sanetizedPlayers" :details="currentRound.additionalDetails" :matchId="this.matchId" @error="onError"></TwoSpinsAdmin>
 
       </v-col>
       <v-spacer></v-spacer>
@@ -146,7 +146,8 @@ export default defineComponent({
       endRound: undefined,
       error: "",
       errorShown: false,
-      connectionIssues: false
+      connectionIssues: false,
+      discordPlayersMap: {} as { [key: string]: string }
     }
   },
   async created() {
@@ -159,20 +160,21 @@ export default defineComponent({
     }
     this.refreshTask = setInterval(this.updateData, 1000);
     await this.updateData();
+    const users = await get('/data/users');
+    this.discordPlayersMap = users.data;
   },
   beforeUnmount() {
     clearInterval(this.refreshTask);
   },
   methods: {
     getPlayerLink(playerName: string): string {
-      return `${window.location.origin}/client/${this.matchId}/${playerName}`
+      return `${window.location.origin}/client/${this.matchId}/${encodeURIComponent(playerName)}`
     },
     getOverlayLink(): string {
       return `${window.location.origin}/overlay/${this.matchId}`
     },
     getEventOverlayLink(): string {
       return `${window.location.origin}/tpc-overlay/${this.matchId}`
-      // return "";
     },
     async doneAddingRound(values: any, title: string) {
       if (values) {
@@ -282,7 +284,7 @@ export default defineComponent({
     onError(error: string) {
       this.error = error;
       this.errorShown = true;
-    }
+    },
   },
   watch: {
     gameModeToAdd(newGM) {
@@ -318,10 +320,15 @@ export default defineComponent({
       return { mode: "" };
     },
     endRoundItems(): unknown[] {
-      let arr = this.players.map((p, idx) => { return {title: `End round and increase score of ${p} by 1`, value: idx} });
+      let arr = this.sanetizedPlayers.map((p, idx) => { return {title: `End round and increase score of ${p} by 1`, value: idx} });
       arr.push({title: "End round and increase score of every player by 0.5", value: -2});
       arr.push({title: "End round and don't increase scores", value: -1});
       return arr;
+    },
+    sanetizedPlayers(): string[] {
+      return this.players.map(player => {
+        return this.discordPlayersMap[player] || player;
+      });
     }
   }
 })

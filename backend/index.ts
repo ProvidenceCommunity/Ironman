@@ -1,5 +1,5 @@
 import express from 'express';
-import {loadDatabase, writeDatabase} from "./database";
+import {getConfig, loadDatabase, writeDatabase} from "./database";
 import {apiRouter} from "./apiRouter";
 import {authRouter} from "./authenticator";
 import {dataRouter} from "./dataRouter";
@@ -7,11 +7,13 @@ import * as bodyParser from "body-parser";
 import cors from 'cors';
 import history from 'connect-history-api-fallback';
 import 'dotenv/config';
+import DiscordConnector from './discordConnector';
 
 async function main() {
     const app = express();
 
     await loadDatabase();
+    await DiscordConnector.getInstance().initialize(getConfig().discord.botToken, getConfig().discord.guildId, getConfig().discord.channelId);
 
     setInterval(writeDatabase, 1000 * 60 * 15); // 15 minute interval to save db
 

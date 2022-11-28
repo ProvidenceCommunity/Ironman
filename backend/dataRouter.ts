@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import {getConfig, getMatches, sessionStore} from "./database";
+import DiscordConnector from './discordConnector';
 import {GameModes} from "./model";
 
 export const dataRouter = Router();
@@ -48,4 +49,12 @@ dataRouter.get('/schema', (req, res) => {
         return;
     }
     res.json(getConfig().matchSchema);
+})
+
+dataRouter.get('/users', async (req, res) => {
+    if (!req.session.isAdmin) {
+        res.sendStatus(403);
+        return;
+    }
+    res.json(await DiscordConnector.getInstance().getAvailableUsers());
 })

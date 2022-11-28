@@ -3,8 +3,8 @@
     <v-card width="500px" style="align-self: center">
       <v-card-title>Create match</v-card-title>
       <v-card-text>
-        Players: (One per line)
-        <v-textarea v-model="players"></v-textarea>
+        Players: <v-btn @click="players.push('')">+</v-btn><v-btn @click="players.pop()">-</v-btn>
+        <v-combobox v-for="(player, index) in players" :key="index" :items="Object.values(discordPlayersMap)" v-model="players[index]"></v-combobox>
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
@@ -45,7 +45,7 @@
               <tbody>
                 <tr v-for="match of displayedMatches" :key="match.id">
                   <td>{{ getTimestamp(match.timestamp) }}</td>
-                  <td>{{ match.players.join(", ") }}</td>
+                  <td>{{ getPlayers(match.players) }}</td>
                   <td v-for="column in schemaHeaders" :key="column.name">{{ match.schedulingData[column.name] }}</td>
                   <td>
                     <v-btn fab x-small color="primary" @click="editMatch(match.id)"><v-icon>mdi-pencil</v-icon></v-btn>
@@ -78,7 +78,8 @@ export default defineComponent({
       matches: [],
       showFinished: false,
       creationDialog: false,
-      players: "",
+      players: [],
+      discordPlayersMap: { roles: {}, members: {} },
       matchFields: [],
 
       currentlyScheduling: null
@@ -92,6 +93,8 @@ export default defineComponent({
     }
     this.username = userInfo.data.username;
     this.avatar = userInfo.data.avatar;
+    const users = await get('/data/users');
+    this.discordPlayersMap = users.data;
     const matchSchema = await get('/data/schema');
     if (matchSchema.status !== 200) {
       await this.$router.push("/");
@@ -107,11 +110,17 @@ export default defineComponent({
     },
     async createMatch() {
       this.creationDialog = false;
-      await post("/api/match/create", {players: this.players.split("\n")});
+      await post("/api/match/create", {players: this.players.map(player => {
+        const discordIndex = Object.values(this.discordPlayersMap).findIndex(e => { return e === player });
+        if (discordIndex > 0) {
+          return Object.keys(this.discordPlayersMap)[discordIndex];
+        }
+        return player;
+      })});
       await this.updateList();
     },
     openMatchCreator() {
-      this.players = "";
+      this.players = [];
       this.creationDialog = true;
     },
     editMatch(matchId) {
@@ -132,6 +141,11 @@ export default defineComponent({
       } else {
         return DateTime.fromMillis(ts).toLocaleString(DateTime.DATETIME_SHORT);
       }
+    },
+    getPlayers(players) {
+      return players.map(player => {
+        return this.discordPlayersMap[player] || player;
+      }).join(", ");
     }
   },
   computed: {
