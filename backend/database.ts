@@ -35,7 +35,9 @@ export async function loadDatabase(): Promise<void> {
         dbg("Failed to load database, assuming empty");
         matches = {};
     }
+}
 
+export async function loadConfig(): Promise<void> {
     try {
         const file = await readFile("./config.json", "utf8");
         config = JSON.parse(file);

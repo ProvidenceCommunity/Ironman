@@ -117,7 +117,7 @@ export default class DiscordConnector {
         const channel = await this.discord.channels.fetch(this.channelId) as TextChannel;
         const embed = new EmbedBuilder();
         const players = [] as string[];
-        const timestamp = match.timestamp > 0 ? `<t:${match.timestamp}:F>\n<t:${match.timestamp}:R>` : "to be scheduled";
+        const timestamp = match.timestamp > 0 ? `<t:${match.timestamp / 1000}:F>\n<t:${match.timestamp / 1000}:R>` : "to be scheduled";
         for (const player of match.players) {
             players.push(await this.getPing(player));
         }
@@ -127,11 +127,15 @@ export default class DiscordConnector {
             { name: "Time", value: timestamp }
         );
         for (const key in match.schedulingData) {
-            if (getConfig().matchSchema.filter(e => {return e.name === key})[0]?.announceInDiscord) {
+            const configField = getConfig().matchSchema.filter(e => {return e.name === key})[0];
+            if (!configField) {
+                continue;
+            }
+            if (configField.announceInDiscord) {
                 if (typeof match.schedulingData[key] === "object") {
-                    embed.addFields({ name: key, value: (match.schedulingData[key] as string[]).join("\n") });
+                    embed.addFields({ name: configField.title, value: (match.schedulingData[key] as string[]).join("\n") });
                 } else {
-                    embed.addFields({ name: key, value: match.schedulingData[key] as string });
+                    embed.addFields({ name: configField.title, value: match.schedulingData[key] as string });
                 }
             }
         }
