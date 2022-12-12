@@ -9,6 +9,12 @@ interface PlayerEventPayload {
     tile: number;
 }
 
+enum ClaimStatus {
+    UNCLAIMED,
+    CLAIMED,
+    HALF_CLAIMED,
+}
+
 export class BingoGameMode implements GameMode {
     getGeneratorOptions(): GeneratorOption[] {
         return [
@@ -22,15 +28,20 @@ export class BingoGameMode implements GameMode {
                 id: "card",
                 type: "string",
                 caption: "Bingo card"
+            },
+            {
+                id: "halfClaim",
+                type: "boolean",
+                caption: "Enable half-claimed tiles"
             }
         ];
     }
 
     generate(options: GeneratorOptions, players: string[]): GameModeDetails {
-        const claimedTiles = [];
+        const claimedTiles = [] as ClaimStatus[][];
 
         for (let i = 0; i < 25; i++) {
-            claimedTiles.push(players.map(() => { return false }));
+            claimedTiles.push(players.map(() => { return ClaimStatus.UNCLAIMED }));
         }
 
         return {
@@ -38,7 +49,8 @@ export class BingoGameMode implements GameMode {
             mode: options['mode'],
             claimedTiles,
             doneStatus: players.map(() => { return 0 }),
-            lastDone: players.map(() => { return -1 })
+            lastDone: players.map(() => { return -1 }),
+            halfClaimEnabled: options['halfClaim'] as boolean
         };
     }
 
@@ -52,9 +64,9 @@ export class BingoGameMode implements GameMode {
         }
         if (event === "newCard") {
             currentState['card'] = this.parseCard(payload.card as string);
-            const claimedTiles = [];
+            const claimedTiles = [] as ClaimStatus[][];
             for (let i = 0; i < 25; i++) {
-                claimedTiles.push((currentState['claimedTiles'] as boolean[][])[0].map(() => { return false }));
+                claimedTiles.push((currentState['claimedTiles'] as ClaimStatus[][])[i].map(() => { return ClaimStatus.UNCLAIMED }));
             }
             currentState['claimedTiles'] = claimedTiles;
         }
@@ -68,13 +80,34 @@ export class BingoGameMode implements GameMode {
         }
         if (event === "tile") {
             if (currentState['mode'] === "Lockout") {
-                if ((currentState['claimedTiles'] as boolean[][])[payload.tile].reduce((prev, curr) => { return prev || curr})) {
-                    if (!(currentState['claimedTiles'] as boolean[][])[payload.tile][player]) {
-                        return currentState;
+                // Check if another player has already claimed the time
+                let canClaim = true;
+                (currentState['claimedTiles'] as ClaimStatus[][])[payload.tile].forEach((status, idx) => {
+                    if (status !== ClaimStatus.UNCLAIMED && idx != player) {
+                        canClaim = false;
                     }
+                });
+                if (!canClaim) {
+                    return currentState;
                 }
             }
-            (currentState['claimedTiles'] as boolean[][])[payload.tile][player] = !(currentState['claimedTiles'] as boolean[][])[payload.tile][player];
+            if ((currentState['claimedTiles'] as ClaimStatus[][])[payload.tile][player] == ClaimStatus.UNCLAIMED || (currentState['claimedTiles'] as ClaimStatus[][])[payload.tile][player] == ClaimStatus.HALF_CLAIMED) {
+                (currentState['claimedTiles'] as ClaimStatus[][])[payload.tile][player] = ClaimStatus.CLAIMED;
+            } else if ((currentState['claimedTiles'] as ClaimStatus[][])[payload.tile][player] == ClaimStatus.CLAIMED) {
+                (currentState['claimedTiles'] as ClaimStatus[][])[payload.tile][player] = ClaimStatus.UNCLAIMED;
+            }
+        }
+        if (event === "fullReset") {
+            (currentState['claimedTiles'] as ClaimStatus[][]).map((e) => {
+                e[player] = ClaimStatus.UNCLAIMED
+            });
+        }
+        if (event === "halfReset" && currentState['halfClaimEnabled']) {
+            (currentState['claimedTiles'] as ClaimStatus[][]).map((e) => {
+                if (e[player] === ClaimStatus.CLAIMED) {
+                    e[player] = ClaimStatus.HALF_CLAIMED;
+                }
+            });
         }
         return currentState;
     }
@@ -86,6 +119,7 @@ export class BingoGameMode implements GameMode {
             claimedTiles: currentState['claimedTiles'],
             doneStatus: (currentState['doneStatus'] as number[])[player],
             lastDone: (currentState['lastDone'] as number[])[player],
+            halfClaimEnabled: currentState['halfClaimEnabled']
         };
     }
 

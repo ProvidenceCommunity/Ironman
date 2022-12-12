@@ -2,6 +2,8 @@
   <table>
     <tr v-for="y in 5" :key="y">
       <td v-for="x in 5" :key="x" @click="click(x,y)" :style="`height: ${tileHeight || '88' }px;`">
+        <div :class="getHalfClaimClass('orange')" v-if="isTileHalfClaimed(x,y,0)"></div>
+        <div :class="getHalfClaimClass('blue')" v-if="isTileHalfClaimed(x,y,1)"></div>
         <div :class="getClaimClass('orange')" v-if="isTileClaimed(x,y,0)"></div>
         <div :class="getClaimClass('blue')" v-if="isTileClaimed(x,y,1)"></div>
         <div class="textField">{{ getTile(x,y) }}</div>
@@ -59,6 +61,18 @@ td {
   background-color: #37A1DE;
 }
 
+.orangeHCSquare {
+  border-width: 4px;
+  border-style: solid;
+  border-color: #FF9C12;
+}
+
+.blueHCSquare {
+  border-width: 4px;
+  border-style: solid;
+  border-color: #409CFF;
+}
+
 .coloredSquare {
   width: 100%;
   height: 100%;
@@ -93,13 +107,23 @@ export default defineComponent({
       return this.card[(y - 1) * 5 + x - 1];
     },
     isTileClaimed(x: number, y: number, player: number): boolean {
-      return this.claimedTiles[(y - 1) * 5 + x - 1][player];
+      return this.claimedTiles[(y - 1) * 5 + x - 1][player] == 1;
+    },
+    isTileHalfClaimed(x: number, y: number, player: number): boolean {
+      return this.claimedTiles[(y - 1) * 5 + x - 1][player] == 2;
     },
     getClaimClass(color: string): string {
       if (this.mode === "Lockout") {
         return "coloredSquare " + color + "Square";
       } else {
         return "coloredSquare " + color + "Square " + color + "SquareNonLock";
+      }
+    },
+    getHalfClaimClass(color: string): string {
+      if (this.mode === "Lockout") {
+        return "coloredSquare " + color + "HCSquare";
+      } else {
+        return "coloredSquare " + color + "HCSquare " + color + "SquareNonLock";
       }
     },
     click(x: number, y: number) {
