@@ -14,6 +14,8 @@
   <v-text-field v-model="newCard" label="Card"></v-text-field><v-btn @click="sendNewCard">New card</v-btn>
   <BingoCard :card="this.details.card" :claimedTiles="this.details.claimedTiles" :mode="this.details.mode" @click="toggleTile"></BingoCard>
   <v-select :items="players" v-model="deselectPlayer" label="Toggle tiles for player"></v-select>
+  <v-btn color="red" @click="fullReset">Full-Reset for player</v-btn>
+  <v-btn @click="halfReset" v-if="halfClaimEnabled">Half-Reset for player</v-btn>
 </template>
 
 <script lang="ts">
@@ -72,6 +74,23 @@ export default defineComponent({
       if (resp.status !== 204) {
         this.$emit("error", "An error occurred while trying to toggle the selected tile.");
       }
+    },
+    async fullReset() {
+      const resp = await post(`/api/match/player/${this.matchId}/${this.deselectPlayer}/fullReset`, {});
+      if (resp.status !== 204) {
+        this.$emit("error", "An error occurred while trying to reset the player.");
+      }
+    },
+    async halfReset() {
+      const resp = await post(`/api/match/player/${this.matchId}/${this.deselectPlayer}/halfReset`, {});
+      if (resp.status !== 204) {
+        this.$emit("error", "An error occurred while trying to half-reset the player.");
+      }
+    }
+  },
+  computed: {
+    halfClaimEnabled() {
+      return this.details.halfClaimEnabled || false;
     }
   }
 })

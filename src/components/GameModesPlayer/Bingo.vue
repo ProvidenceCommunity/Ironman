@@ -1,5 +1,7 @@
 <template>
   <BingoCard :card="this.details.card" :claimedTiles="this.details.claimedTiles" :mode="this.details.mode" @click="clickTile"></BingoCard>
+  <v-btn @click="fullReset">Reset all tiles</v-btn>
+  <v-btn @click="halfReset" v-if="halfClaimEnabled">Set all tiles to half-claimed</v-btn>
   <h5>Please click the done button upon finishing!</h5>
   <v-btn @click="done" x-large>{{ buttonText }}</v-btn>
 </template>
@@ -51,6 +53,18 @@ export default defineComponent({
       if (resp.status !== 204) {
         this.$emit("error", "An error occurred while toggling a tile. Please inform your match admin via discord.");
       }
+    },
+    async fullReset() {
+      const resp = await post(`/api/match/player/${this.matchId}/${this.player}/fullReset`, {});
+      if (resp.status !== 204) {
+        this.$emit("error", "An error occurred while resetting all tiles. Please inform your match admin via discord.");
+      }
+    },
+    async halfReset() {
+      const resp = await post(`/api/match/player/${this.matchId}/${this.player}/halfReset`, {});
+      if (resp.status !== 204) {
+        this.$emit("error", "An error occurred while setting all tiles to half-claimed. Please inform your match admin via discord.");
+      }
     }
   },
   computed: {
@@ -60,6 +74,9 @@ export default defineComponent({
       if (this.details.doneStatus === 1) return "Awaiting verification...";
       if (this.details.doneStatus === 2) return "Run verified!";
       return "DONE";
+    },
+    halfClaimEnabled() {
+      return this.details.halfClaimEnabled || false;
     }
   }
 })
