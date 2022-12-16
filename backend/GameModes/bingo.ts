@@ -33,6 +33,11 @@ export class BingoGameMode implements GameMode {
                 id: "halfClaim",
                 type: "boolean",
                 caption: "Enable half-claimed tiles"
+            },
+            {
+                id: "hideClaims",
+                type: "boolean",
+                caption: "Hide claimed tiles (recommended for 3+ Players)"
             }
         ];
     }
@@ -50,7 +55,8 @@ export class BingoGameMode implements GameMode {
             claimedTiles,
             doneStatus: players.map(() => { return 0 }),
             lastDone: players.map(() => { return -1 }),
-            halfClaimEnabled: options['halfClaim'] as boolean
+            halfClaimEnabled: options['halfClaim'] as boolean,
+            hideClaims: options['hideClaims'] as boolean
         };
     }
 
@@ -113,14 +119,22 @@ export class BingoGameMode implements GameMode {
     }
 
     getPlayerDetails(player: number, currentState: GameModeDetails): GameModeDetails {
-        return {
+        const data = {
             card: currentState['card'],
             mode: currentState['mode'],
-            claimedTiles: currentState['claimedTiles'],
+            claimedTiles: currentState['claimedTiles'] as number[][],
             doneStatus: (currentState['doneStatus'] as number[])[player],
             lastDone: (currentState['lastDone'] as number[])[player],
-            halfClaimEnabled: currentState['halfClaimEnabled']
+            halfClaimEnabled: currentState['halfClaimEnabled'],
+            hideClaims: currentState['hideClaims']
         };
+
+        if (currentState['hideClaims']) {
+            data.mode = "Lockout";
+            data.claimedTiles = data.claimedTiles.map(e => { return [e[player]] });
+        }
+
+        return data;
     }
 
     parseCard(card: string): string[] {

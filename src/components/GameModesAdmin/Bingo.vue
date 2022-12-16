@@ -12,10 +12,17 @@
     </v-list-item>
   </v-list>
   <v-text-field v-model="newCard" label="Card"></v-text-field><v-btn @click="sendNewCard">New card</v-btn>
-  <BingoCard :card="this.details.card" :claimedTiles="this.details.claimedTiles" :mode="this.details.mode" @click="toggleTile"></BingoCard>
+  <BingoCard :card="this.details.card" :claimedTiles="claimedTiles" :mode="this.details.mode" @click="toggleTile"></BingoCard>
   <v-select :items="players" v-model="deselectPlayer" label="Toggle tiles for player"></v-select>
   <v-btn color="red" @click="fullReset">Full-Reset for player</v-btn>
   <v-btn @click="halfReset" v-if="halfClaimEnabled">Half-Reset for player</v-btn>
+  <div v-if="this.details.hideClaims">
+    <ol>
+      <li v-for="tile, idx in this.details.card" :key="idx">
+        {{ tile }}: {{ this.players.filter((e, pidx) => { return this.details.claimedTiles[idx][pidx] == 1 }).join(", ") }}
+      </li>
+    </ol>
+  </div>
 </template>
 
 <script lang="ts">
@@ -91,6 +98,17 @@ export default defineComponent({
   computed: {
     halfClaimEnabled() {
       return this.details.halfClaimEnabled || false;
+    },
+    claimedTiles() {
+      if(this.details.hideClaims) {
+        const emptyBoard = [] as number[][];
+        for (let i = 0; i < 25; i++) {
+            emptyBoard.push([0,0]);
+        }
+        return emptyBoard;
+      } else {
+        return this.details.claimedTiles;
+      }
     }
   }
 })
