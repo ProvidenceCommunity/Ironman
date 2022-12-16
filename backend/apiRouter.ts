@@ -1,7 +1,8 @@
 import { Router } from 'express';
 import {createMatch, getMatch, sessionStore, setMatch} from "./database";
-import {GameModeDetails, GameModes, IronmanRound, IronmanScoringType} from "./model";
+import {GameModeDetails, GameModes, IronmanRound} from "./model";
 import debug from 'debug';
+import DiscordConnector from './discordConnector';
 
 const dbg = debug("ironman:api");
 
@@ -13,7 +14,7 @@ apiRouter.post('/match/create', (req, res) => {
         res.sendStatus(403);
         return;
     }
-    const uuid = createMatch(req.body.players, req.body.scoringType);
+    const uuid = createMatch(req.body.players);
     dbg("Creating match %s", uuid);
     res.send(uuid);
 });
@@ -23,11 +24,28 @@ apiRouter.post('/match/update/:mID', (req, res) => {
         res.sendStatus(403);
         return;
     }
-    setMatch(req.params.mID as string, req.body);
+    const match = getMatch(req.params.mID);
+    Object.assign(match, req.body);
+    setMatch(req.params.mID as string, match);
     res.sendStatus(204);
 });
 
-apiRouter.get('/match/admin/:mID', (req, res) => {
+apiRouter.post('/match/schedule/:mID', async (req, res) => {
+    if (!req.session.isAdmin) {
+        res.sendStatus(403);
+        return;
+    }
+    const match = getMatch(req.params.mID);
+    const shouldAnnounce = DiscordConnector.shouldAnnounceSchedule(match, Object.assign({}, match, req.body));
+    Object.assign(match, req.body);
+    setMatch(req.params.mID as string, match);
+    if (shouldAnnounce) {
+        await DiscordConnector.getInstance().sendSchedulingMessage(match);
+    }
+    res.sendStatus(204);
+});
+
+apiRouter.get('/match/admin/:mID', async (req, res) => {
     if (!req.session.isAdmin) {
         res.sendStatus(403);
         return;
@@ -89,7 +107,7 @@ apiRouter.post('/match/admin/:mID/:event', async (req, res) => {
     }
 });
 
-apiRouter.get('/match/player/:mID/:player', (req, res) => {
+apiRouter.get('/match/player/:mID/:player', async (req, res) => {
     const match = getMatch(req.params.mID as string);
     if (!match) {
         res.sendStatus(404);
@@ -101,10 +119,13 @@ apiRouter.get('/match/player/:mID/:player', (req, res) => {
         return;
     }
     const roundIndex = match.rounds.length - 1;
-    const result: {players:string[];scores:number[];scoringType:IronmanScoringType;round?:GameModeDetails;currentGameMode?:string;countdown?:number;totalMatchTime?:number;roundLive:boolean;roundTitle?:string} = {
-        players: match.players,
+    const players = [] as string[];
+    for (const player of match.players) {
+        players.push(await DiscordConnector.getInstance().resolvePlayer(player));
+    }
+    const result: {players:string[];scores:number[];round?:GameModeDetails;currentGameMode?:string;countdown?:number;totalMatchTime?:number;roundLive:boolean;roundTitle?:string} = {
+        players,
         scores: match.scores,
-        scoringType: match.scoringType,
         roundLive: false
     };
     if (roundIndex >= 0) {
@@ -152,10 +173,9 @@ apiRouter.get('/match/overlay/:mID', (req, res) => {
         return;
     }
     const roundIndex = match.rounds.length - 1;
-    const result: {players:string[];scores:number[];scoringType:IronmanScoringType;round?:IronmanRound;countdown?:number;totalMatchTime?:number;roundLive:boolean} = {
+    const result: {players:string[];scores:number[];round?:IronmanRound;countdown?:number;totalMatchTime?:number;roundLive:boolean} = {
         players: match.players,
         scores: match.scores,
-        scoringType: match.scoringType,
         roundLive: false
     };
     if (roundIndex >= 0) {

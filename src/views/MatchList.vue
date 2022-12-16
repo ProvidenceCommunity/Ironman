@@ -1,10 +1,10 @@
 <template>
   <v-dialog v-model="creationDialog">
-    <v-card width="500px">
+    <v-card width="500px" style="align-self: center">
       <v-card-title>Create match</v-card-title>
       <v-card-text>
-        Players: (One per line)
-        <v-textarea v-model="players"></v-textarea>
+        Players: <v-btn @click="players.push('')">+</v-btn><v-btn @click="players.pop()">-</v-btn>
+        <v-combobox v-for="(player, index) in players" :key="index" :items="Object.values(discordPlayersMap)" v-model="players[index]"></v-combobox>
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
@@ -12,14 +12,14 @@
       </v-card-actions>
     </v-card>
   </v-dialog>
+  <MatchEditDialog :showDialog="currentlyScheduling !== null" :match="currentlyScheduling" :schema="matchFields" @cancel="cancelEdit" @save="saveEdit"></MatchEditDialog>
   <v-container fluid>
     <v-row>
       <v-spacer></v-spacer>
       <v-col cols="2">
         <v-card>
-          <v-list-item>
+          <v-list-item :prepend-avatar="avatar">
             <v-list-item-title>Logged in as<br>{{username}}</v-list-item-title>
-            <v-list-item-avatar size="64"><img :src="avatar"></v-list-item-avatar>
           </v-list-item>
         </v-card>
       </v-col>
@@ -36,19 +36,22 @@
             <v-table>
               <thead>
                 <tr>
+                  <th>Timestamp</th>
                   <th>Players</th>
-                  <th>Finished?</th>
+                  <th v-for="column in schemaHeaders" :key="column.name">{{ column.title }}</th>
                   <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
-                <template v-for="match in matches" :key="match.id">
-                  <tr v-if="!match.finished || showFinished">
-                    <td>{{ match.players.join(", ") }}</td>
-                    <td>{{ match.finished }}</td>
-                    <td><a :href="'/admin/' + match.id">Administrate</a></td>
-                  </tr>
-                </template>
+                <tr v-for="match of displayedMatches" :key="match.id">
+                  <td>{{ getTimestamp(match.timestamp) }}</td>
+                  <td>{{ getPlayers(match.players) }}</td>
+                  <td v-for="column in schemaHeaders" :key="column.name">{{ match.schedulingData[column.name] }}</td>
+                  <td>
+                    <v-btn fab x-small color="primary" @click="editMatch(match.id)"><v-icon>mdi-pencil</v-icon></v-btn>
+                    <v-btn fab x-small color="green" :href="'/admin/' + match.id"><v-icon>mdi-arrow-right-circle</v-icon></v-btn>
+                  </td>
+                </tr>
               </tbody>
             </v-table>
           </v-card-text>
@@ -59,12 +62,15 @@
   </v-container>
 </template>
 
-<script lang="ts">
+<script>
 import { defineComponent } from "vue";
 import { get, post } from '@/http';
+import { DateTime } from 'luxon';
+import MatchEditDialog from "@/components/MatchEditDialog.vue";
 
 export default defineComponent({
   name: 'MatchList',
+  components: { MatchEditDialog },
   data() {
     return {
       username: '',
@@ -72,7 +78,11 @@ export default defineComponent({
       matches: [],
       showFinished: false,
       creationDialog: false,
-      players: ""
+      players: [],
+      discordPlayersMap: { roles: {}, members: {} },
+      matchFields: [],
+
+      currentlyScheduling: null
     }
   },
   async created() {
@@ -83,6 +93,14 @@ export default defineComponent({
     }
     this.username = userInfo.data.username;
     this.avatar = userInfo.data.avatar;
+    const users = await get('/data/users');
+    this.discordPlayersMap = users.data;
+    const matchSchema = await get('/data/schema');
+    if (matchSchema.status !== 200) {
+      await this.$router.push("/");
+      return;
+    }
+    this.matchFields = matchSchema.data;
     await this.updateList();
   },
   methods: {
@@ -92,12 +110,50 @@ export default defineComponent({
     },
     async createMatch() {
       this.creationDialog = false;
-      await post("/api/match/create", {players: this.players.split("\n"), scoringType: 0});
+      await post("/api/match/create", {players: this.players.map(player => {
+        const discordIndex = Object.values(this.discordPlayersMap).findIndex(e => { return e === player });
+        if (discordIndex > 0) {
+          return Object.keys(this.discordPlayersMap)[discordIndex];
+        }
+        return player;
+      })});
       await this.updateList();
     },
     openMatchCreator() {
-      this.players = "";
+      this.players = [];
       this.creationDialog = true;
+    },
+    editMatch(matchId) {
+      this.currentlyScheduling = this.matches.filter(e => {return e.id === matchId})[0];
+    },
+    async saveEdit(matchId, data) {
+      console.log(data);
+      await post("/api/match/schedule/" + matchId, data);
+      await this.updateList();
+      this.currentlyScheduling = null;
+    },
+    cancelEdit() {
+      this.currentlyScheduling = null;
+    },
+    getTimestamp(ts) {
+      if (ts <= 0) {
+        return "Not scheduled";
+      } else {
+        return DateTime.fromMillis(ts).toLocaleString(DateTime.DATETIME_SHORT);
+      }
+    },
+    getPlayers(players) {
+      return players.map(player => {
+        return this.discordPlayersMap[player] || player;
+      }).join(", ");
+    }
+  },
+  computed: {
+    schemaHeaders() {
+      return this.matchFields.filter(e => e.displayInOverview);
+    },
+    displayedMatches() {
+      return this.matches.filter(e => { return !e.finished || this.showFinished });
     }
   }
 })

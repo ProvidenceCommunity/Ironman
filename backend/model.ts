@@ -4,24 +4,31 @@ import { BingoGameMode } from "./GameModes/bingo";
 import {TimerGameMode} from "./GameModes/timer";
 import { TwoSpinsGameMode } from "./GameModes/twoSpins";
 
+export interface MatchField {
+    type: "string" | "select" | "list";
+    name: string;
+    title: string;
+    displayInOverview: boolean;
+    announceInDiscord: boolean;
+    options?: string[] | MatchField;
+}
+
 export interface IronmanMatch {
     id: string;
     players: string[];
-    scoringType: IronmanScoringType;
     scores: number[];
     finished?: boolean;
     rounds: IronmanRound[];
+    schedulingData: { [key: string]: string | string[] };
+    timestamp: number;
 }
 
 export interface SimplifiedIronmanMatch {
     id: string;
     players: string[];
     finished?: boolean;
-}
-
-export enum IronmanScoringType {
-    PLAYER,
-    TEAMS
+    schedulingData: { [key: string]: string | string[] };
+    timestamp: number;
 }
 
 export interface IronmanRound {
