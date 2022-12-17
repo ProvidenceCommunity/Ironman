@@ -4,7 +4,7 @@
       <v-card-title>Create match</v-card-title>
       <v-card-text>
         Players: <v-btn @click="players.push('')">+</v-btn><v-btn @click="players.pop()">-</v-btn>
-        <v-combobox v-for="(player, index) in players" :key="index" :items="Object.values(discordPlayersMap)" v-model="players[index]"></v-combobox>
+        <v-combobox v-for="(player, index) in players" :key="index" :items="getSelectPlayers(players[index])" v-model="players[index]"></v-combobox>
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
@@ -146,6 +146,12 @@ export default defineComponent({
       return players.map(player => {
         return this.discordPlayersMap[player] || player;
       }).join(", ");
+    },
+    getSelectPlayers(val) {
+      if (val.length < 2 || Object.values(this.discordPlayersMap).includes(val)) {
+        return []
+      }
+      return Object.values(this.discordPlayersMap)
     }
   },
   computed: {

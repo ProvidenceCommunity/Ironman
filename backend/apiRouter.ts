@@ -166,15 +166,19 @@ apiRouter.post('/match/player/:mID/:player/:event', (req, res) => {
     }
 });
 
-apiRouter.get('/match/overlay/:mID', (req, res) => {
+apiRouter.get('/match/overlay/:mID', async (req, res) => {
     const match = getMatch(req.params.mID as string);
     if (!match) {
         res.sendStatus(404);
         return;
     }
     const roundIndex = match.rounds.length - 1;
+    const players = [] as string[];
+    for (const player of match.players) {
+        players.push(await (await DiscordConnector.getInstance().resolvePlayer(player)).split("#")[0]);
+    }
     const result: {players:string[];scores:number[];round?:IronmanRound;countdown?:number;totalMatchTime?:number;roundLive:boolean} = {
-        players: match.players,
+        players: players,
         scores: match.scores,
         roundLive: false
     };

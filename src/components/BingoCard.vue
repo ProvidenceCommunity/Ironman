@@ -2,10 +2,10 @@
   <table>
     <tr v-for="y in 5" :key="y">
       <td v-for="x in 5" :key="x" @click="click(x,y)" :style="`height: ${tileHeight || '88' }px;`">
-        <div :class="getHalfClaimClass('orange')" v-if="isTileHalfClaimed(x,y,0)"></div>
-        <div :class="getHalfClaimClass('blue')" v-if="isTileHalfClaimed(x,y,1)"></div>
-        <div :class="getClaimClass('orange')" v-if="isTileClaimed(x,y,0)"></div>
-        <div :class="getClaimClass('blue')" v-if="isTileClaimed(x,y,1)"></div>
+        <div :class="getHalfClaimClass('red')" v-if="isTileHalfClaimed(x,y,0)"></div>
+        <div :class="getHalfClaimClass('green')" v-if="isTileHalfClaimed(x,y,1)"></div>
+        <div :class="getClaimClass('red')" v-if="isTileClaimed(x,y,0)"></div>
+        <div :class="getClaimClass('green')" v-if="isTileClaimed(x,y,1)"></div>
         <div class="textField">{{ getTile(x,y) }}</div>
       </td>
     </tr>
@@ -51,26 +51,26 @@ td {
   font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
 }
 
-.orangeSquare {
-  background-image: linear-gradient(#FF9C12, #F98E1E 60%, #D0800F);
-  background-color: #F98E1E;
+.redSquare {
+  background-image: linear-gradient(#891B26, #4C1117);
+  background-color: #4C1117;
 }
 
-.blueSquare {
-  background-image: linear-gradient(#409CFF, #37A1DE 60%, #088CBD);
-  background-color: #37A1DE;
+.greenSquare {
+  background-image: linear-gradient(#2D802C, #2B5D2A);
+  background-color: #2B5D2A;
 }
 
-.orangeHCSquare {
+.redHCSquare {
   border-width: 4px;
   border-style: solid;
-  border-color: #FF9C12;
+  border-color: #891B26;
 }
 
-.blueHCSquare {
+.greenHCSquare {
   border-width: 4px;
   border-style: solid;
-  border-color: #409CFF;
+  border-color: #2D802C;
 }
 
 .coloredSquare {
@@ -80,12 +80,12 @@ td {
   position: absolute;
 }
 
-.orangeSquareNonLock {
+.redSquareNonLock {
   transform: skew(-45deg) translateX(0%);
   transform-origin: 0px 0px;
 }
 
-.blueSquareNonLock {
+.greenSquareNonLock {
   transform: skew(-45deg) translateX(0%);
   transform-origin: 0px 96px;
 }

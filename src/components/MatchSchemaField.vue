@@ -59,13 +59,10 @@ export default defineComponent({
             this.update();
         },
         updateList(index, element) {
-            console.log(index);
-            console.log(element);
             this.internalValue[index] = element;
             this.update();
         },
         update() {
-            console.log("update");
             this.$emit('change', this.internalValue);
         },
     }
