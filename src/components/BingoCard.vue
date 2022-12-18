@@ -3,9 +3,9 @@
     <tr v-for="y in 5" :key="y">
       <td v-for="x in 5" :key="x" @click="click(x,y)" :style="`height: ${tileHeight || '88' }px;`">
         <div :class="getHalfClaimClass('red')" v-if="isTileHalfClaimed(x,y,0)"></div>
-        <div :class="getHalfClaimClass('green')" v-if="isTileHalfClaimed(x,y,1)"></div>
+        <div :class="getHalfClaimClass('navy')" v-if="isTileHalfClaimed(x,y,1)"></div>
         <div :class="getClaimClass('red')" v-if="isTileClaimed(x,y,0)"></div>
-        <div :class="getClaimClass('green')" v-if="isTileClaimed(x,y,1)"></div>
+        <div :class="getClaimClass('navy')" v-if="isTileClaimed(x,y,1)"></div>
         <div class="textField">{{ getTile(x,y) }}</div>
       </td>
     </tr>
@@ -51,6 +51,11 @@ td {
   font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
 }
 
+.navySquare {
+  background-image: linear-gradient(#0d48b5, #022b75);
+  background-color: #022b75;
+}
+
 .redSquare {
   background-image: linear-gradient(#891B26, #4C1117);
   background-color: #4C1117;
@@ -73,6 +78,12 @@ td {
   border-color: #2D802C;
 }
 
+.navyHCSquare {
+  border-width: 4px;
+  border-style: solid;
+  border-color: #0d48b5;
+}
+
 .coloredSquare {
   width: 100%;
   height: 100%;
@@ -85,7 +96,7 @@ td {
   transform-origin: 0px 0px;
 }
 
-.greenSquareNonLock {
+.navySquareNonLock {
   transform: skew(-45deg) translateX(0%);
   transform-origin: 0px 96px;
 }
