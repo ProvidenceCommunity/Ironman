@@ -159,7 +159,11 @@ export default defineComponent({
       return this.matchFields.filter(e => e.displayInOverview);
     },
     displayedMatches() {
-      return this.matches.filter(e => { return !e.finished || this.showFinished });
+      return this.matches
+        .filter(e => { return !e.finished || this.showFinished })
+        .sort((a, b) => {
+          return a.timestamp - b.timestamp;
+        });
     }
   }
 })
