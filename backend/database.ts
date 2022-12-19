@@ -58,7 +58,6 @@ export async function loadConfig(): Promise<void> {
 }
 
 export async function writeDatabase(): Promise<void> {
-    await writeFile("./config.json", JSON.stringify(config), 'utf8');
     await writeFile('./database.json', JSON.stringify(matches), 'utf8');
     dbg("Wrote %d matches to disk", Object.keys(matches).length);
 }
