@@ -299,11 +299,11 @@ export default defineComponent({
         if (roundIndex >= 0) {
           (this.matchInfo as any).rounds[roundIndex].leavingTimestamp = Date.now();
           if (newER >= 0) {
-            (this.matchInfo as any)['scores'][newER] += 1;
+            this.playerScores[newER] += 2;
           } else if (newER === -2) {
-            ((this.matchInfo as any)['scores'] as number[]).map(v => { return v + 0.5 });
+            this.playerScores = this.playerScores.map(v => { return v + 1 });
           }
-          await this.sendData();
+          await this.updateScores();
         }
         this.endRound = undefined;
       }
@@ -321,8 +321,8 @@ export default defineComponent({
       return { mode: "" };
     },
     endRoundItems(): unknown[] {
-      let arr = this.sanetizedPlayers.map((p, idx) => { return {title: `End round and increase score of ${p} by 1`, value: idx} });
-      arr.push({title: "End round and increase score of every player by 0.5", value: -2});
+      let arr = this.sanetizedPlayers.map((p, idx) => { return {title: `End round and increase score of ${p} by 2`, value: idx} });
+      arr.push({title: "End round and increase score of every player by 1", value: -2});
       arr.push({title: "End round and don't increase scores", value: -1});
       return arr;
     },
