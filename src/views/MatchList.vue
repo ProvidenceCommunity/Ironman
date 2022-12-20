@@ -127,7 +127,6 @@ export default defineComponent({
       this.currentlyScheduling = this.matches.filter(e => {return e.id === matchId})[0];
     },
     async saveEdit(matchId, data) {
-      console.log(data);
       await post("/api/match/schedule/" + matchId, data);
       await this.updateList();
       this.currentlyScheduling = null;
