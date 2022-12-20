@@ -158,11 +158,12 @@ body.overlay::-webkit-scrollbar {
   top: 504px;
 }
 .countdownBox {
-  top: 600px;
-  left: 775px;
+  top: 550px;
+  left: 675px;
   position: absolute;
   font-size: 35px;
   font-family: 'font';
+  width: 600px;
 }
 .centeredText {
   width: 100%;
