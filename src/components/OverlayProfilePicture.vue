@@ -16,7 +16,7 @@ export default defineComponent({
         "Phanium": "https://cdn.discordapp.com/avatars/708231270341148744/c6b2190a21f11a3bdda42874399df25b.png",
         "TK47": "https://cdn.discordapp.com/avatars/509023924470808587/55bc10ced2891aa2fb3437703596aa73.png",
         "MattySpice04": "https://cdn.discordapp.com/avatars/244943203076145153/5ebb86dad93130a30e2c3f879ce2ae21.png",
-        "yoshi ♡": "https://cdn.discordapp.com/avatars/287785246336876545/71b42bc1f2a34cd954fa92132dbc49c3.png",
+        "yoshi ♡": "https://cdn.discordapp.com/avatars/287785246336876545/a66f6efc85dba164dd285fd20d1c1f14.png",
         "420": "https://cdn.discordapp.com/avatars/486226753203994628/972627c644993adcc18b033eedb16129.png",
         "Yannini": "https://cdn.discordapp.com/avatars/229973032234516480/1d902af804aa78a3548c0ce91e51ef0a.png",
         "linux_penguin": "https://cdn.discordapp.com/avatars/603970242053537824/09d21a5eadbd7f8c79d788a5147d412a.png",
