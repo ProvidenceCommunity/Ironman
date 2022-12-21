@@ -1,6 +1,6 @@
 import debug from "debug";
-import { Client, EmbedBuilder, IntentsBitField, TextChannel } from "discord.js";
-import { getConfig } from "./database";
+import { APIEmbedField, Client, CommandInteraction, EmbedBuilder, IntentsBitField, Interaction, TextChannel } from "discord.js";
+import { getConfig, getMatches } from "./database";
 import { IronmanMatch } from "./model";
 
 const CACHE_LIFETIME = 5 * 60 * 1000;
@@ -32,9 +32,25 @@ export default class DiscordConnector {
         this.playerMapCache = { roles: {}, members: {} };
         this.playerMapCacheTimer = -1;
 
-        this.discord.on('ready', () => {
+        this.discord.once('ready', async () => {
             this.dbg("Bot logged in as %s", this.discord.user?.tag);
-        })
+
+            if (getConfig().discord.enableMatchesCommand) {
+                const guild = getConfig().discord.guildId;
+                if (guild === "") {
+                    this.dbg("Couldn't register /matches command - No guild given!");
+                    return;
+                }
+
+                await this.discord.application?.commands.set([{
+                    name: "matches",
+                    description: "Displays upcoming tournament matches."
+                }], guild);
+                this.dbg("Successfully registered /matches command.");
+            }
+        });
+
+        this.discord.on('interactionCreate', this.handleMatchesCommand);
     }
 
     static getInstance(): DiscordConnector {
@@ -141,6 +157,58 @@ export default class DiscordConnector {
         }
 
         await channel.send({ embeds: [embed] });
+    }
+
+    async handleMatchesCommand(interaction: Interaction): Promise<void> {
+        if (!interaction.isCommand()) return;
+        const commandInteraction = interaction as CommandInteraction;
+        if (commandInteraction.commandName !== "matches") return;
+
+        await commandInteraction.deferReply();
+        const matchList = getMatches().filter((e) => {
+            return !e.finished && e.timestamp > 0;
+        }).sort((a, b) => {
+            return a.timestamp - b.timestamp;
+        }).slice(0, 10);
+
+        if (matchList.length <= 0) {
+            await commandInteraction.followUp("No scheduled matches anytime soon!");
+            return;
+        }
+
+        const embedFields = [] as APIEmbedField[];
+        for (const match of matchList) {
+            const sanetizedPlayers = [] as string[];
+            for (const e of match.players) {
+                sanetizedPlayers.push(await DiscordConnector.getInstance().resolvePlayer(e));
+            }
+            const timestamp = match.timestamp > 0 ? `<t:${match.timestamp / 1000}:F> - <t:${match.timestamp / 1000}:R>` : "to be scheduled";
+            let details = `:watch:${timestamp}`;
+            for (const key in match.schedulingData) {
+                const configField = getConfig().matchSchema.filter(e => { return e.name === key })[0];
+                if (!configField) {
+                    continue;
+                }
+                if (configField.displayInMatchesCommand) {
+                    if (typeof match.schedulingData[key] === "object") {
+                        details += `\n:small_orange_diamond:**${configField.title}**: ${(match.schedulingData[key] as string[]).join(" - ")}`;
+                    } else {
+                        details += `\n:small_orange_diamond:**${configField.title}**: ${match.schedulingData[key]}`;
+                    }
+                }
+            }
+
+            embedFields.push({
+                name: sanetizedPlayers.join(" vs "),
+                value: details + "\n"
+            });
+        }
+
+        const embed = new EmbedBuilder();
+        embed.setTitle("Upcoming Matches:");
+        embed.setTimestamp(new Date());
+        embed.addFields(embedFields);
+        await commandInteraction.followUp({ embeds: [embed] });
     }
 
     static shouldAnnounceSchedule(matchOne: IronmanMatch, matchTwo: IronmanMatch): boolean {

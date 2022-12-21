@@ -16,6 +16,7 @@ interface GlobalConfig {
     matchSchema: MatchField[];
     discord: {
         enableMatchupChannel: boolean;
+        enableMatchesCommand: boolean;
         guildId: string;
         channelId: string;
         botToken: string;
@@ -49,6 +50,7 @@ export async function loadConfig(): Promise<void> {
             matchSchema: [],
             discord: {
                 enableMatchupChannel: false,
+                enableMatchesCommand: false,
                 botToken: "",
                 channelId: "",
                 guildId: ""

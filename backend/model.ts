@@ -8,8 +8,9 @@ export interface MatchField {
     type: "string" | "select" | "list";
     name: string;
     title: string;
-    displayInOverview: boolean;
-    announceInDiscord: boolean;
+    displayInOverview?: boolean;
+    announceInDiscord?: boolean;
+    displayInMatchesCommand?: boolean;
     options?: string[] | MatchField;
 }
 
