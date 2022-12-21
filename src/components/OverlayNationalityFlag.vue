@@ -23,7 +23,8 @@ export default defineComponent({
         "Pigiero": "nl",
         "Some Random Person": "no",
         "In4Fun": "hu",
-        "Jokerj": "gb"
+        "Jokerj": "gb",
+        "SupremeCommanderIke": "us",
       } as {[player: string]: string}
     }
   },

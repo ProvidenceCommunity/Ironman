@@ -23,7 +23,8 @@ export default defineComponent({
         "Pigiero": "https://cdn.discordapp.com/avatars/161873616684843030/f9eb9e7255a2fad51d9ec97deb3d7560.png",
         "Some Random Person": "https://cdn.discordapp.com/guilds/928821020738084965/users/247360708562518016/avatars/30230ae2dd832bb86984c7ab9e1e3401.png",
         "In4Fun": "https://cdn.discordapp.com/avatars/412288950854746113/4c66bdb872631ccb1df0b3f8cd1a7cea.png",
-        "Jokerj": "https://cdn.discordapp.com/avatars/700245922722087012/0a460f40f90619aebdbc921b1537eb97.png"
+        "Jokerj": "https://cdn.discordapp.com/avatars/700245922722087012/0a460f40f90619aebdbc921b1537eb97.png",
+        "SupremeCommanderIke": "https://cdn.discordapp.com/avatars/459345398754967563/dc4b5a128f9156175ed8a50f9642add0.png",
       } as {[player: string]: string}
     }
   },
