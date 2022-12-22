@@ -10,7 +10,7 @@ export default defineComponent({
   data() {
     return {
       imageMap: {
-        "Crewdy": "https://cdn.discordapp.com/avatars/340040555234983938/4eae170ed195adb35e7ba07d7846bc3d.png",
+        "crewdy": "https://cdn.discordapp.com/avatars/340040555234983938/4eae170ed195adb35e7ba07d7846bc3d.png",
         "Meekah": "https://cdn.discordapp.com/avatars/201065244297003008/8393738b125c653af3295fcf933e1a09.png",
         "Nezuko Chan": "https://cdn.discordapp.com/avatars/577924506471890976/917decfbaa9a0368bf6335f30f30f97a.png",
         "Phanium": "https://cdn.discordapp.com/avatars/708231270341148744/c6b2190a21f11a3bdda42874399df25b.png",

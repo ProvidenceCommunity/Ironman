@@ -10,7 +10,7 @@ export default defineComponent({
   data() {
     return {
       imageMap: {
-        "Crewdy": "gb",
+        "crewdy": "gb",
         "Meekah": "ca",
         "Nezuko Chan": "gb",
         "Phanium": "us",
