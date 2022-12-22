@@ -1,7 +1,8 @@
 <template>
   <table>
     <tr v-for="y in 5" :key="y">
-      <td v-for="x in 5" :key="x" @click="click(x,y)" :style="`height: ${tileHeight || '88' }px;`">
+      <td v-for="x in 5" :key="x" @click="click(x,y)" @contextmenu.prevent="star(x,y)" :style="`height: ${tileHeight || '88' }px;`">
+        <div class="starred" v-if="isTileStarred(x,y)"></div>
         <div :class="getHalfClaimClass('red')" v-if="isTileHalfClaimed(x,y,0)"></div>
         <div :class="getHalfClaimClass('navy')" v-if="isTileHalfClaimed(x,y,1)"></div>
         <div :class="getClaimClass('red')" v-if="isTileClaimed(x,y,0)"></div>
@@ -101,6 +102,17 @@ td {
   transform-origin: 0px 96px;
 }
 
+.starred {
+  background-image: url("~@/assets/providence_icon.png");
+  background-size: contain;
+  background-repeat: no-repeat;
+  position: absolute;
+  margin-top: 5px;
+  z-index: 100;
+  height: 15px;
+  width: 15px;
+}
+
 </style>
 
 <script lang="ts">
@@ -108,10 +120,18 @@ import { defineComponent } from 'vue';
 
 export default defineComponent({
   name: "BingoCard",
-  props: ['card', 'claimedTiles', 'mode', 'tileHeight'],
+  props: ['card', 'claimedTiles', 'mode', 'tileHeight', 'starrable'],
   emits: ['click'],
   data() {
-    return {};
+    return {
+      starredTiles: [
+        [false, false, false, false, false],
+        [false, false, false, false, false],
+        [false, false, false, false, false],
+        [false, false, false, false, false],
+        [false, false, false, false, false],
+      ]
+    };
   },
   methods: {
     getTile(x: number, y: number): string {
@@ -139,6 +159,12 @@ export default defineComponent({
     },
     click(x: number, y: number) {
       this.$emit('click', x, y);
+    },
+    star(x: number, y: number) {
+      this.starredTiles[y-1][x-1] = !this.starredTiles[y-1][x-1] && this.starrable;
+    },
+    isTileStarred(x: number, y: number): boolean {
+      return this.starredTiles[y-1][x-1];
     }
   }
 });
