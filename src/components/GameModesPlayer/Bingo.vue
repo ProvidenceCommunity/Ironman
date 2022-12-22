@@ -1,4 +1,7 @@
 <template>
+  <ul v-if="details.mode === 'Lockout'">
+    <li v-for="(player, index) in players" :key="index">{{player}}: {{getClaims(index)}}/10 Tiles claimed</li>
+  </ul>
   <BingoCard :card="this.details.card" :claimedTiles="this.details.claimedTiles" :mode="this.details.mode" @click="clickTile"></BingoCard>
   <v-btn @click="fullReset">Reset all tiles</v-btn>
   <v-btn @click="halfReset" v-if="halfClaimEnabled">Set all tiles to half-claimed</v-btn>
@@ -16,7 +19,7 @@ export default defineComponent({
   components: {
     BingoCard
   },
-  props: ['matchId', 'player', 'details'],
+  props: ['matchId', 'player', 'details', 'players'],
   emits: ['error'],
   data() {
     return {
@@ -65,6 +68,15 @@ export default defineComponent({
       if (resp.status !== 204) {
         this.$emit("error", "An error occurred while setting all tiles to half-claimed. Please inform your match admin via discord.");
       }
+    },
+    getClaims(index: number) {
+      let result = 0;
+      for (const tile of this.details.claimedTiles) {
+        if (tile[index] == 1) {
+          result += 1;
+        }
+      }
+      return result;
     }
   },
   computed: {
