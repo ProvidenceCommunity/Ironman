@@ -27,4 +27,11 @@ export class IronmanMatch {
         schedulingData: Record<string, string | string[]>;
     @Column({ nullable: true })
         finished?: boolean;
+
+    constructor(players?: string[]) {
+        this.players = players?.map(p => { return { name: p, score: 0 } }) || [];
+        this.rounds = [];
+        this.schedulingData = {};
+        this.timestamp = -1;
+    }
 }
