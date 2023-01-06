@@ -99,6 +99,7 @@
         <BingoAdmin v-if="currentRound.mode === 'bingo'" :players="sanetizedPlayers" :details="currentRound.additionalDetails" :matchId="this.matchId" @error="onError"></BingoAdmin>
         <TimerAdmin v-if="currentRound.mode === 'timer'" :details="currentRound.additionalDetails"></TimerAdmin>
         <TwoSpinsAdmin v-if="currentRound.mode === 'twoSpins'" :players="sanetizedPlayers" :details="currentRound.additionalDetails" :matchId="this.matchId" @error="onError"></TwoSpinsAdmin>
+        <SelectableSpinAdmin v-if="currentRound.mode === 'selectableSpin'" :players="sanetizedPlayers" :details="currentRound.additionalDetails" :matchId="this.matchId" @error="onError"></SelectableSpinAdmin>
 
       </v-col>
       <v-spacer></v-spacer>
@@ -115,6 +116,7 @@ import RouletteSpinAdmin from "@/components/GameModesAdmin/RouletteSpin.vue";
 import TwoSpinsAdmin from "@/components/GameModesAdmin/TwoSpins.vue";
 import BingoAdmin from "@/components/GameModesAdmin/Bingo.vue";
 import TimerAdmin from "@/components/GameModesAdmin/Timer.vue";
+import SelectableSpinAdmin from "@/components/GameModesAdmin/SelectableSpin.vue";
 import { DateTime } from "luxon";
 
 export default defineComponent({
@@ -126,6 +128,7 @@ export default defineComponent({
     BingoAdmin,
     AddRoundDialog,
     TwoSpinsAdmin,
+    SelectableSpinAdmin,
   },
   data() {
     return {
