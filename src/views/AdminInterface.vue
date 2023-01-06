@@ -63,7 +63,7 @@
       <v-spacer></v-spacer>
       <v-col cols="5">
         <b>Add new round:</b><br>
-        <v-select :items="gameModes" v-model="gameModeToAdd" ></v-select>
+        <v-select :items="gameModes" v-model="gameModeToAdd" :loading="roundAddLoading"></v-select>
 
         <v-container>
           <v-row>
@@ -150,7 +150,8 @@ export default defineComponent({
       error: "",
       errorShown: false,
       connectionIssues: false,
-      discordPlayersMap: {} as { [key: string]: string }
+      discordPlayersMap: {} as { [key: string]: string },
+      roundAddLoading: false,
     }
   },
   async created() {
@@ -182,11 +183,13 @@ export default defineComponent({
     },
     async doneAddingRound(values: any, title: string) {
       if (values) {
+        this.roundAddLoading = true;
         const resp = await post('/api/match/admin/' + this.matchId + '/addRound', {
           game_mode: this.gameModeToAdd,
           generatorOptions: values,
           title: title
         });
+        this.roundAddLoading = false;
         if (resp.status !== 204) {
           this.onError("An error occured while creating the round.");
         }

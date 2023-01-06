@@ -1,6 +1,11 @@
 import { GameMode, GameModeDetails, GeneratorOption, GeneratorOptions, IronmanMatch } from "../model";
 import axios from 'axios';
 
+interface AdminEventPayload {
+    spin: any;
+    playerIndex: number;
+}
+
 interface RawItem {
     name: string;
     tileUrl: string;
@@ -24,6 +29,7 @@ interface KillMethod {
 interface TargetCondition {
     killMethod: {
         name: string;
+        variant: string;
         tileUrl: string;
         selectedBy: number;
     }
@@ -47,6 +53,8 @@ const missionIdToSlug: {[key: string]: MapInfo} = {
     "The Final Test (ICA Facility)": { game: "hitman", location: "ica-facility", mission: "the-final-test", amountTargets: 1, target: "Kalvin Ritter" },
     "The Showstopper (Paris)": { game: "hitman", location: "paris", mission: "the-showstopper", amountTargets: 2, target: "Viktor Novikov" },
     "World of Tomorrow (Sapienza)": { game: "hitman", location: "sapienza", mission: "world-of-tomorrow", amountTargets: 2, target: "Silvio Caruso" },
+    
+    "Freedom Fighters (Colorado)": { game: "hitman", location: "colorado", mission: "freedom-fighters", amountTargets: 4, target: "Ezra Berg" },
 }
 const tmp = {
     "The Icon (Sapienza)": "hitman|sapienza|the-icon",
@@ -56,7 +64,6 @@ const tmp = {
     "A House Built on Sand (Marrakesh)": "hitman|marrakesh|a-house-built-on-sand",
     "Club 27 (Bangkok)": "hitman|bangkok|club-27",
     "The Source (Bangkok)": "hitman|bangkok|the-source",
-    "Freedom Fighters (Colorado)": "hitman|colorado|freedom-fighters",
     "Situs Inversus (Hokkaido)": "hitman|hokkaido|situs-inversus",
     "Hokkaido Snow Festival (Hokkaido)": "hitman|hokkaido|hokkaido-snow-festival",
     "Patient Zero (Hokkaido)": "hitman|hokkaido|patient-zero",
@@ -106,6 +113,7 @@ export class SelectableSpinGameMode implements GameMode {
                 },
                 killMethod: {
                     name: "",
+                    variant: "",
                     tileUrl: "",
                     selectedBy: 0
                 }
@@ -133,7 +141,18 @@ export class SelectableSpinGameMode implements GameMode {
                 variants: e.variants.map(v => v.name),
                 tileUrl: e.tileUrl
             });
-        })
+        });
+
+        methodOptions.push({
+            name: "Pistol Elimination", 
+            tileUrl: "https://media.hitmaps.com/img/hitman3/contractconditions/condition_killmethod_pistol.jpg",
+            variants: ["Silenced", "Loud"]
+        });
+        methodOptions.push({
+            name: "SMG Elimination",
+            tileUrl: "https://media.hitmaps.com/img/hitman3/contractconditions/condition_killmethod_smg.jpg",
+            variants: ["Silenced", "Loud"]
+        });
 
         const spin = {
             mission: {
@@ -153,15 +172,33 @@ export class SelectableSpinGameMode implements GameMode {
     }
 
     handleUserEvent(event: string, player: number, payload: unknown, currentState: GameModeDetails): GameModeDetails {
+        if (event === "done") {
+            (currentState['doneStatus'] as number[])[player] = 1;
+            (currentState['lastDone'] as number[])[player] = Date.now();
+        }
         return currentState;
     }
 
-    handleAdminEvent(event: string, payload: unknown, currentState: GameModeDetails): GameModeDetails | Promise<GameModeDetails> {
+    handleAdminEvent(event: string, payload: AdminEventPayload, currentState: GameModeDetails): GameModeDetails | Promise<GameModeDetails> {
+        if (event === "acceptDone") {
+            (currentState['doneStatus'] as number[])[payload.playerIndex] = 2;
+        }
+        if (event === "rejectDone") {
+            (currentState['doneStatus'] as number[])[payload.playerIndex] = 0;
+            (currentState['lastDone'] as number[])[payload.playerIndex] = -1;
+        }
+        if (event === "updateSpin") {
+            currentState.currentSpin = payload.spin;
+        }
         return currentState;
     }
 
-    getPlayerDetails(player: number, currentState: GameModeDetails, match: IronmanMatch): GameModeDetails {
-        return currentState;
+    getPlayerDetails(player: number, currentState: GameModeDetails): GameModeDetails {
+        return {
+            currentSpin: currentState['currentSpin'],
+            doneStatus: (currentState['doneStatus'] as number[])[player],
+            lastDone: (currentState['lastDone'] as number[])[player],
+        };
     }
     
 }
