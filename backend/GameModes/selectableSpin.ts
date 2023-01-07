@@ -55,6 +55,8 @@ const missionIdToSlug: {[key: string]: MapInfo} = {
     "World of Tomorrow (Sapienza)": { game: "hitman", location: "sapienza", mission: "world-of-tomorrow", amountTargets: 2, target: "Silvio Caruso" },
     
     "Freedom Fighters (Colorado)": { game: "hitman", location: "colorado", mission: "freedom-fighters", amountTargets: 4, target: "Ezra Berg" },
+
+    "Apex Predator (Berlin)": { game: "hitman3", location: "berlin", mission: "apex-predator", amountTargets: 5, target: "ICA Agent %231" },
 }
 const tmp = {
     "The Icon (Sapienza)": "hitman|sapienza|the-icon",
@@ -81,7 +83,6 @@ const tmp = {
     "The Last Resort (Haven Island)": "hitman2|haven-island|the-last-resort",
     "On Top Of The World (Dubai)": "hitman3|dubai|on-top-of-the-world",
     "Death In The Family (Dartmoor)": "hitman3|dartmoor|death-in-the-family",
-    "Apex Predator (Berlin)": "hitman3|berlin|apex-predator",
     "End Of An Era (Chongqing)": "hitman3|chongqing|end-of-an-era",
     "The Farewell (Mendoza)": "hitman3|mendoza|the-farewell",
     "Untouchable (Carpathian Mountains)": "hitman3|carpathian-mountains|untouchable",

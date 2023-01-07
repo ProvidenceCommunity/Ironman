@@ -1,23 +1,26 @@
 <template>
-  <v-container fluid>
-    <v-row no-gutters>
-      <v-col>
-        <v-sheet class="condition">
-          <img :src="condition.killMethod.tileUrl" class="conditionImg float-right">
-          <span class="conditionTitle">Eliminate using</span><br>
-          <span :class="classMethod()">{{ buildKillMethod() }}</span>
-        </v-sheet>
-        <v-sheet class="condition">
-          <img :src="condition.disguise.tileUrl" class="conditionImg float-right">
-          <span class="conditionTitle">Wear disguise</span><br>
-          <span :class="classDisguise()">{{ condition.disguise.name }}</span>
-        </v-sheet>
-      </v-col>
-    </v-row>
-  </v-container>
+  <v-sheet class="condition">
+    <img :src="condition.killMethod.tileUrl" class="conditionImg float-right">
+    <span class="conditionTitle">Eliminate using</span><br>
+    <span class="conditionDetail">
+      {{ buildKillMethod() }}
+      <img :src="getDiamondSrcMethod()" v-if="getDiamondSrcMethod() !== ''" height="20">
+    </span>
+  </v-sheet>
+  <v-sheet class="condition borderbottom">
+    <img :src="condition.disguise.tileUrl" class="conditionImg float-right">
+    <span class="conditionTitle">Wear disguise</span><br>
+    <span class="conditionDetail">
+      <img :src="getDiamondSrcDisguise()" v-if="getDiamondSrcDisguise() !== ''" height="20">
+      {{ condition.disguise.name }}
+    </span>
+  </v-sheet>
 </template>
 
 <style scoped>
+  .borderbottom {
+    border-bottom: 1px solid black;
+  }
   .target {
     height: 198px;
     width: 325px;
@@ -32,7 +35,10 @@
   }
   .condition {
     height: 99px;
-    width: 600px;
+    min-width: 400px;
+    max-width: 600px;
+    border-right: 1px solid black;
+    border-left: 1px solid black;
   }
   .conditionTitle {
     color: red;
@@ -75,21 +81,23 @@ export default defineComponent({
         return this.condition.killMethod.name;
       }
     },
-    classMethod() {
+    getDiamondSrcMethod() {
       if (this.condition.killMethod.selectedBy === 1) {
-        return "conditionDetail selected1";
-      } else if (this.condition.killMethod.selectedBy === 2) {
-        return "conditionDetail selected2";
+        return require("@/assets/DiamondP1.png");
       }
-      return "conditionDetail";
+      if (this.condition.killMethod.selectedBy === 2) {
+        return require("@/assets/DiamondP2.png");
+      }
+      return "";
     },
-    classDisguise() {
+    getDiamondSrcDisguise() {
       if (this.condition.disguise.selectedBy === 1) {
-        return "conditionDetail selected1";
-      } else if (this.condition.disguise.selectedBy === 2) {
-        return "conditionDetail selected2";
+        return require("@/assets/DiamondP1.png");
       }
-      return "conditionDetail";
+      if (this.condition.disguise.selectedBy === 2) {
+        return require("@/assets/DiamondP2.png");
+      }
+      return "";
     }
   }
 })

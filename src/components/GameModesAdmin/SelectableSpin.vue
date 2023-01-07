@@ -7,11 +7,11 @@
           <h5>Target {{ index+1 }}</h5>
           <v-row>
             <v-col><v-select label="Method" :items="details.methodOptions" return-object item-title="name" @update:modelValue="(e) => { updateMethod(index, e) }" v-model="conditions[index]"></v-select></v-col>
-            <v-col><v-select label="Variant" :items="conditions[index]?.variants.concat([''])" v-if="conditions[index]?.variants.length > 0" @update:modelValue="(e) => { updateVariant(index, e) }"></v-select></v-col>
+            <v-col><v-select label="Variant" :items="conditions[index]?.variants.concat([''])" v-if="conditions[index]?.variants.length > 0" @update:modelValue="(e) => { updateVariant(index, e) }" v-model="variants[index]"></v-select></v-col>
             <v-col><v-select label="Chosen by" :items="selectedByOptions"  @update:modelValue="(e) => { updateSelectedMethod(index, e) }"></v-select></v-col>
           </v-row>
           <v-row>
-            <v-col><v-select label="Disguise" :items="details.disguiseOptions" return-object item-title="name" @update:modelValue="(e) => { updateDisguise(index, e) }"></v-select></v-col>
+            <v-col><v-select label="Disguise" :items="details.disguiseOptions" return-object item-title="name" @update:modelValue="(e) => { updateDisguise(index, e) }" v-model="disguises[index]"></v-select></v-col>
             <v-col></v-col>
             <v-col><v-select label="Chosen by" :items="selectedByOptions"  @update:modelValue="(e) => { updateSelectedDisguise(index, e) }"></v-select></v-col>
           </v-row>
@@ -57,6 +57,8 @@ export default defineComponent({
   emits: [ 'error' ],
   data() {
     return {
+        disguises: this.details.currentSpin.targetConditions.map(() => { return undefined }),
+        variants: this.details.currentSpin.targetConditions.map(() => { return undefined }),
         conditions: this.details.currentSpin.targetConditions.map(() => { return undefined })
     }
   },
@@ -126,12 +128,36 @@ export default defineComponent({
     async updateSelectedMethod(targetIndex: number, selectedBy: any) {
       const newSpin = Object.assign({}, this.details.currentSpin);
       newSpin.targetConditions[targetIndex].killMethod.selectedBy = selectedBy;
+      if (selectedBy == 0) {
+        // Random selection
+        this.conditions[targetIndex] = this.randomElement(this.details.methodOptions);
+        
+        newSpin.targetConditions[targetIndex].killMethod.name = this.conditions[targetIndex].name;
+        newSpin.targetConditions[targetIndex].killMethod.tileUrl = this.conditions[targetIndex].tileUrl;
+
+        if (this.conditions[targetIndex].variants.length > 0) {
+          this.variants[targetIndex] = this.randomElement(this.conditions[targetIndex].variants.concat([""]));
+          newSpin.targetConditions[targetIndex].killMethod.variant = this.variants[targetIndex];
+        } else {
+          newSpin.targetConditions[targetIndex].killMethod.variant = "";
+        }
+      }
       await this.updateSpin(newSpin);
     },
     async updateSelectedDisguise(targetIndex: number, selectedBy: any) {
       const newSpin = Object.assign({}, this.details.currentSpin);
       newSpin.targetConditions[targetIndex].disguise.selectedBy = selectedBy;
+      if (selectedBy == 0) {
+        // Random selection
+        this.disguises[targetIndex] = this.randomElement(this.details.disguiseOptions);
+        
+        newSpin.targetConditions[targetIndex].disguise.name = this.disguises[targetIndex].name;
+        newSpin.targetConditions[targetIndex].disguise.tileUrl = this.disguises[targetIndex].image;
+      }
       await this.updateSpin(newSpin);
+    },
+    randomElement(array: any[]): any {
+      return array[Math.floor(Math.random() * array.length)];
     }
   },
   computed: {

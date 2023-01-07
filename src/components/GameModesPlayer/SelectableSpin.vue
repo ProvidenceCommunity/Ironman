@@ -1,7 +1,7 @@
 <template>
   <h1>{{ details.currentSpin.mission.name }}</h1>
   <v-row no-gutters>
-    <v-col v-for="(target, index) in details.currentSpin.targetConditions" :key="index">
+    <v-col v-for="(target, index) in details.currentSpin.targetConditions" :key="index" cols="6">
       <FreestyleCondition :condition="target"></FreestyleCondition>
     </v-col>
   </v-row>
