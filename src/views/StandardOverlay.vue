@@ -4,6 +4,7 @@
       <SpinOverlay :data="currentDetails.currentSpin" class="spin" v-if="currentRound.mode === 'rouletteSpin'"></SpinOverlay>
       <DoneButtonOverlay :data="currentRound" v-if="currentRound.mode === 'simpleDoneButton' || currentRound.mode === 'timer'"></DoneButtonOverlay>
       <BingoOverlay :data="currentRound" v-if="currentRound.mode === 'bingo'"></BingoOverlay>
+      <SelectableSpinOverlay :data="currentDetails.currentSpin" v-if="currentRound.mode === 'selectableSpin'"></SelectableSpinOverlay>
       <CountdownBar :timeRemaining="matchData.countdown" :totalTime="matchData.totalMatchTime"></CountdownBar>
     </div>
     <div class="container" v-else-if="currentRound.arrivingTimestamp > new Date() || currentRound.arrivingTimestamp <= 0">
@@ -20,6 +21,9 @@ body.overlay {
   overflow: hidden;
   height: 1080px;
   width: 1920px;
+}
+body.overlay > div[data-v-app] > div.v-application {
+  background: none;
 }
 body.overlay::-webkit-scrollbar {
   display: none;
@@ -56,10 +60,12 @@ import { get } from "@/http";
 import { Duration } from "luxon";
 import DoneButtonOverlay from "@/components/GameModesOverlay/DoneButton.vue";
 import BingoOverlay from "@/components/GameModesOverlay/Bingo.vue";
+import SelectableSpinOverlay from "@/components/GameModesOverlay/SelectableSpin.vue";
+import { useTheme } from "vuetify";
 
 export default defineComponent({
   name: 'RouletteSpinOverlay',
-  components: {BingoOverlay, DoneButtonOverlay, SpinOverlay, CountdownBar},
+  components: {BingoOverlay, DoneButtonOverlay, SpinOverlay, SelectableSpinOverlay, CountdownBar},
   data() {
     return {
       matchData: {
@@ -83,6 +89,8 @@ export default defineComponent({
   },
   beforeCreate() {
     document.body.className = "overlay";
+    const theme = useTheme();
+    theme.global.name.value = 'light';
   },
   methods: {
     async update() {

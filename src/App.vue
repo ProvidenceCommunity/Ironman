@@ -1,5 +1,5 @@
 <template>
-  <v-app :theme="getTheme" :style="getStyle">
+  <v-app>
     <v-main>
       <router-view></router-view>
     </v-main>
@@ -7,21 +7,12 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent } from 'vue';
 
 export default defineComponent({
   name: 'App',
-
   data () {
     return {}
   },
-  computed: {
-    getTheme() {
-      return (this.$route.name === "prooverlay" || this.$route.name === "overlay") ? 'light' : 'dark';
-    },
-    getStyle() {
-      return (this.$route.name === "prooverlay" || this.$route.name === "overlay") ? "background: none;" : "";
-    }
-  }
 })
 </script>
