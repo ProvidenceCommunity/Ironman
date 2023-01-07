@@ -11,8 +11,8 @@
     <img :src="condition.disguise.tileUrl" class="conditionImg float-right">
     <span class="conditionTitle">Wear disguise</span><br>
     <span class="conditionDetail">
-      <img :src="getDiamondSrcDisguise()" v-if="getDiamondSrcDisguise() !== ''" height="20">
       {{ condition.disguise.name }}
+      <img :src="getDiamondSrcDisguise()" v-if="getDiamondSrcDisguise() !== ''" height="20">
     </span>
   </v-sheet>
 </template>
