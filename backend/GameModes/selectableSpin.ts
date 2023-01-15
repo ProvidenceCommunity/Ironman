@@ -158,9 +158,16 @@ export class SelectableSpinGameMode implements GameMode {
             targetConditions: conditions
         } as Spin;
 
+        const fixedDisguises = disguises.data.disguises.map((e: any) => {
+            if (e.suit) {
+                e.name = "Suit";
+            }
+            return e;
+        });
+
         return {
             currentSpin: spin,
-            disguiseOptions: disguises.data.disguises,
+            disguiseOptions: fixedDisguises,
             methodOptions: methodOptions,
             doneStatus: players.map(() => { return 0 }),
             lastDone: players.map(() => { return -1 })
