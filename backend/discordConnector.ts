@@ -1,5 +1,6 @@
 import debug from "debug";
 import { APIEmbedField, Client, CommandInteraction, EmbedBuilder, IntentsBitField, Interaction, TextChannel } from "discord.js";
+import { DateTime } from "luxon";
 import { getConfig, getMatches } from "./database";
 import { IronmanMatch } from "./model";
 
@@ -14,6 +15,13 @@ export interface UnifiedPlayerMap {
     [id: string]: string;
 }
 
+interface AvatarCache {
+    [id: string]: {
+        requestDate: DateTime;
+        result: string;
+    }
+}
+
 export default class DiscordConnector {
     private static instance: DiscordConnector | null = null;
 
@@ -23,6 +31,7 @@ export default class DiscordConnector {
     private channelId: string;
     private playerMapCache: PlayerMap;
     private playerMapCacheTimer: number;
+    private avatarCache: AvatarCache;
 
     private constructor() {
         this.discord = new Client({ intents: [ IntentsBitField.Flags.Guilds, IntentsBitField.Flags.GuildMembers ] });
@@ -31,6 +40,7 @@ export default class DiscordConnector {
         this.channelId = "";
         this.playerMapCache = { roles: {}, members: {} };
         this.playerMapCacheTimer = -1;
+        this.avatarCache = {};
 
         this.discord.once('ready', async () => {
             this.dbg("Bot logged in as %s", this.discord.user?.tag);
@@ -209,6 +219,22 @@ export default class DiscordConnector {
         embed.setTimestamp(new Date());
         embed.addFields(embedFields);
         await commandInteraction.followUp({ embeds: [embed] });
+    }
+
+    async getAvatar(playerId: string): Promise<string> {
+        if (this.avatarCache[playerId] == undefined || this.avatarCache[playerId].requestDate.diff(DateTime.now()).as('hours') > 1) {
+            this.avatarCache[playerId] = {
+               result: await this.fetchAvatar(playerId),
+               requestDate: DateTime.now() 
+            }
+        }
+        return this.avatarCache[playerId].result;
+    }
+
+    private async fetchAvatar(playerId: string): Promise<string> {
+        const guild = await this.discord.guilds.fetch(this.guildId);
+        const user = await guild.members.fetch(playerId);
+        return user.displayAvatarURL();
     }
 
     static shouldAnnounceSchedule(matchOne: IronmanMatch, matchTwo: IronmanMatch): boolean {
