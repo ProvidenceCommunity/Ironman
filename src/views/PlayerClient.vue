@@ -28,6 +28,7 @@
           <TimerPlayer v-else-if="matchInfo.currentGameMode === 'timer'" :details="this.matchInfo.round"></TimerPlayer>
           <TwoSpinsPlayer v-else-if="matchInfo.currentGameMode === 'twoSpins'" :matchId="this.matchId" :player="this.player" :details="this.matchInfo.round" @error="onError"></TwoSpinsPlayer>
           <SelectableSpinPlayer v-else-if="matchInfo.currentGameMode === 'selectableSpin'" :matchId="this.matchId" :player="this.player" :details="this.matchInfo.round" @error="onError"></SelectableSpinPlayer>
+          <RelayPlayer v-else-if="matchInfo.currentGameMode === 'relay'" :matchId="matchId" :player="player" :details="matchInfo.round" @error="onError"></RelayPlayer>
         </div>
         <div v-else>
           <h1>Waiting for match info...</h1>
@@ -50,6 +51,7 @@ import CountdownBar from "@/components/CountdownBar.vue";
 import TimerPlayer from "@/components/GameModesPlayer/Timer.vue";
 import TwoSpinsPlayer from "@/components/GameModesPlayer/TwoSpins.vue";
 import SelectableSpinPlayer from "@/components/GameModesPlayer/SelectableSpin.vue";
+import RelayPlayer from "@/components/GameModesPlayer/Relay.vue";
 
 export default defineComponent({
   name: "PlayerClient",
@@ -61,6 +63,7 @@ export default defineComponent({
     RouletteSpinPlayer,
     TwoSpinsPlayer,
     SelectableSpinPlayer,
+    RelayPlayer
   },
   data() {
     return {

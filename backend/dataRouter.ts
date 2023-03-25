@@ -58,3 +58,9 @@ dataRouter.get('/users', async (req, res) => {
     }
     res.json(await DiscordConnector.getInstance().getAvailableUsers());
 })
+
+dataRouter.get('/avatar/:userId', async (req, res) => {
+    res.json({
+        avatar: await DiscordConnector.getInstance().getAvatar(req.params.userId)
+    })
+});
