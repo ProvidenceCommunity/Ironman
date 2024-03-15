@@ -36,7 +36,7 @@
                   <b>Shoutcast-Overlay:</b> <a :href="getOverlayLink()">{{ getOverlayLink() }}</a> (1300px x 600px)
                 </li>
                 <li>
-                  <b>RFR-Overlay:</b> <a :href="getEventOverlayLink()">{{ getEventOverlayLink() }}</a> (1920px x 1080px)
+                  <b>TPC2-Overlay:</b> <a :href="getEventOverlayLink()">{{ getEventOverlayLink() }}</a> (1920px x 1080px)
                 </li>
               </ul>
             </v-expansion-panel-text>
@@ -100,6 +100,7 @@
         <TimerAdmin v-if="currentRound.mode === 'timer'" :details="currentRound.additionalDetails"></TimerAdmin>
         <TwoSpinsAdmin v-if="currentRound.mode === 'twoSpins'" :players="sanetizedPlayers" :details="currentRound.additionalDetails" :matchId="this.matchId" @error="onError"></TwoSpinsAdmin>
         <SelectableSpinAdmin v-if="currentRound.mode === 'selectableSpin'" :players="sanetizedPlayers" :details="currentRound.additionalDetails" :matchId="this.matchId" @error="onError"></SelectableSpinAdmin>
+        <RelayAdmin v-if="currentRound.mode === 'relay'" :players="sanetizedPlayers" :details="currentRound.additionalDetails" :matchId="matchId" :arrivalTimestamp="currentRound.arrivingTimestamp" @error="onError"></RelayAdmin>
 
       </v-col>
       <v-spacer></v-spacer>
@@ -116,6 +117,7 @@ import RouletteSpinAdmin from "@/components/GameModesAdmin/RouletteSpin.vue";
 import TwoSpinsAdmin from "@/components/GameModesAdmin/TwoSpins.vue";
 import BingoAdmin from "@/components/GameModesAdmin/Bingo.vue";
 import TimerAdmin from "@/components/GameModesAdmin/Timer.vue";
+import RelayAdmin from "@/components/GameModesAdmin/Relay.vue";
 import SelectableSpinAdmin from "@/components/GameModesAdmin/SelectableSpin.vue";
 import { DateTime } from "luxon";
 
@@ -129,6 +131,7 @@ export default defineComponent({
     AddRoundDialog,
     TwoSpinsAdmin,
     SelectableSpinAdmin,
+    RelayAdmin,
   },
   data() {
     return {
@@ -178,7 +181,7 @@ export default defineComponent({
       return `${window.location.origin}/overlay/${this.matchId}`
     },
     getEventOverlayLink(): string {
-      return `${window.location.origin}/rfr-overlay/${this.matchId}`
+      return `${window.location.origin}/tpc2-overlay/${this.matchId}`
       // return "";
     },
     async doneAddingRound(values: any, title: string) {

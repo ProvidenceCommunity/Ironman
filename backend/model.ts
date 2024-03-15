@@ -4,6 +4,7 @@ import { BingoGameMode } from "./GameModes/bingo";
 import {TimerGameMode} from "./GameModes/timer";
 import { TwoSpinsGameMode } from "./GameModes/twoSpins";
 import { SelectableSpinGameMode } from "./GameModes/selectableSpin";
+import { RelayGameMode } from "./GameModes/relay";
 
 export interface MatchField {
     type: "string" | "select" | "list";
@@ -71,6 +72,7 @@ export const GameModes: { [key: string]: GameMode } = {
     "timer": new TimerGameMode(),
     "twoSpins": new TwoSpinsGameMode(),
     "selectableSpin": new SelectableSpinGameMode(),
+    "relay": new RelayGameMode()
 }
 
 declare module 'express-session' {

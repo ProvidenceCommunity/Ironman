@@ -34,7 +34,7 @@ const routes: Array<RouteRecordRaw> = [
     component: OverlayView
   },
   {
-    path: '/rfr-overlay/:matchID',
+    path: '/tpc2-overlay/:matchID',
     name: 'eventoverlay',
     component: EventOverlay
   },
