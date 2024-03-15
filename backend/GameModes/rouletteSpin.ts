@@ -11,6 +11,8 @@ interface SpinGeneratorOptions {
         uniqueTargetKills: boolean;
         genericKills: boolean;
         impossibleOrDifficultKills: boolean;
+        additionalObjectives: boolean;
+        additionalObjectiveDisguises: boolean;
     }
 }
 
@@ -140,7 +142,9 @@ export class RouletteSpinGameMode implements GameMode {
                 specificAccidents: !options['noAccidents'] as boolean,
                 uniqueTargetKills: options['uniqueTargetKills'] as boolean,
                 genericKills: options['genericKills'] as boolean,
-                impossibleOrDifficultKills: false
+                impossibleOrDifficultKills: false,
+                additionalObjectives: false,
+                additionalObjectiveDisguises: false
             }
         }
 
@@ -203,9 +207,9 @@ export class RouletteSpinGameMode implements GameMode {
             // }
 
             const splittedSlug = options.missionPool[0].split("|");
-            const missionInfo = await axios.get(`https://www.hitmaps.com/api/v1/games/${splittedSlug[0]}/locations/${splittedSlug[1]}/missions/${splittedSlug[2]}`);
+            const missionInfo = await axios.get(`https://api.hitmaps.com/api/games/${splittedSlug[0]}/locations/${splittedSlug[1]}/missions/${splittedSlug[2]}`);
 
-            return Object.assign(result, { mission: { name: missionInfo.data[0].name, backgroundTile: missionInfo.data[0].backgroundUrl } });
+            return Object.assign(result, { mission: { name: missionInfo.data.name, backgroundTile: missionInfo.data.backgroundUrl } });
 
             // return result;
         } catch(e) {

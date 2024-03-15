@@ -6,8 +6,8 @@
     <span class="score s1">{{ matchData.scores[0] }}</span>
     <span class="score s2">{{ matchData.scores[1] }}</span>
 
-    <OverlayProfilePicture class="pfp lplayer" :player="matchData.players[0]" width="150" height="150"></OverlayProfilePicture>
-    <OverlayProfilePicture class="pfp rplayer" :player="matchData.players[1]" width="150" height="150"></OverlayProfilePicture>
+    <v-img :src="matchData.avatars[0]" width="150" height="150" class="pfp lplayer"></v-img>
+    <v-img :src="matchData.avatars[1]" width="150" height="150" class="pfp rplayer"></v-img>
 
     <span class="timer">{{ roundTimer }}</span>
 
@@ -135,7 +135,6 @@ body.overlay::-webkit-scrollbar {
 import {defineComponent} from "vue";
 import { get } from "@/http";
 import { Duration } from "luxon";
-import OverlayProfilePicture from "@/components/OverlayProfilePicture.vue";
 import BingoOverlay from "@/components/GameModesOverlay/Bingo.vue";
 import DoneButtonOverlay from "@/components/GameModesOverlay/DoneButton.vue";
 import SelectableSpinOverlay from "@/components/GameModesOverlay/SelectableSpin.vue";
@@ -143,7 +142,7 @@ import SpinOverlay from "@/components/GameModesOverlay/RouletteSpin.vue";
 
 export default defineComponent({
   name: 'EventOverlay',
-  components: {OverlayProfilePicture, BingoOverlay, DoneButtonOverlay, SpinOverlay, SelectableSpinOverlay},
+  components: {BingoOverlay, DoneButtonOverlay, SpinOverlay, SelectableSpinOverlay},
   data() {
     return {
       matchData: {
@@ -151,6 +150,7 @@ export default defineComponent({
           additionalDetails: {}
         },
         players: ["",""],
+        avatars: ["",""],
         scores: [0,0],
         countdown: 0,
         roundLive: false,

@@ -174,11 +174,14 @@ apiRouter.get('/match/overlay/:mID', async (req, res) => {
     }
     const roundIndex = match.rounds.length - 1;
     const players = [] as string[];
+    const avatars = [] as string[];
     for (const player of match.players) {
         players.push(await (await DiscordConnector.getInstance().resolvePlayer(player)).split("#")[0]);
+        avatars.push(await DiscordConnector.getInstance().getAvatar(player));
     }
-    const result: {players:string[];scores:number[];round?:IronmanRound;countdown?:number;totalMatchTime?:number;roundLive:boolean} = {
+    const result: {players:string[];avatars:string[];scores:number[];round?:IronmanRound;countdown?:number;totalMatchTime?:number;roundLive:boolean} = {
         players: players,
+        avatars: avatars,
         scores: match.scores,
         roundLive: false
     };

@@ -232,9 +232,13 @@ export default class DiscordConnector {
     }
 
     private async fetchAvatar(playerId: string): Promise<string> {
-        const guild = await this.discord.guilds.fetch(this.guildId);
-        const user = await guild.members.fetch(playerId);
-        return user.displayAvatarURL();
+        try {
+            const guild = await this.discord.guilds.fetch(this.guildId);
+            const user = await guild.members.fetch(playerId);
+            return user.displayAvatarURL();
+        } catch {
+            return "";
+        }
     }
 
     static shouldAnnounceSchedule(matchOne: IronmanMatch, matchTwo: IronmanMatch): boolean {

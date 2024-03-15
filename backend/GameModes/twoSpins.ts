@@ -205,7 +205,7 @@ export class TwoSpinsGameMode implements GameMode {
             // }
 
             const splittedSlug = options.missionPool[0].split("|");
-            const missionInfo = await axios.get(`https://www.hitmaps.com/api/v1/games/${splittedSlug[0]}/locations/${splittedSlug[1]}/missions/${splittedSlug[2]}`);
+            const missionInfo = await axios.get(`https://api.hitmaps.com/api/games/${splittedSlug[0]}/locations/${splittedSlug[1]}/missions/${splittedSlug[2]}`);
 
             return Object.assign(result, { mission: { name: missionInfo.data[0].name, backgroundTile: missionInfo.data[0].backgroundUrl } });
 

@@ -7,8 +7,8 @@
       <SelectableSpinOverlay :data="currentDetails.currentSpin" v-if="currentRound.mode === 'selectableSpin'"></SelectableSpinOverlay>
       <CountdownBar :timeRemaining="matchData.countdown" :totalTime="matchData.totalMatchTime"></CountdownBar>
     </div>
-    <div class="container" v-else-if="currentRound.arrivingTimestamp > new Date() || currentRound.arrivingTimestamp <= 0">
-      <div class="container">
+    <div class="container" v-else style="background-image: url('https://media.hitmaps.com/img/hitman3/backgrounds/menu_bg.jpg');">
+      <div class="container" v-if="currentRound.arrivingTimestamp > new Date() || currentRound.arrivingTimestamp <= 0">
         <h1 class="centeredText topSpace">Up next: {{ currentRound.title }}</h1>
         <h1 class="centeredText" v-if="matchData.countdown">Arriving in: {{ formatTimer(matchData.countdown) }}</h1>
       </div>

@@ -116,8 +116,8 @@ export class SelectableSpinGameMode implements GameMode {
             });
         }
 
-        const missionInfo = await axios.get(`https://www.hitmaps.com/api/v1/games/${selectedMap.game}/locations/${selectedMap.location}/missions/${selectedMap.mission}`);
-        const disguises = await axios.get(`https://www.hitmaps.com/api/v2/games/${selectedMap.game}/locations/${selectedMap.location}/missions/${selectedMap.mission}/disguises`);
+        const missionInfo = await axios.get(`https://api.hitmaps.com/api/games/${selectedMap.game}/locations/${selectedMap.location}/missions/${selectedMap.mission}`);
+        const disguises = await axios.get(`https://api.hitmaps.com/api/games/${selectedMap.game}/locations/${selectedMap.location}/missions/${selectedMap.mission}/disguises`);
         const melees = await axios.get(`https://rouletteapi.hitmaps.com/api/spins/kill-conditions?missionGame=${selectedMap.game}&missionLocation=${selectedMap.location}&missionSlug=${selectedMap.mission}&specificDisguises=true&impossivleOrDifficultKills=true&specificMelee=true&targetName=${selectedMap.target}`);
         const otherKMs = await axios.get(`https://rouletteapi.hitmaps.com/api/spins/kill-conditions?missionGame=${selectedMap.game}&missionLocation=${selectedMap.location}&missionSlug=${selectedMap.mission}&specificDisguises=true&impossivleOrDifficultKills=true&specificFirearms=true&specificAccidents=true&targetName=${selectedMap.target}`);
 
