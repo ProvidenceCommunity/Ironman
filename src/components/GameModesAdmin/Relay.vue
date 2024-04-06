@@ -77,12 +77,14 @@
           return `Player's forfeit @${this.timestampToLocale(this.details.lastDone[index])} was accepted.`;
         } else {
           let countdown = Duration.fromMillis(0);
-          if (this.details.currentSpinStart[index] === -1) {
+          if (this.details.timelimit <= 0) {
+            countdown = Duration.fromMillis(0);
+          } else if (this.details.currentSpinStart[index] === -1) {
             countdown = Duration.fromMillis((this.arrivalTimestamp + this.details.timelimit) - Date.now());
           } else {
             countdown = Duration.fromMillis((this.details.currentSpinStart[index] + this.details.timelimit) - Date.now());
           }
-          if (this.details.currentSpin[index] + 1 === this.details.maps.length) {
+          if (this.details.currentSpin[index] + 1 === this.details.maps.length || countdown.as('seconds') <= 0) {
             return `running on Map ${this.details.currentSpin[index] + 1} / ${this.details.maps.length} with unlimited time remaining`;
           } else {
             return `running on Map ${this.details.currentSpin[index] + 1} / ${this.details.maps.length} with ${countdown.toFormat("mm:ss")} remaining`;

@@ -96,6 +96,11 @@ export class RelayGameMode implements GameMode {
                 caption: "Timelimit per map (in minutes)"
             },
             {
+                id: "trilogy",
+                type: "boolean",
+                caption: "Use all 19 trilogy maps"
+            },
+            {
                 id: "maps",
                 type: "list",
                 caption: "Maps",
@@ -105,28 +110,6 @@ export class RelayGameMode implements GameMode {
                     caption: "Map",
                     options: Object.keys(missionIdToSlug)
                 }
-            },
-            {
-                id: "team1Players",
-                type: "list",
-                caption: "Team 1 - Players",
-                options: {
-                    id: "team1_player_select",
-                    type: "select",
-                    caption: "Player",
-                    options: ["Player 1", "Player 2", "Player 3"]
-                }
-            },
-            {
-                id: "team2Players",
-                type: "list",
-                caption: "Team 2 - Players",
-                options: {
-                    id: "team2_player_select",
-                    type: "select",
-                    caption: "Player",
-                    options: ["Player 1", "Player 2", "Player 3"]
-                }
             }
         ];
     }
@@ -135,7 +118,35 @@ export class RelayGameMode implements GameMode {
         const spinGenOptions: SpinGeneratorOptions[] = [];
         const spins: Spin[] = [];
 
-        for (const map of options['maps'] as string[]) {
+        const maps = [] as string[];
+
+        if (options['trilogy'] === true) {
+            maps.push(
+                "The Showstopper (Paris)",
+                "World of Tomorrow (Sapienza)",
+                "A Gilded Cage (Marrakesh)",
+                "Club 27 (Bangkok)",
+                "Freedom Fighters (Colorado)",
+                "Situs Inversus (Hokkaido)",
+                "The Finish Line (Miami)",
+                "Three-Headed Serpent (Santa Fortuna)",
+                "Chasing a Ghost (Mumbai)",
+                "Another Life (Whittleton Creek)",
+                "The Ark Society (Isle of Sgàil)",
+                "Golden Handshake (New York)",
+                "The Last Resort (Haven Island)",
+                "On Top Of The World (Dubai)",
+                "Death In The Family (Dartmoor)",
+                "Apex Predator (Berlin)",
+                "End Of An Era (Chongqing)",
+                "The Farewell (Mendoza)",
+                "Shadows in the Water (Ambrose Island)"
+            )
+        } else {
+            maps.push(...(options['maps'] as string[]));
+        }
+
+        for (const map of maps) {
             const options: SpinGeneratorOptions = {
                 missionPool: [missionIdToSlug[map]],
                 criteriaFilters: {
@@ -157,9 +168,8 @@ export class RelayGameMode implements GameMode {
             doneStatus: players.map(() => { return 0 }),
             lastDone: players.map(() => { return -1 }),
             currentSpin: players.map(() => { return 0 }),
-            rta: players.map(() => { return (options['maps'] as string[]).map(() => { return 0 }) }),
+            rta: players.map(() => { return maps.map(() => { return 0 }) }),
             currentSpinStart: players.map(() => { return -1 }),
-            activePlayers: [options['team1Players'], options['team2Players']],
             maps: spins,
             spinGenOptions: spinGenOptions,
         };
@@ -206,7 +216,8 @@ export class RelayGameMode implements GameMode {
         if (event === "done") {
             (currentState['doneStatus'] as number[])[player] = 1;
             (currentState['lastDone'] as number[])[player] = Date.now();
-        } if (event === "forfeit") {
+        }
+        if (event === "forfeit") {
             (currentState['doneStatus'] as number[])[player] = 3;
             (currentState['lastDone'] as number[])[player] = Date.now();
         }
@@ -216,7 +227,9 @@ export class RelayGameMode implements GameMode {
     getPlayerDetails(player: number, currentState: GameModeDetails, match: IronmanMatch): GameModeDetails {
         let countdown = 0;
 
-        if ((currentState['currentSpin'] as number[])[player]+1 === (currentState['maps'] as string[]).length) {
+        if (currentState['timelimit'] as number <= 0) {
+            countdown = -1;
+        } else if ((currentState['currentSpin'] as number[])[player]+1 === (currentState['maps'] as string[]).length) {
             countdown = -1;
         } else if ((currentState['currentSpinStart'] as number[])[player] === -1) {
             countdown = (match.rounds[match.rounds.length - 1].arrivingTimestamp + (currentState['timelimit'] as number)) - Date.now();
@@ -224,7 +237,7 @@ export class RelayGameMode implements GameMode {
             countdown = ((currentState['currentSpinStart'] as number[])[player] + (currentState['timelimit'] as number)) - Date.now();
         }
 
-        if (countdown <= 0 && (currentState['doneStatus'] as number[])[player] === 0 && (currentState['currentSpin'] as number[])[player]+1 !== (currentState['maps'] as string[]).length) {
+        if (countdown > 0 && (currentState['doneStatus'] as number[])[player] === 0 && (currentState['currentSpin'] as number[])[player]+1 !== (currentState['maps'] as string[]).length) {
             (currentState['rta'] as number[][])[player][(currentState['currentSpin'] as number[])[player]] = FORFEIT_TIME;
             (currentState['currentSpin'] as number[])[player] += 1;
             (currentState['currentSpinStart'] as number[])[player] = Date.now();
@@ -250,11 +263,9 @@ export class RelayGameMode implements GameMode {
             const result = spin.data;
 
             const splittedSlug = options.missionPool[0].split("|");
-            const missionInfo = await axios.get(`https://www.hitmaps.com/api/v1/games/${splittedSlug[0]}/locations/${splittedSlug[1]}/missions/${splittedSlug[2]}`);
+            const missionInfo = await axios.get(`https://api.hitmaps.com/api/games/${splittedSlug[0]}/locations/${splittedSlug[1]}/missions/${splittedSlug[2]}`);
 
-            return Object.assign(result, { mission: { name: missionInfo.data[0].name, backgroundTile: missionInfo.data[0].backgroundUrl } });
-
-            // return result;
+            return Object.assign(result, { mission: { name: missionInfo.data.name, backgroundTile: missionInfo.data.backgroundUrl } });
         } catch(e) {
             return {
                 mission: {

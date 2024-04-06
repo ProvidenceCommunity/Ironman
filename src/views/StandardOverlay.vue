@@ -2,10 +2,13 @@
   <div class="container">
     <div class="container" v-if="matchData.roundLive">
       <SpinOverlay :data="currentDetails.currentSpin" class="spin" v-if="currentRound.mode === 'rouletteSpin'"></SpinOverlay>
+      <SpinOverlay :data="currentDetails.maps[currentDetails.currentSpin[spinNum]]" class="spin" v-if="currentRound.mode === 'relay' && currentDetails.maps[currentDetails.currentSpin[spinNum]] !== undefined"></SpinOverlay>
+      <SpinOverlay :data="currentDetails.currentSpins[spinNum]" class="spin" v-if="currentRound.mode === 'twoSpins'"></SpinOverlay>
       <DoneButtonOverlay :data="currentRound" v-if="currentRound.mode === 'simpleDoneButton' || currentRound.mode === 'timer'"></DoneButtonOverlay>
       <BingoOverlay :data="currentRound" v-if="currentRound.mode === 'bingo'"></BingoOverlay>
       <SelectableSpinOverlay :data="currentDetails.currentSpin" v-if="currentRound.mode === 'selectableSpin'"></SelectableSpinOverlay>
-      <CountdownBar :timeRemaining="matchData.countdown" :totalTime="matchData.totalMatchTime"></CountdownBar>
+      <CountdownBar v-if="currentRound.mode === 'relay' && currentDetails.maps[currentDetails.currentSpin[1]] !== undefined" :timeRemaining="relaySpinTimeRemaining" :totalTime="relaySpinTotalTime"></CountdownBar>
+      <CountdownBar :timeRemaining="matchData.countdown" :totalTime="matchData.totalMatchTime" v-else></CountdownBar>
     </div>
     <div class="container" v-else style="background-image: url('https://media.hitmaps.com/img/hitman3/backgrounds/menu_bg.jpg');">
       <div class="container" v-if="currentRound.arrivingTimestamp > new Date() || currentRound.arrivingTimestamp <= 0">
@@ -75,11 +78,20 @@ export default defineComponent({
         countdown: 0
       },
       updateInterval: -1,
-      matchId: ""
+      matchId: "",
+      spinNum: 0
     }
   },
   async created() {
     this.matchId = window.location.pathname.split("/").pop() as string;
+    const queryParams = new URLSearchParams(window.location.search);
+    if (queryParams.has("spin")) {
+      try {
+        this.spinNum = parseInt(queryParams.get("spin") ?? "0");
+      } catch {
+        this.spinNum = 0;
+      }
+    }
     await this.update();
     this.updateInterval = setInterval(this.update, 1000);
   },
@@ -107,7 +119,24 @@ export default defineComponent({
     },
     currentDetails(): any {
       return this.matchData.round.additionalDetails;
-    }
+    },
+    relaySpinTimeRemaining() {
+      if (this.currentRound.mode !== 'relay') return 0;
+      let countdown = 0;
+      if (this.currentDetails.currentSpinStart[this.spinNum] === -1) {
+        countdown = (this.currentRound.arrivingTimestamp + this.currentDetails.timelimit) - Date.now();
+      } else {
+        countdown = (this.currentDetails.currentSpinStart[this.spinNum] + this.currentDetails.timelimit) - Date.now();
+      }
+      return Math.floor(countdown / 1000);
+    },
+    relaySpinTotalTime(): number {
+      if (this.currentRound.mode !== 'relay') return 0;
+      if (this.currentDetails.currentSpin[this.spinNum] + 1 === this.currentDetails.maps.length || this.currentDetails.timelimit <= 0) {
+        return -1;
+      }
+      return this.currentDetails.timelimit / 1000
+    },
   }
 })
 </script>

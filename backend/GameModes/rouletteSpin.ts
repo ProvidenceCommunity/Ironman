@@ -1,7 +1,7 @@
 import {GameMode, GameModeDetails, GeneratorOption, GeneratorOptions} from "../model";
 import axios from 'axios';
 
-interface SpinGeneratorOptions {
+export interface SpinGeneratorOptions {
     missionPool: string[];
     criteriaFilters: {
         specificDisguises: boolean;
@@ -16,7 +16,7 @@ interface SpinGeneratorOptions {
     }
 }
 
-interface Spin {
+export interface Spin {
     mission: {
         slug: string;
         publicIdPrefix: number;
@@ -48,7 +48,7 @@ interface AdminEventPayload {
     playerIndex: number;
 }
 
-const missionIdToSlug: {[key: string]: string} = {
+export const missionIdToSlug: {[key: string]: string} = {
     "Freeform Training (ICA Facility)": "hitman|ica-facility|freeform-training",
     "The Final Test (ICA Facility)": "hitman|ica-facility|the-final-test",
     "The Showstopper (Paris)": "hitman|paris|the-showstopper",
@@ -148,7 +148,7 @@ export class RouletteSpinGameMode implements GameMode {
             }
         }
 
-        const spin = await this.generateSpin(spinGenOptions, options['noTargets'] as boolean);
+        const spin = await RouletteSpinGameMode.generateSpin(spinGenOptions, options['noTargets'] as boolean);
 
         return {
             currentSpin: spin,
@@ -168,7 +168,7 @@ export class RouletteSpinGameMode implements GameMode {
             (currentState['lastDone'] as number[])[payload.playerIndex] = -1;
         }
         if (event === "respin") {
-            currentState['currentSpin'] = await this.generateSpin(currentState['generatorOptions'] as SpinGeneratorOptions, currentState['noTargets'] as boolean);
+            currentState['currentSpin'] = await RouletteSpinGameMode.generateSpin(currentState['generatorOptions'] as SpinGeneratorOptions, currentState['noTargets'] as boolean);
         }
         return currentState;
     }
@@ -189,7 +189,7 @@ export class RouletteSpinGameMode implements GameMode {
         };
     }
 
-    async generateSpin(options: SpinGeneratorOptions, freestyleMode: boolean): Promise<Spin> {
+    static async generateSpin(options: SpinGeneratorOptions, freestyleMode: boolean): Promise<Spin> {
         try {
             const spin = await axios.post('https://rouletteapi.hitmaps.com/api/spins', options, { validateStatus: () => { return true } });
             const result = spin.data;
