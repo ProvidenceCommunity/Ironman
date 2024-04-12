@@ -19,6 +19,12 @@
         </v-sheet>
       </v-col>
     </v-row>
+    <v-row no-gutters v-for="(complication, idx) of condition.complications" :key="idx">
+      <v-col class="complication">
+          <span class="conditionTitle">Complication</span><br>
+          <span class="conditionDetail">{{ complication.name }}</span>
+      </v-col>
+    </v-row>
   </v-container>
 </template>
 
@@ -54,6 +60,15 @@
   .conditionImg {
     height: 99px;
     display: flex;
+  }
+  .complication {
+    background-color: red;
+    min-width: 600px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+  }
+  .complication > .conditionTitle {
+    color: white;
   }
 </style>
 

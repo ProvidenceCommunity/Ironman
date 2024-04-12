@@ -15,6 +15,9 @@
   <v-sheet class="images">
     <div class="conditionImage" :style="`background: url(${target.killMethod.tileUrl}) center -20px / cover no-repeat;`"></div>
     <div class="conditionImage" :style="`background: url(${target.disguise.tileUrl}) center -20px / cover no-repeat;`"></div>
+    <div v-if="hasNtko" class="complication">
+      No Target Pacification
+    </div>
   </v-sheet>
 </template>
 
@@ -53,11 +56,22 @@
 .images {
   height: 33%;
   max-height: 198px;
+  position: relative;
 }
 .conditionImage {
   height: 100%;
   width: 50%;
   display: inline-block;
+}
+.complication {
+  background-color: red;
+  position: absolute;
+  bottom: 0px;
+  width: 100%;
+  color: white;
+  font-size: 150%;
+  padding-left: 10px;
+  font-weight: bold;
 }
 </style>
 
@@ -77,6 +91,11 @@ export default defineComponent({
       } else {
         return this.target.killMethod.name;
       }
+    }
+  },
+  computed: {
+    hasNtko() {
+      return this.target.complications.filter((comp: {name: string}) => comp.name === "No Target Pacification").length > 0;
     }
   }
 })

@@ -49,6 +49,11 @@ export class TwoSpinsGameMode implements GameMode {
                 id: "genericKills",
                 caption: "Allow generic kills",
                 type: "boolean"
+            },
+            {
+                id: "noNtko",
+                caption: "Disable No Target Pacification",
+                type: "boolean"
             }
         ];
     }
@@ -65,8 +70,16 @@ export class TwoSpinsGameMode implements GameMode {
                 genericKills: options['genericKills'] as boolean,
                 impossibleOrDifficultKills: false,
                 additionalObjectiveDisguises: false,
-                additionalObjectives: false
+                additionalObjectives: false,
+                potentialComplications: []
             }
+        }
+
+        if (!options['noNtko']) {
+            spinGenOptions.criteriaFilters.potentialComplications.push({
+                complicationType: "No Target Pacification",
+                oddsOfReceivingComplication: 0.2
+            });
         }
 
         const spin = await RouletteSpinGameMode.generateSpin(spinGenOptions, options['noTargets'] as boolean);

@@ -13,6 +13,7 @@ export interface SpinGeneratorOptions {
         impossibleOrDifficultKills: boolean;
         additionalObjectives: boolean;
         additionalObjectiveDisguises: boolean;
+        potentialComplications: {complicationType: string, oddsOfReceivingComplication: number}[];
     }
 }
 
@@ -40,7 +41,11 @@ export interface Spin {
         disguise: {
             name: string;
             tileUrl: string;
-        }
+        },
+        complications: {
+            name: string;
+            tileUrl: string;
+        }[]
     }[]
 }
 
@@ -128,6 +133,11 @@ export class RouletteSpinGameMode implements GameMode {
                 id: "genericKills",
                 caption: "Allow generic kills",
                 type: "boolean"
+            },
+            {
+                id: "noNtko",
+                caption: "Disable No Target Pacification",
+                type: "boolean"
             }
         ];
     }
@@ -144,8 +154,16 @@ export class RouletteSpinGameMode implements GameMode {
                 genericKills: options['genericKills'] as boolean,
                 impossibleOrDifficultKills: false,
                 additionalObjectives: false,
-                additionalObjectiveDisguises: false
+                additionalObjectiveDisguises: false,
+                potentialComplications: []
             }
+        }
+
+        if (!options['noNtko']) {
+            spinGenOptions.criteriaFilters.potentialComplications.push({
+                complicationType: "No Target Pacification",
+                oddsOfReceivingComplication: 0.2
+            });
         }
 
         const spin = await RouletteSpinGameMode.generateSpin(spinGenOptions, options['noTargets'] as boolean);
@@ -199,19 +217,11 @@ export class RouletteSpinGameMode implements GameMode {
                     e.target.tileUrl = "https://media.hitmaps.com/img/hitmaps-roulette/berlin-target.png";
                 });
             }
-            // if (!options.criteriaFilters.specificDisguises) {
-            //     (result.targetConditions as {disguise: {name: string;tileUrl: string}}[]).forEach((e, index) => {
-            //         e.disguise.name = "Any disguise";
-            //         e.disguise.tileUrl = "";
-            //     });
-            // }
 
             const splittedSlug = options.missionPool[0].split("|");
             const missionInfo = await axios.get(`https://api.hitmaps.com/api/games/${splittedSlug[0]}/locations/${splittedSlug[1]}/missions/${splittedSlug[2]}`);
 
             return Object.assign(result, { mission: { name: missionInfo.data.name, backgroundTile: missionInfo.data.backgroundUrl } });
-
-            // return result;
         } catch(e) {
             return {
                 mission: {
@@ -234,7 +244,8 @@ export class RouletteSpinGameMode implements GameMode {
                     disguise: {
                         name: "",
                         tileUrl: ""
-                    }
+                    },
+                    complications: []
                 }]
             }
         }
