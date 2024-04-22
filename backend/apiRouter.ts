@@ -158,7 +158,7 @@ apiRouter.post('/match/player/:mID/:player/:event', (req, res) => {
     const round = match.rounds[match.rounds.length - 1];
     try {
         dbg("(%s)[%s] Player(%s) event %s: %o", match.id, round.mode, req.params.player, req.params['event'], req.body);
-        round.additionalDetails = GameModes[round.mode].handleUserEvent(req.params.event as string, playerIndex, req.body, round.additionalDetails);
+        round.additionalDetails = GameModes[round.mode].handleUserEvent(req.params.event as string, playerIndex, req.body, round.additionalDetails, round.arrivingTimestamp);
         res.sendStatus(204);
     } catch {
         dbg("(%s) Error while Player(%s) event %s: %o", match.id, round.mode, req.params.player, req.params['event'], req.body);

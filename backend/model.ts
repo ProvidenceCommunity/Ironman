@@ -60,7 +60,7 @@ export interface GeneratorOptions {
 export interface GameMode {
     getGeneratorOptions(): GeneratorOption[];
     generate(options: GeneratorOptions, players: string[]): Promise<GameModeDetails> | GameModeDetails;
-    handleUserEvent(event: string, player: number, payload: unknown, currentState: GameModeDetails): GameModeDetails;
+    handleUserEvent(event: string, player: number, payload: unknown, currentState: GameModeDetails, roundStartingTimestamp: number): GameModeDetails;
     handleAdminEvent(event: string, payload: unknown, currentState: GameModeDetails, roundStartingTimestamp: number): Promise<GameModeDetails> | GameModeDetails;
     getPlayerDetails(player: number, currentState: GameModeDetails, match: IronmanMatch): GameModeDetails;
 }
