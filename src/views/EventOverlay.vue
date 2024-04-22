@@ -57,7 +57,7 @@ body.overlay::-webkit-scrollbar {
 <style scoped>
 @font-face {
   font-family: playerNames;
-  src: url("~@/assets/JockeyOne-Regular.ttf");
+  src: url("@/assets/JockeyOne-Regular.ttf");
 }
 .playername {
   font-family: playerNames;
@@ -131,7 +131,7 @@ body.overlay::-webkit-scrollbar {
   width: 1920px;
   height: 1080px;
   overflow: hidden;
-  background-image: url("~@/assets/Providence-Cup-Overlay-Clean.png");
+  background-image: url("@/assets/Providence-Cup-Overlay-Clean.png");
 }
 .leftspin {
   left: -260px;
@@ -165,7 +165,7 @@ body.overlay::-webkit-scrollbar {
   width: 16px;
   height: 16px;
   position: absolute;
-  background-image: url('~@/assets/athletics.png');
+  background-image: url('@/assets/athletics.png');
   background-size: contain;
 }
 .lpRunner {

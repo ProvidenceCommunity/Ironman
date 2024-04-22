@@ -103,7 +103,7 @@ td {
 }
 
 .starred {
-  background-image: url("~@/assets/providence_icon.png");
+  background-image: url("@/assets/providence_icon.png");
   background-size: contain;
   background-repeat: no-repeat;
   position: absolute;
