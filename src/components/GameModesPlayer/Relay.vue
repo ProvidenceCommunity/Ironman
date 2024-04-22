@@ -3,14 +3,16 @@
     <div v-if="details.currentMapIndex < details.totalMaps">
       <h3>Map #{{details.currentMapIndex + 1}}/{{details.totalMaps}}</h3>
       <CountdownBar :total-time="totalTime" :time-remaining="details.countdown / 1000"></CountdownBar>
-      <template v-if="details.map !== undefined">
+      <template v-if="(details.map !== undefined)">
         <RouletteCondition v-for="(target, index) in details.map.targetConditions" :key="index" :condition="target"></RouletteCondition>
       </template>
       <h5>Please click the done button upon finishing!</h5>
       <v-btn @click="done" x-large>{{ buttonText }}</v-btn><br><br>
-      Warning! Forfeiting will add 30 minutes of RTA to your time.<br>
-      Forfeits must be accepted by the match admin.
-      <v-btn @click="forfeit" x-large color="red">{{ forfeitText }}</v-btn>
+      <template v-if="details.allowForfeits">
+        Warning! Forfeiting will add 30 minutes of RTA to your time.<br>
+        Forfeits must be accepted by the match admin.
+        <v-btn @click="forfeit" x-large color="red">{{ forfeitText }}</v-btn>
+      </template>
     </div>
     <div v-else>
       <h1>You're through with all maps!</h1>
@@ -34,14 +36,15 @@
     data() {
       return {
         sendingDone: false,
-        sentDone: false,
+        // sentDone: false,
         timer: -1,
         rejectedFor: 0,
-        map: ""
+        map: "",
+        cachedStatus: 0,
       }
     },
     created() {
-      setInterval(this.rejectionTimer, 1000);
+      this.timer = setInterval(this.rejectionTimer, 1000);
     },
     beforeUnmount() {
       clearInterval(this.timer);
@@ -51,55 +54,87 @@
         this.sendingDone = true;
         this.map = this.details.map.mission.slug;
         const resp = await post('/api/match/player/' + this.matchId + '/' + this.player + '/done', {});
+        this.sendingDone = false;
         if (resp.status !== 204) {
           this.$emit("error", "An error occurred while sending the 'done' signal. Please inform your match admin via discord.");
+        } else {
+          this.cachedStatus = 1;
         }
       },
       async forfeit() {
         this.sendingDone = true;
         this.map = this.details.map.mission.slug;
         const resp = await post('/api/match/player/' + this.matchId + '/' + this.player + '/forfeit', {});
+        this.sendingDone = false;
         if (resp.status !== 204) {
           this.$emit("error", "An error occurred while sending the 'done' signal. Please inform your match admin via discord.");
+        } else {
+          this.cachedStatus = 3;
         }
       },
       rejectionTimer() {
-        if (this.sendingDone && (this.details.doneStatus === 1 || this.details.doneStatus === 3)) {
-          this.sendingDone = false;
-          this.sentDone = true;
+        if (this.rejectedFor > 0) {
+          this.rejectedFor--;
         }
-        if (this.details.doneStatus === 0 && this.sentDone) {
-          if (this.details.map.mission.slug !== this.map) {
-            this.sentDone = false;
-          } else {
-            this.rejectedFor++;
-          }
-        }
-        if (this.rejectedFor >= 10) {
-          this.rejectedFor = 0;
-          this.sentDone = false;
-        }
+        return;
+
+        // if (this.sendingDone && (this.details.doneStatus === 1 || this.details.doneStatus === 3)) {
+        //   this.sendingDone = false;
+        //   this.sentDone = true;
+        // }
+        // if (this.details.doneStatus === 0 && this.sentDone) {
+        //   if (this.details.map.mission.slug !== this.map) {
+        //     this.sentDone = false;
+        //   } else {
+        //     this.rejectedFor++;
+        //   }
+        // }
+        // if (this.rejectedFor >= 10) {
+        //   this.rejectedFor = 0;
+        //   this.sentDone = false;
+        // }
       },
     },
     computed: {
       buttonText() {
-        if (this.details.doneStatus === 0 && this.sendingDone) return "Sending done...";
-        if (this.details.doneStatus === 0 && !this.sentDone) return "DONE";
-        if (this.details.doneStatus === 0 && this.sentDone) {
-          if (this.details.map.mission.slug !== this.map) {
+        if (this.sendingDone) return "Sending done...";
+        if (this.rejectedFor > 0) return "REJECTED!";
+        switch (this.cachedStatus) {
+          case 0:
+            return "DONE";
+          case 1:
+            return "Awaiting verification...";
+          case 2:
+            return "Run verified!"
+          case 3:
+            return "Awaiting forfeit accept...";
+          case 4:
+            return "Forfeit accepted!";
+          default:
             return "";
-          } else {
-            return "REJECTED!";
-          }
         }
-        if (this.details.doneStatus === 1) return "Awaiting verification...";
-        if (this.details.doneStatus === 3) return "Awaiting forfeit accept...";
-        if (this.details.doneStatus === 2) return "Run verified!";
-        if (this.details.doneStatus === 4) return "Forfeit accepted!";
-        return "DONE";
+        
+
+        // if (this.details.doneStatus === 0 && this.sendingDone) return "Sending done...";
+        // if (this.details.doneStatus === 0 && !this.sentDone) return "DONE";
+        // if (this.details.doneStatus === 0 && this.sentDone) {
+        //   if (this.details.map.mission.slug !== this.map) {
+        //     return "";
+        //   } else {
+        //     return "REJECTED!";
+        //   }
+        // }
+        // if (this.details.doneStatus === 1) return "Awaiting verification...";
+        // if (this.details.doneStatus === 3) return "Awaiting forfeit accept...";
+        // if (this.details.doneStatus === 2) return "Run verified!";
+        // if (this.details.doneStatus === 4) return "Forfeit accepted!";
+        // return "DONE";
       },
       forfeitText() {
-        if (this.details.doneStatus === 0 && !this.sentDone) return "Forfeit this map";
+        if (!this.sendingDone && this.rejectedFor <= 0 && this.cachedStatus === 0) {
+          return "Forfeit this map";
+        }
+        // if (this.details.doneStatus === 0 && !this.sentDone) return "Forfeit this map";
         return this.buttonText;
       },
       totalTime() {
@@ -108,6 +143,16 @@
         } else {
           return this.details.timelimit / 1000;
         }
+      }
+    },
+    watch: {
+      details(newDetails: { doneStatus: number; map: { mission: { slug: string; }} }) {
+        if (this.cachedStatus !== 0 && newDetails.doneStatus === 0 && this.map !== newDetails.map.mission.slug) {
+          this.rejectedFor = 10;
+        }
+
+        this.cachedStatus = newDetails.doneStatus;
+        this.map = newDetails.map.mission.slug;
       }
     }
   })

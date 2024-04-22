@@ -19,6 +19,7 @@ interface RelayDetails extends GameModeDetails {
     maps: Spin[];
     spinGenOptions: SpinGeneratorOptions[];
     autoAccept: boolean;
+    allowForfeits: boolean;
 }
 
 export class RelayGameMode implements GameMode {
@@ -33,6 +34,11 @@ export class RelayGameMode implements GameMode {
                 id: "autoaccept",
                 type: "boolean",
                 caption: "Automatically accept any done presses"
+            },
+            {
+                id: "allowforfeits",
+                type: "boolean",
+                caption: "Allow forfeits",
             },
             {
                 id: "trilogy",
@@ -118,6 +124,7 @@ export class RelayGameMode implements GameMode {
             maps: spins,
             spinGenOptions: spinGenOptions,
             autoAccept: options['autoaccept'] as boolean,
+            allowForfeits: options['allowforfeits'] as boolean
         };
     }
 
@@ -148,11 +155,11 @@ export class RelayGameMode implements GameMode {
 
     handleUserEvent(event: string, player: number, payload: unknown, currentState: RelayDetails, roundStartingTimestamp: number): RelayDetails {
         if (event === "done") {
+            currentState.lastDone[player] = Date.now();
             if (currentState.autoAccept) {
                 currentState = this.handleDone(player, currentState, roundStartingTimestamp);
             } else {
                 currentState.doneStatus[player] = 1;
-                currentState.lastDone[player] = Date.now();
             }
         }
         if (event === "forfeit") {
@@ -191,7 +198,8 @@ export class RelayGameMode implements GameMode {
             currentMapIndex: currentState.currentSpin[player],
             totalMaps: currentState.maps.length,
             countdown,
-            timelimit: currentState.timelimit
+            timelimit: currentState.timelimit,
+            allowForfeits: currentState.allowForfeits
         };
     }
 
