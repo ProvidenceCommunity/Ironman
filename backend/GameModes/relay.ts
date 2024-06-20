@@ -182,7 +182,7 @@ export class RelayGameMode implements GameMode {
             countdown = (currentState.currentSpinStart[player] + currentState.timelimit) - Date.now();
         }
 
-        if (countdown > 0 && currentState.doneStatus[player] === 0 && currentState.currentSpin[player]+1 !== currentState.maps.length) {
+        if (countdown <= 0 && countdown !== -1 && currentState.doneStatus[player] === 0 && currentState.currentSpin[player]+1 !== currentState.maps.length) {
             currentState.rta[player][currentState.currentSpin[player]] = FORFEIT_TIME;
             currentState.currentSpin[player] += 1;
             currentState.currentSpinStart[player] = Date.now();
