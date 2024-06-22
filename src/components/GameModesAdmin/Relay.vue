@@ -17,6 +17,9 @@
               <v-btn @click="accept(index, 'Forfeit')" color="green">Accept FORFEIT</v-btn>
               <v-btn @click="reject(index, 'Forfeit')" color="red">Reject FORFEIT</v-btn>
             </template>
+            <template v-if="!isOnFirstMap(index) && !isPlayerDone(index) && !hasPlayerForfeitted(index)">
+              <v-btn @click="undoDone(index)" color="yellow">Undo last map</v-btn>
+            </template>
         </template>
       </v-list-item>
     </v-list>
@@ -107,6 +110,9 @@
       hasPlayerForfeitted(index: number): boolean {
         return this.details.doneStatus[index] === 3;
       },
+      isOnFirstMap(index: number): boolean {
+        return this.details.currentSpin[index] === 0;
+      },
       timestampToLocale(timestamp: number): string {
         return DateTime.fromMillis(timestamp).toLocaleString(DateTime.DATETIME_SHORT_WITH_SECONDS);
       },
@@ -127,7 +133,13 @@
         if (resp.status !== 204) {
           this.$emit("error", "An error occurred while respinning.");
         }
+      },
+     async undoDone(player: number) {
+      const resp = await post(`/api/match/admin/${this.matchId}/undo`, {playerIndex: player});
+      if (resp.status !== 204) {
+        this.$emit("error", "An error occured while undoing the player's last map.");
       }
+     }
     }
   })
   </script>

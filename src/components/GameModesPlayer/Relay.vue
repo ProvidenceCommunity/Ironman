@@ -7,11 +7,11 @@
         <RouletteCondition v-for="(target, index) in details.map.targetConditions" :key="index" :condition="target"></RouletteCondition>
       </template>
       <h5>Please click the done button upon finishing!</h5>
-      <v-btn @click="done" x-large>{{ buttonText }}</v-btn><br><br>
+      <v-btn @click="done" size="x-large">{{ buttonText }}</v-btn><br><br>
       <template v-if="details.allowForfeits">
-        Warning! Forfeiting will add 30 minutes of RTA to your time.<br>
+        Warning! Forfeiting will add {{ forfeitTime }} of RTA to your time.<br>
         Forfeits must be accepted by the match admin.
-        <v-btn @click="forfeit" x-large color="red">{{ forfeitText }}</v-btn>
+        <v-btn @click="forfeit" color="red">{{ forfeitText }}</v-btn>
       </template>
     </div>
     <div v-else>
@@ -24,6 +24,7 @@
   import {post} from "@/http";
   import RouletteCondition from "@/components/RouletteCondition.vue";
   import CountdownBar from "@/components/CountdownBar.vue";
+import { Duration } from "luxon";
   
   export default defineComponent({
     name: "RelayPlayer",
@@ -31,12 +32,11 @@
     emits: ['error'],
     components: {
       CountdownBar,
-      RouletteCondition
+      RouletteCondition,
     },
     data() {
       return {
         sendingDone: false,
-        // sentDone: false,
         timer: -1,
         rejectedFor: 0,
         map: "",
@@ -76,23 +76,6 @@
         if (this.rejectedFor > 0) {
           this.rejectedFor--;
         }
-        return;
-
-        // if (this.sendingDone && (this.details.doneStatus === 1 || this.details.doneStatus === 3)) {
-        //   this.sendingDone = false;
-        //   this.sentDone = true;
-        // }
-        // if (this.details.doneStatus === 0 && this.sentDone) {
-        //   if (this.details.map.mission.slug !== this.map) {
-        //     this.sentDone = false;
-        //   } else {
-        //     this.rejectedFor++;
-        //   }
-        // }
-        // if (this.rejectedFor >= 10) {
-        //   this.rejectedFor = 0;
-        //   this.sentDone = false;
-        // }
       },
     },
     computed: {
@@ -113,28 +96,11 @@
           default:
             return "";
         }
-        
-
-        // if (this.details.doneStatus === 0 && this.sendingDone) return "Sending done...";
-        // if (this.details.doneStatus === 0 && !this.sentDone) return "DONE";
-        // if (this.details.doneStatus === 0 && this.sentDone) {
-        //   if (this.details.map.mission.slug !== this.map) {
-        //     return "";
-        //   } else {
-        //     return "REJECTED!";
-        //   }
-        // }
-        // if (this.details.doneStatus === 1) return "Awaiting verification...";
-        // if (this.details.doneStatus === 3) return "Awaiting forfeit accept...";
-        // if (this.details.doneStatus === 2) return "Run verified!";
-        // if (this.details.doneStatus === 4) return "Forfeit accepted!";
-        // return "DONE";
       },
       forfeitText() {
         if (!this.sendingDone && this.rejectedFor <= 0 && this.cachedStatus === 0) {
           return "Forfeit this map";
         }
-        // if (this.details.doneStatus === 0 && !this.sentDone) return "Forfeit this map";
         return this.buttonText;
       },
       totalTime() {
@@ -143,6 +109,13 @@
         } else {
           return this.details.timelimit / 1000;
         }
+      },
+      forfeitTime() {
+        if (this.details?.timelimit <= 0) {
+          return "0 minutes"
+        }
+        const time = Duration.fromMillis(this.details.timelimit, { locale: 'en-US' }).rescale();
+        return time.toHuman();
       }
     },
     watch: {

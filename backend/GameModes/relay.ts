@@ -7,8 +7,6 @@ interface AdminEventPayload {
     mapIndex?: number;
 }
 
-const FORFEIT_TIME = 1800000;
-
 interface RelayDetails extends GameModeDetails {
     timelimit: number;
     doneStatus: number[];
@@ -33,7 +31,7 @@ export class RelayGameMode implements GameMode {
             {
                 id: "autoaccept",
                 type: "boolean",
-                caption: "Automatically accept any done presses"
+                caption: "Automatically accept any done/forfeit presses"
             },
             {
                 id: "allowforfeits",
@@ -137,18 +135,13 @@ export class RelayGameMode implements GameMode {
             currentState.lastDone[payload.playerIndex as number] = -1;
         }
         if (event === "acceptForfeit") {
-            currentState.rta[payload.playerIndex as number][currentState.currentSpin[payload.playerIndex as number]] = FORFEIT_TIME;
-            currentState.currentSpin[payload.playerIndex as number] += 1
-            if (currentState.currentSpin[payload.playerIndex as number] === currentState.maps.length) {
-                currentState.doneStatus[payload.playerIndex as number] = 4;
-            } else {
-                currentState.currentSpinStart[payload.playerIndex as number] = Date.now();
-                currentState.doneStatus[payload.playerIndex as number] = 0;
-                currentState.lastDone[payload.playerIndex as number] = -1;
-            }
+            currentState = this.handleForfeit(payload.playerIndex as number, currentState);
         }
         if (event === "respin") {
             currentState.maps[payload.mapIndex as number] = await RouletteSpinGameMode.generateSpin(currentState.spinGenOptions[payload.mapIndex as number], false);
+        }
+        if (event === "undo") {
+            currentState = this.undoLastSpin(payload.playerIndex as number, currentState);
         }
         return currentState;
     }
@@ -163,8 +156,12 @@ export class RelayGameMode implements GameMode {
             }
         }
         if (event === "forfeit") {
-            currentState.doneStatus[player] = 3;
             currentState.lastDone[player] = Date.now();
+            if (currentState.autoAccept) {
+                currentState = this.handleForfeit(player, currentState);
+            } else {
+                currentState.doneStatus[player] = 3;
+            }
         }
         return currentState;
     }
@@ -183,7 +180,7 @@ export class RelayGameMode implements GameMode {
         }
 
         if (countdown <= 0 && countdown !== -1 && currentState.doneStatus[player] === 0 && currentState.currentSpin[player]+1 !== currentState.maps.length) {
-            currentState.rta[player][currentState.currentSpin[player]] = FORFEIT_TIME;
+            currentState.rta[player][currentState.currentSpin[player]] = currentState.timelimit;
             currentState.currentSpin[player] += 1;
             currentState.currentSpinStart[player] = Date.now();
 
@@ -217,6 +214,37 @@ export class RelayGameMode implements GameMode {
             currentState.doneStatus[player] = 0;
             currentState.lastDone[player] = -1;
         }
+        return currentState;
+    }
+
+    private handleForfeit(player: number, currentState: RelayDetails): RelayDetails {
+        currentState.rta[player][currentState.currentSpin[player]] = currentState.timelimit;
+        currentState.currentSpin[player] += 1
+        if (currentState.currentSpin[player] === currentState.maps.length) {
+            currentState.doneStatus[player] = 4;
+        } else {
+            currentState.currentSpinStart[player] = Date.now();
+            currentState.doneStatus[player] = 0;
+            currentState.lastDone[player] = -1;
+        }
+        return currentState;
+    }
+
+    private undoLastSpin(player: number, currentState: RelayDetails): RelayDetails {
+        if (currentState.currentSpin[player] === 0) {
+            return currentState;
+        }
+
+        currentState.currentSpin[player] -= 1;
+        if (currentState.rta[player][currentState.currentSpin[player]] === currentState.timelimit) {
+            currentState.currentSpinStart[player] = Date.now();
+        } else {
+            currentState.currentSpinStart[player] = Date.now() - currentState.rta[player][currentState.currentSpin[player]];
+        }
+        currentState.rta[player][currentState.currentSpin[player]] = 0;
+        currentState.doneStatus[player] = 0;
+        currentState.lastDone[player] = -1;
+
         return currentState;
     }
 
