@@ -1,2 +1,2 @@
-yarn install --ignore-engines
-yarn backend
+npm i
+npm run backend
