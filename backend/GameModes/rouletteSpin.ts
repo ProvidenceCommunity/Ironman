@@ -78,6 +78,7 @@ export const missionIdToSlug: {[key: string]: string} = {
     "Illusions of Grandeur (Mumbai)": "hitman2|mumbai|illusions-of-grandeur",
     "Another Life (Whittleton Creek)": "hitman2|whittleton-creek|another-life",
     "A Bitter Pill (Whittleton Creek)": "hitman2|whittleton-creek|a-bitter-pill",
+    "Shadows in the Water (Ambrose Island)": "hitman2|ambrose-island|shadows-in-the-water",
     "The Ark Society (Isle of Sgàil)": "hitman2|isle-of-sgail|ark-society",
     "Golden Handshake (New York)": "hitman2|new-york|golden-handshake",
     "The Last Resort (Haven Island)": "hitman2|haven-island|the-last-resort",
@@ -86,8 +87,7 @@ export const missionIdToSlug: {[key: string]: string} = {
     "Apex Predator (Berlin)": "hitman3|berlin|apex-predator",
     "End Of An Era (Chongqing)": "hitman3|chongqing|end-of-an-era",
     "The Farewell (Mendoza)": "hitman3|mendoza|the-farewell",
-    "Untouchable (Carpathian Mountains)": "hitman3|carpathian-mountains|untouchable",
-    "Shadows in the Water (Ambrose Island)": "hitman3|ambrose-island|shadows-in-the-water"
+    "Untouchable (Carpathian Mountains)": "hitman3|carpathian-mountains|untouchable"
 }
 
 export class RouletteSpinGameMode implements GameMode {
