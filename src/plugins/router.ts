@@ -6,6 +6,7 @@ import PlayerClientView from '../views/PlayerClient.vue';
 import OverlayView from '../views/StandardOverlay.vue';
 import LocalLoginView from '../views/LocalLogin.vue';
 import EventOverlay from "@/views/EventOverlay.vue";
+import WideOverlay from '@/views/WideOverlay.vue';
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -34,9 +35,14 @@ const routes: Array<RouteRecordRaw> = [
     component: OverlayView
   },
   {
-    path: '/tpc2-overlay/:matchID',
+    path: '/event-overlay/:matchID',
     name: 'eventoverlay',
     component: EventOverlay
+  },
+  {
+    path: '/wide-overlay/:matchID',
+    name: 'wideoverlay',
+    component: WideOverlay
   },
   {
     path: '/login',

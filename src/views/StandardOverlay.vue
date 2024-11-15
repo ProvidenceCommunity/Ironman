@@ -75,7 +75,9 @@ export default defineComponent({
         round: {
           additionalDetails: {}
         },
-        countdown: 0
+        countdown: 0,
+        roundLive: false,
+        totalMatchTime: -1
       },
       updateInterval: -1,
       matchId: "",

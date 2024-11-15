@@ -36,7 +36,10 @@
                   <b>Shoutcast-Overlay:</b> <a :href="getOverlayLink()">{{ getOverlayLink() }}</a> (1300px x 600px)
                 </li>
                 <li>
-                  <b>TPC2-Overlay:</b> <a :href="getEventOverlayLink()">{{ getEventOverlayLink() }}</a> (1920px x 1080px)
+                  <b>Wide-Overlay:</b> <a :href="getWideOverlayLink()">{{ getWideOverlayLink() }}</a> (1900px x 6000px)
+                </li>
+                <li>
+                  <b>FFF-Overlay:</b> <a :href="getEventOverlayLink()">{{ getEventOverlayLink() }}</a> (1920px x 1080px)
                 </li>
               </ul>
             </v-expansion-panel-text>
@@ -50,7 +53,7 @@
             <v-expansion-panel-text>
               <ul>
                 <li v-for="(player, index) of sanetizedPlayers" :key="index">
-                  <v-text-field v-model="playerScores[index]" hide-details="true" density="compact" :label="player" @change="updateScores" type="number"></v-text-field>
+                  <v-text-field v-model="playerScores[index]" :hide-details="true" density="compact" :label="player" @change="updateScores" type="number"></v-text-field>
                 </li>
               </ul>
             </v-expansion-panel-text>
@@ -180,8 +183,11 @@ export default defineComponent({
     getOverlayLink(): string {
       return `${window.location.origin}/overlay/${this.matchId}`
     },
+    getWideOverlayLink(): string {
+      return `${window.location.origin}/wide-overlay/${this.matchId}`
+    },
     getEventOverlayLink(): string {
-      return `${window.location.origin}/tpc2-overlay/${this.matchId}`
+      return `${window.location.origin}/event-overlay/${this.matchId}`
       // return "";
     },
     async doneAddingRound(values: any, title: string) {

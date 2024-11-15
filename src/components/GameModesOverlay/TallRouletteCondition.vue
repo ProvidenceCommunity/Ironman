@@ -1,5 +1,5 @@
 <template>
-  <v-sheet class="target" :style="`background: url(${ target.target.tileUrl }) center -30px no-repeat; background-size: cover;`">
+  <v-sheet class="target" :style="`background: url(${ target.target.tileUrl }) center 20% no-repeat; background-size: cover;`">
     <span class="targetName">{{ target.target.name }}</span>
   </v-sheet>
   <v-sheet class="conditions">
