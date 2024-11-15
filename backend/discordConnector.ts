@@ -233,8 +233,7 @@ export default class DiscordConnector {
 
     private async fetchAvatar(playerId: string): Promise<string> {
         try {
-            const guild = await this.discord.guilds.fetch(this.guildId);
-            const user = await guild.members.fetch(playerId);
+            const user = await this.discord.users.fetch(playerId);
             return user.displayAvatarURL();
         } catch {
             return "";
