@@ -25,3 +25,4 @@ pnpm-debug.log*
 config.json
 database.json
 .env
+app.cjs
