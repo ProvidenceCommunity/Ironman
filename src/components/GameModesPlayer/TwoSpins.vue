@@ -1,10 +1,10 @@
 <template>
   <h1>{{ details.currentSpins[0].mission.name }}</h1>
   <h3>Spin 1:</h3>
-  <RouletteCondition v-for="(target, index) in details.currentSpins[0].targetConditions" :key="index" :condition="target"></RouletteCondition>
+  <RouletteSpin :spin="details.currentSpins[0]" />
   <v-divider></v-divider>
   <h3>Spin 2:</h3>
-  <RouletteCondition v-for="(target, index) in details.currentSpins[1].targetConditions" :key="index" :condition="target"></RouletteCondition>
+  <RouletteSpin :spin="details.currentSpins[1]" />
   <h5>Please click the done button upon finishing!</h5>
   <v-btn @click="done" x-large>{{ buttonText }}</v-btn>
 </template>
@@ -12,14 +12,14 @@
 <script lang="ts">
 import {defineComponent} from "vue";
 import {post} from "@/http";
-import RouletteCondition from "@/components/RouletteCondition.vue";
+import RouletteSpin from '@/components/RouletteSpin.vue';
 
 export default defineComponent({
   name: "TwoSpinsPlayer",
   props: ['matchId', 'player', 'details'],
   emits: ['error'],
   components: {
-    RouletteCondition
+    RouletteSpin
   },
   data() {
     return {

@@ -138,6 +138,11 @@ export class RouletteSpinGameMode implements GameMode {
                 id: "noNtko",
                 caption: "Disable No Target Pacification",
                 type: "boolean"
+            },
+            {
+                id: "hardOrImpossible",
+                caption: "Allow hard or impossible conditions",
+                type: "boolean"
             }
         ];
     }
@@ -152,7 +157,7 @@ export class RouletteSpinGameMode implements GameMode {
                 specificAccidents: !options['noAccidents'] as boolean,
                 uniqueTargetKills: options['uniqueTargetKills'] as boolean,
                 genericKills: options['genericKills'] as boolean,
-                impossibleOrDifficultKills: false,
+                impossibleOrDifficultKills: options['hardOrImpossible'] as boolean,
                 additionalObjectives: false,
                 additionalObjectiveDisguises: false,
                 potentialComplications: []

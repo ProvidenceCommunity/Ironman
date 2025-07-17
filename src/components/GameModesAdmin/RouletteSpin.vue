@@ -13,18 +13,18 @@
   </v-list>
   <h1>{{ details.currentSpin.mission.name }}</h1>
   <v-btn @click="respin">Respin</v-btn><br>
-  <RouletteCondition v-for="(target, index) in details.currentSpin.targetConditions" :key="index" :condition="target"></RouletteCondition>
+  <RouletteSpin :spin="details.currentSpin" />
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
 import {post} from "@/http";
-import RouletteCondition from "@/components/RouletteCondition.vue";
+import RouletteSpin from "@/components/RouletteSpin.vue";
 import {DateTime} from "luxon";
 
 export default defineComponent({
   name: "RouletteSpinAdmin",
-  components: {RouletteCondition},
+  components: {RouletteSpin},
   props: [ 'players', 'details', 'matchId' ],
   emits: [ 'error' ],
   data() {

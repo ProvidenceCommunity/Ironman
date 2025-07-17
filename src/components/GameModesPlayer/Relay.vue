@@ -3,9 +3,7 @@
     <div v-if="details.currentMapIndex < details.totalMaps">
       <h3>Map #{{details.currentMapIndex + 1}}/{{details.totalMaps}}</h3>
       <CountdownBar :total-time="totalTime" :time-remaining="details.countdown / 1000"></CountdownBar>
-      <template v-if="(details.map !== undefined)">
-        <RouletteCondition v-for="(target, index) in details.map.targetConditions" :key="index" :condition="target"></RouletteCondition>
-      </template>
+      <RouletteSpin v-if="details.map !== undefined" :spin="details.map" />
       <h5>Please click the done button upon finishing!</h5>
       <v-btn @click="done" size="x-large">{{ buttonText }}</v-btn><br><br>
       <template v-if="details.allowForfeits">
@@ -22,7 +20,7 @@
   <script lang="ts">
   import {defineComponent} from "vue";
   import {post} from "@/http";
-  import RouletteCondition from "@/components/RouletteCondition.vue";
+  import RouletteSpin from '@/components/RouletteSpin.vue';
   import CountdownBar from "@/components/CountdownBar.vue";
 import { Duration } from "luxon";
   
@@ -32,7 +30,7 @@ import { Duration } from "luxon";
     emits: ['error'],
     components: {
       CountdownBar,
-      RouletteCondition,
+      RouletteSpin,
     },
     data() {
       return {

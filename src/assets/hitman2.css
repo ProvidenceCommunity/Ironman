@@ -1,0 +1,562 @@
+@font-face {
+    font-family: 'hitman2';
+    src: url('@/assets/fonts/hitman2.eot?47724031');
+    src: url('@/assets/fonts/hitman2.eot?47724031#iefix') format('embedded-opentype'), url('@/assets/fonts/hitman2.woff2?47724031') format('woff2'),
+        url('@/assets/fonts/hitman2.woff?47724031') format('woff'), url('@/assets/fonts/hitman2.ttf?47724031') format('truetype'),
+        url('@/assets/fonts/hitman2.svg?47724031#hitman2') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+[class^='hm-']:before,
+[class*=' hm-']:before {
+    font-family: 'hitman2';
+    font-style: normal;
+    font-weight: normal;
+    speak: never;
+
+    display: inline-block;
+    text-decoration: inherit;
+    width: 1em;
+    /*margin-right: .2em;*/
+    text-align: center;
+    /* opacity: .8; */
+
+    /* For safety - reset parent styles, that can break glyph codes*/
+    font-variant: normal;
+    text-transform: none;
+
+    /* fix buttons height, for twitter bootstrap */
+    line-height: 1em;
+
+    /* Animation center compensation - margins should be symmetric */
+    /* remove if not needed */
+    /*margin-left: .2em;*/
+
+    /* you can be more comfortable with increased icons size */
+    /* font-size: 120%; */
+
+    /* Font smoothing. That was taken from TWBS */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+
+    /* Uncomment for 3D effect */
+    /* text-shadow: 1px 1px 1px rgba(127, 127, 127, 0.3); */
+}
+
+.hm-bullet-dancer:before {
+    content: '\e800';
+} /* '' */
+.hm-challenge:before {
+    content: '\e801';
+} /* '' */
+.hm-challenge-category-assassination:before {
+    content: '\e802';
+} /* '' */
+.hm-challenge-category-discovery:before {
+    content: '\e803';
+} /* '' */
+.hm-challenge-category-item:before {
+    content: '\e804';
+} /* '' */
+.hm-check:before {
+    content: '\e805';
+} /* '' */
+.hm-civilians:before {
+    content: '\e806';
+} /* '' */
+.hm-close-range:before {
+    content: '\e807';
+} /* '' */
+.hm-completion:before {
+    content: '\e808';
+} /* '' */
+.hm-completion-list:before {
+    content: '\e809';
+} /* '' */
+.hm-complication:before {
+    content: '\e80a';
+} /* '' */
+.hm-complication-optional:before {
+    content: '\e80b';
+} /* '' */
+.hm-concealed-weapon:before {
+    content: '\e80c';
+} /* '' */
+.hm-contract:before {
+    content: '\e80d';
+} /* '' */
+.hm-controller:before {
+    content: '\e80e';
+} /* '' */
+.hm-corrupt:before {
+    content: '\e80f';
+} /* '' */
+.hm-credits:before {
+    content: '\e810';
+} /* '' */
+.hm-crowd-control:before {
+    content: '\e811';
+} /* '' */
+.hm-cutscene:before {
+    content: '\e812';
+} /* '' */
+.hm-damage:before {
+    content: '\e813';
+} /* '' */
+.hm-difficulty-1:before {
+    content: '\e814';
+} /* '' */
+.hm-difficulty-2:before {
+    content: '\e815';
+} /* '' */
+.hm-difficulty-3:before {
+    content: '\e816';
+} /* '' */
+.hm-difficulty-casual:before {
+    content: '\e817';
+} /* '' */
+.hm-difficulty-level:before {
+    content: '\e818';
+} /* '' */
+.hm-difficulty-professional:before {
+    content: '\e819';
+} /* '' */
+.hm-difficulty-master:before {
+    content: '\e81a';
+} /* '' */
+.hm-disguise:before {
+    content: '\e81b';
+} /* '' */
+.hm-distraction:before {
+    content: '\e81c';
+} /* '' */
+.hm-download:before {
+    content: '\e81d';
+} /* '' */
+.hm-edit:before {
+    content: '\e81e';
+} /* '' */
+.hm-elevation:before {
+    content: '\e81f';
+} /* '' */
+.hm-elusive:before {
+    content: '\e820';
+} /* '' */
+.hm-emote:before {
+    content: '\e821';
+} /* '' */
+.hm-escalation:before {
+    content: '\e822';
+} /* '' */
+.hm-exit:before {
+    content: '\e823';
+} /* '' */
+.hm-explosive:before {
+    content: '\e824';
+} /* '' */
+.hm-extended-mag:before {
+    content: '\e825';
+} /* '' */
+.hm-extended-mag-1:before {
+    content: '\e826';
+} /* '' */
+.hm-extended-mag-2:before {
+    content: '\e827';
+} /* '' */
+.hm-extended-mag-3:before {
+    content: '\e828';
+} /* '' */
+.hm-extended-mag-4:before {
+    content: '\e829';
+} /* '' */
+.hm-eye-tracking:before {
+    content: '\e82a';
+} /* '' */
+.hm-fast-reload:before {
+    content: '\e82b';
+} /* '' */
+.hm-failed:before {
+    content: '\e82c';
+} /* '' */
+.hm-fast-reload-2:before {
+    content: '\e82d';
+} /* '' */
+.hm-fast-reload-3:before {
+    content: '\e82e';
+} /* '' */
+.hm-fast-reload-4:before {
+    content: '\e82f';
+} /* '' */
+.hm-favorite-contracts:before {
+    content: '\e830';
+} /* '' */
+.hm-featured:before {
+    content: '\e831';
+} /* '' */
+.hm-fiber-wire:before {
+    content: '\e832';
+} /* '' */
+.hm-fixed:before {
+    content: '\e833';
+} /* '' */
+.hm-frisk:before {
+    content: '\e834';
+} /* '' */
+.hm-full-auto:before {
+    content: '\e835';
+} /* '' */
+.hm-game:before {
+    content: '\e836';
+} /* '' */
+.hm-game-hud:before {
+    content: '\e837';
+} /* '' */
+.hm-gear:before {
+    content: '\e838';
+} /* '' */
+.hm-graphics:before {
+    content: '\e839';
+} /* '' */
+.hm-hail-storm:before {
+    content: '\e83a';
+} /* '' */
+.hm-hidden:before {
+    content: '\e83b';
+} /* '' */
+.hm-high-pressure:before {
+    content: '\e83c';
+} /* '' */
+.hm-hm-added-to-list:before {
+    content: '\e83d';
+} /* '' */
+.hm-ica:before {
+    content: '\e83e';
+} /* '' */
+.hm-info:before {
+    content: '\e83f';
+} /* '' */
+.hm-intel:before {
+    content: '\e840';
+} /* '' */
+.hm-inventory:before {
+    content: '\e841';
+} /* '' */
+.hm-ioi-account:before {
+    content: '\e842';
+} /* '' */
+.hm-key:before {
+    content: '\e843';
+} /* '' */
+.hm-knock-down:before {
+    content: '\e844';
+} /* '' */
+.hm-language:before {
+    content: '\e845';
+} /* '' */
+.hm-leaderboard:before {
+    content: '\e846';
+} /* '' */
+.hm-leaderboard-friends:before {
+    content: '\e847';
+} /* '' */
+.hm-livetile-news:before {
+    content: '\e848';
+} /* '' */
+.hm-load:before {
+    content: '\e849';
+} /* '' */
+.hm-loadout:before {
+    content: '\e84a';
+} /* '' */
+.hm-location:before {
+    content: '\e84b';
+} /* '' */
+.hm-locked:before {
+    content: '\e84c';
+} /* '' */
+.hm-long-range:before {
+    content: '\e84d';
+} /* '' */
+.hm-map:before {
+    content: '\e84e';
+} /* '' */
+.hm-marksman:before {
+    content: '\e84f';
+} /* '' */
+.hm-marksman-2:before {
+    content: '\e850';
+} /* '' */
+.hm-marksman-3:before {
+    content: '\e851';
+} /* '' */
+.hm-marksman-4:before {
+    content: '\e852';
+} /* '' */
+.hm-melee:before {
+    content: '\e853';
+} /* '' */
+.hm-mission:before {
+    content: '\e854';
+} /* '' */
+.hm-mouse-keyboard:before {
+    content: '\e855';
+} /* '' */
+.hm-next-level:before {
+    content: '\e856';
+} /* '' */
+.hm-nodus:before {
+    content: '\e857';
+} /* '' */
+.hm-npc:before {
+    content: '\e858';
+} /* '' */
+.hm-nvidia:before {
+    content: '\e859';
+} /* '' */
+.hm-objective:before {
+    content: '\e85a';
+} /* '' */
+.hm-one-man-army:before {
+    content: '\e85b';
+} /* '' */
+.hm-online:before {
+    content: '\e85c';
+} /* '' */
+.hm-opportunity-completed:before {
+    content: '\e85d';
+} /* '' */
+.hm-opportunity-discovered:before {
+    content: '\e85e';
+} /* '' */
+.hm-opportunity-disabled:before {
+    content: '\e85f';
+} /* '' */
+.hm-opportunity-search:before {
+    content: '\e860';
+} /* '' */
+.hm-opportunity-failed:before {
+    content: '\e861';
+} /* '' */
+.hm-opportunity-tracked:before {
+    content: '\e862';
+} /* '' */
+.hm-opportunity-undiscovered:before {
+    content: '\e863';
+} /* '' */
+.hm-outbreak:before {
+    content: '\e864';
+} /* '' */
+.hm-piercing:before {
+    content: '\e865';
+} /* '' */
+.hm-play:before {
+    content: '\e866';
+} /* '' */
+.hm-point-shooting:before {
+    content: '\e867';
+} /* '' */
+.hm-poison:before {
+    content: '\e868';
+} /* '' */
+.hm-profile:before {
+    content: '\e869';
+} /* '' */
+.hm-publish:before {
+    content: '\e86a';
+} /* '' */
+.hm-rate-of-fire:before {
+    content: '\e86b';
+} /* '' */
+.hm-rate-of-fire-2:before {
+    content: '\e86c';
+} /* '' */
+.hm-rate-of-fire-3:before {
+    content: '\e86d';
+} /* '' */
+.hm-rate-of-fire-4:before {
+    content: '\e86e';
+} /* '' */
+.hm-remote:before {
+    content: '\e86f';
+} /* '' */
+.hm-replay:before {
+    content: '\e870';
+} /* '' */
+.hm-reset:before {
+    content: '\e871';
+} /* '' */
+.hm-reset-back:before {
+    content: '\e872';
+} /* '' */
+.hm-save:before {
+    content: '\e873';
+} /* '' */
+.hm-save-auto:before {
+    content: '\e874';
+} /* '' */
+.hm-save-disabled:before {
+    content: '\e875';
+} /* '' */
+.hm-search:before {
+    content: '\e876';
+} /* '' */
+.hm-security:before {
+    content: '\e877';
+} /* '' */
+.hm-settings:before {
+    content: '\e878';
+} /* '' */
+.hm-shockwave-ammo:before {
+    content: '\e879';
+} /* '' */
+.hm-shop:before {
+    content: '\e87a';
+} /* '' */
+.hm-shotgun:before {
+    content: '\e87b';
+} /* '' */
+.hm-smg:before {
+    content: '\e87c';
+} /* '' */
+.hm-sniperrifle:before {
+    content: '\e87d';
+} /* '' */
+.hm-stable:before {
+    content: '\e87e';
+} /* '' */
+.hm-stable-2:before {
+    content: '\e87f';
+} /* '' */
+.hm-stable-3:before {
+    content: '\e880';
+} /* '' */
+.hm-stable-4:before {
+    content: '\e881';
+} /* '' */
+.hm-starting:before {
+    content: '\e882';
+} /* '' */
+.hm-stash-point-empty:before {
+    content: '\e883';
+} /* '' */
+.hm-stash-point-full:before {
+    content: '\e884';
+} /* '' */
+.hm-stats:before {
+    content: '\e885';
+} /* '' */
+.hm-steady-aim:before {
+    content: '\e886';
+} /* '' */
+.hm-steady-aim-2:before {
+    content: '\e887';
+} /* '' */
+.hm-steady-aim-3:before {
+    content: '\e888';
+} /* '' */
+.hm-steady-aim-4:before {
+    content: '\e889';
+} /* '' */
+.hm-story:before {
+    content: '\e88a';
+} /* '' */
+.hm-subsonic:before {
+    content: '\e88b';
+} /* '' */
+.hm-suitcase:before {
+    content: '\e88c';
+} /* '' */
+.hm-suppressor:before {
+    content: '\e88d';
+} /* '' */
+.hm-tag:before {
+    content: '\e88e';
+} /* '' */
+.hm-target:before {
+    content: '\e88f';
+} /* '' */
+.hm-timed:before {
+    content: '\e890';
+} /* '' */
+.hm-toggle-left:before {
+    content: '\e891';
+} /* '' */
+.hm-toggle-right:before {
+    content: '\e892';
+} /* '' */
+.hm-tool:before {
+    content: '\e893';
+} /* '' */
+.hm-trash:before {
+    content: '\e894';
+} /* '' */
+.hm-tutorial:before {
+    content: '\e895';
+} /* '' */
+.hm-unlocked:before {
+    content: '\e896';
+} /* '' */
+.hm-variable:before {
+    content: '\e897';
+} /* '' */
+.hm-versatile-scope:before {
+    content: '\e898';
+} /* '' */
+.hm-versatile-scope-1:before {
+    content: '\e899';
+} /* '' */
+.hm-versatile-scope-2:before {
+    content: '\e89a';
+} /* '' */
+.hm-versatile-scope-3:before {
+    content: '\e89b';
+} /* '' */
+.hm-versatile-scope-4:before {
+    content: '\e89c';
+} /* '' */
+.hm-versatile-scope-extended:before {
+    content: '\e89d';
+} /* '' */
+.hm-versus:before {
+    content: '\e89e';
+} /* '' */
+.hm-wall-piercing-ammo:before {
+    content: '\e89f';
+} /* '' */
+.hm-warning:before {
+    content: '\e8a0';
+} /* '' */
+.hm-witness:before {
+    content: '\e8a1';
+} /* '' */
+.hm-add-to-list:before {
+    content: '\e8a2';
+} /* '' */
+.hm-ammo:before {
+    content: '\e8a3';
+} /* '' */
+.hm-arrow-down:before {
+    content: '\e8a4';
+} /* '' */
+.hm-arrow-left:before {
+    content: '\e8a5';
+} /* '' */
+.hm-arrow-right:before {
+    content: '\e8a6';
+} /* '' */
+.hm-arrow-up:before {
+    content: '\e8a7';
+} /* '' */
+.hm-assault-rifle:before {
+    content: '\e8a8';
+} /* '' */
+.hm-audio:before {
+    content: '\e8a9';
+} /* '' */
+.hm-background:before {
+    content: '\e8aa';
+} /* '' */
+.hm-benchmarks:before {
+    content: '\e8ab';
+} /* '' */

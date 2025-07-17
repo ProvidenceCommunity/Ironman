@@ -28,7 +28,7 @@
       <v-expansion-panel v-for="(map, index) in details.maps" :key="index">
         <v-expansion-panel-title>Map #{{index + 1}} - {{map.mission.name}}</v-expansion-panel-title>
         <v-expansion-panel-text>
-          <RouletteCondition v-for="(target, index) in map.targetConditions" :key="index" :condition="target"></RouletteCondition>
+          <RouletteSpin :spin="map" />
           <v-btn @click="respin(index)">Respin</v-btn>
         </v-expansion-panel-text>
       </v-expansion-panel>
@@ -39,14 +39,14 @@
   import { defineComponent } from "vue";
   import {post} from "@/http";
   import {DateTime, Duration} from "luxon";
-  import RouletteCondition from '@/components/RouletteCondition.vue';
+  import RouletteSpin from '@/components/RouletteSpin.vue';
   
   export default defineComponent({
     name: "RelayAdmin",
     props: [ 'players', 'details', 'matchId', 'arrivalTimestamp' ],
     emits: [ 'error' ],
     components: {
-      RouletteCondition
+      RouletteSpin
     },
     data() {
       return {

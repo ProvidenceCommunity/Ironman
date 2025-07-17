@@ -1,6 +1,6 @@
 <template>
   <h1>{{ details.currentSpin.mission.name }}</h1>
-  <RouletteCondition v-for="(target, index) in details.currentSpin.targetConditions" :key="index" :condition="target"></RouletteCondition>
+  <RouletteSpin :spin="details.currentSpin" />
   <h5>Please click the done button upon finishing!</h5>
   <v-btn @click="done" x-large>{{ buttonText }}</v-btn>
 </template>
@@ -8,14 +8,14 @@
 <script lang="ts">
 import {defineComponent} from "vue";
 import {post} from "@/http";
-import RouletteCondition from "@/components/RouletteCondition.vue";
+import RouletteSpin from '@/components/RouletteSpin.vue';
 
 export default defineComponent({
   name: "RouletteSpinPlayer",
   props: ['matchId', 'player', 'details'],
   emits: ['error'],
   components: {
-    RouletteCondition
+    RouletteSpin
   },
   data() {
     return {

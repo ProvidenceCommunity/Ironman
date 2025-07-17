@@ -14,22 +14,22 @@
   <h1>{{ details.currentSpins[0].mission.name }}</h1>
   <h3>Spin 1:</h3>
   <v-btn @click="respin(0)">Respin</v-btn><br>
-  <RouletteCondition v-for="(target, index) in details.currentSpins[0].targetConditions" :key="index" :condition="target"></RouletteCondition>
+  <RouletteSpin :spin="details.currentSpins[0]" />
   <v-divider></v-divider>
   <h3>Spin 2:</h3>
   <v-btn @click="respin(1)">Respin</v-btn><br>
-  <RouletteCondition v-for="(target, index) in details.currentSpins[1].targetConditions" :key="index" :condition="target"></RouletteCondition>
+  <RouletteSpin :spin="details.currentSpin[1]" />
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
 import {post} from "@/http";
-import RouletteCondition from "@/components/RouletteCondition.vue";
+import RouletteSpin from '@/components/RouletteSpin.vue';
 import {DateTime} from "luxon";
 
 export default defineComponent({
   name: "TwoSpinsAdmin",
-  components: {RouletteCondition},
+  components: {RouletteSpin},
   props: [ 'players', 'details', 'matchId' ],
   emits: [ 'error' ],
   data() {
