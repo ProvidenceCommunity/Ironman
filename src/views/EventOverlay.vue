@@ -1,20 +1,33 @@
 <template>
   <div class="background" v-if="loadCompleted">
+    <span class="title">
+      RRLAN 2025
+    </span>
+
     <span class="playername p1">
-      {{ matchData.players[0] }}<br>
-      5th placer
+      {{ matchData.players[0] }}
     </span>
     <span class="playername p2">
-      {{ matchData.players[1] }}<br>
-      5th placer
+      {{ matchData.players[1] }}
+    </span>
+    <span class="playeraccolade acc1">
+      {{ translateNameToAccolade(matchData.players[0]) }}
+    </span>
+    <span class="playeraccolade acc2">
+      {{ translateNameToAccolade(matchData.players[1]) }}
     </span>
 
-    <span class="score">
-      [{{ matchData.scores[0] }}-{{ matchData.scores[1] }}]
-    </span>
+    <div class="score left">
+      {{ matchData.scores[0] }}
+    </div>
 
-    <v-img :src="avatars[0]" width="160" height="160" class="pfp imgl"></v-img>
-    <v-img :src="avatars[1]" width="160" height="160" class="pfp imgr"></v-img>
+    <div class="score right">
+      {{ matchData.scores[1] }}
+    </div>
+
+
+    <v-img :src="avatars[0]" width="167" height="167" class="pfp imgl"></v-img>
+    <v-img :src="avatars[1]" width="167" height="167" class="pfp imgr"></v-img>
     
     <WideOverlay class="overlay" />
   </div>
@@ -33,62 +46,98 @@ body.overlay::-webkit-scrollbar {
 
 <style scoped>
 @font-face {
-  font-family: turnbb;
-  src: url("@/assets/TURNBB.TTF");
+  font-family: skyfont;
+  src: url("@/assets/Skyfont.otf");
 }
 @font-face {
-  font-family: permanentMarker;
-  src: url("@/assets/PermanentMarker.ttf");
+  font-family: heavitas;
+  src: url("@/assets/Heavitas.ttf");
 }
 .playername {
-  font-family: turnbb;
-  font-size: 40px;
+  font-family: heavitas;
+  font-size: 50px;
   position: absolute;
   width: 590px;
-  letter-spacing: 1px;
+  /* letter-spacing: 1px; */
   white-space: 0.1px;
-  top: 90px;
+  top: 88px;
   color: white;
 }
 .p1 {
-  left: 220px;
+  left: 273px;
 }
 .p2 {
-  right: 220px;
+  right: 253px;
+  text-align: right;
+}
+.playeraccolade {
+  font-family: heavitas;
+  font-size: 31px;
+  position: absolute;
+  width: 590px;
+  /* letter-spacing: 1px; */
+  white-space: 0.1px;
+  top: 177px;
+  color: white;
+}
+.acc1 {
+  left: 273px;
+}
+.acc2 {
+  right: 259px;
   text-align: right;
 }
 .score {
   color: white;
-  font-family: permanentMarker;
-  font-size: 135px;
+  font-family: skyfont;
+  font-size: 200px;
   text-align: center;
-  top: 50px;
-  left: 785px;
   position: absolute;
+  top: 26px;
 }
+.score.left {
+  left: 740px;
+  text-align: right;
+  width: 188px;
+}
+.score.right {
+  left: 997px;
+}
+
 .pfp {
-  border-radius: 10px;
   position: absolute;
-  top: 70px;
+  top: 86px;
 }
 .imgl {
-  left: 50px;
+  left: 56px;
 }
 .imgr {
-  right: 50px;
+  right: 56px;
 }
 .background {
   position: absolute;
   width: 1920px;
   height: 1080px;
   overflow: hidden;
-  /* background-image: url("@/assets/FFF_Back_Unclean_2.png"); */
+  /* background-image: url("@/assets/Overlay_example.png"); */
+  background-image: url("@/assets/Overlay_template_2.png");
   /* background-color: black */
 }
 .overlay {
   position: absolute;
-  left: 235px;
+  left: 0px;
   top: 813px;
+}
+.title {
+  font-family: heavitas;
+  font-size: 50px;
+  position: absolute;
+  /* letter-spacing: 1px; */
+  white-space: 0.1px;
+  width: 1920px;
+  text-align: center;
+  left: 0px;
+  color: white;
 }
 </style>
 <script lang="ts">
@@ -158,24 +207,74 @@ export default defineComponent({
     },
     translateNameToId(name: string) {
       switch(name.toLowerCase()) {
-        case "sovietdubov":
-          return "623597622271279126";
-        case "channel reindeer":
+        case "thatobserver":
+          return "247092196874911744";
+        case "currymaker":
           return "292699566782939137";
-        case "dynaso":
-          return "392817376623722507";
-        case "linux_penguin":
-          return "603970242053537824";
-        case "falcon":
-          return "100578817474572288";
-        case "parapluie":
-          return "664320213700968478";
+        case "in4fun":
+          return "412288950854746113";
+        case "scruffy":
+          return "692039323905818704";
+        case "veggerby":
+          return "203962938250231808";
+        case "some random person":
+        case "random":
+        case "randy":
+          return "247360708562518016";
+        case "yannini":
+          return "229973032234516480";
         case "aphro":
           return "374542927751413760";
-        case "rommel":
-          return "438469962147954688";
+        case "cab":
+        case "cabben":
+          return "319549223722811402";
+        case "chrisx3":
+          return "355182845141975042";
+        case "falcon":
+          return "100578817474572288";
+        case "luke":
+        case "lukedotpng":
+          return "577656406010757130";
+        case "pigiero":
+          return "161873616684843030";
       }
       return "";
+    },
+    translateNameToAccolade(name: string) {
+      switch(name.toLowerCase()) {
+        case "thatobserver":
+          return "Returning Rival";
+        case "currymaker":
+          return "Returning Rival";
+        case "in4fun":
+          return "RRWC 2020 & RR13 Champion";
+        case "scruffy":
+          return "RRWC 2024 & 3x RR Champion";
+        case "veggerby":
+          return "Returning Rival";
+        case "some random person":
+        case "random":
+        case "randy":
+          return "Returning Rival";
+        case "yannini":
+          return "3-Time RR Champion";
+        case "aphro":
+          return "Returning Rival";
+        case "cab":
+        case "cabben":
+          return "Returning Rival";
+        case "chrisx3":
+          return "RR Finalist";
+        case "falcon":
+          return "Returning Rival";
+        case "luke":
+        case "lukedotpng":
+          return "Returning Rival";
+        case "pigiero":
+          return "RR8 Champion";
+        default:
+          return "";
+      }
     }
   },
   computed: {

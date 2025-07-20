@@ -37,7 +37,7 @@
   .container {
     position: absolute;
     top: 0;
-    width: 1450px;
+    width: 1920px;
     height: 267px;
     background-size: cover;
   }
