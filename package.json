@@ -20,7 +20,7 @@
     "debug": "^4.3.4",
     "discord.js": "^14.6.0",
     "dotenv": "^16.0.1",
-    "esbuild": "^0.24.2",
+    "esbuild": "^0.25.8",
     "express": "^4.19.2",
     "express-session": "^1.17.3",
     "luxon": "^3.4.4",
@@ -48,7 +48,7 @@
     "sass": "^1.89.2",
     "ts-node": "^10.8.0",
     "typescript": "^5.4.5",
-    "vite": "^5.2.10",
+    "vite": "^7.1.1",
     "vite-plugin-vuetify": "^2.0.3"
   }
 }
