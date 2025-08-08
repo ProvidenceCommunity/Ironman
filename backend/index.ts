@@ -14,7 +14,9 @@ async function main() {
 
     await loadDatabase();
     await loadConfig();
-    await DiscordConnector.getInstance().initialize(getConfig().discord.botToken, getConfig().discord.guildId, getConfig().discord.channelId);
+    if (getConfig().discord.botToken != null && getConfig().discord.botToken !== "") {
+        await DiscordConnector.getInstance().initialize(getConfig().discord.botToken, getConfig().discord.guildId, getConfig().discord.channelId);
+    }
 
     setInterval(() => {
         void writeDatabase();

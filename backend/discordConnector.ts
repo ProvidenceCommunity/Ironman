@@ -32,12 +32,14 @@ export default class DiscordConnector {
     private playerMapCache: PlayerMap;
     private playerMapCacheTimer: number;
     private avatarCache: AvatarCache;
+    private token: string;
 
     private constructor() {
         this.discord = new Client({ intents: [ IntentsBitField.Flags.Guilds, IntentsBitField.Flags.GuildMembers ] });
         this.dbg = debug("ironman:discord");
         this.guildId = "";
         this.channelId = "";
+        this.token = "";
         this.playerMapCache = { roles: {}, members: {} };
         this.playerMapCacheTimer = -1;
         this.avatarCache = {};
@@ -61,6 +63,13 @@ export default class DiscordConnector {
         });
 
         this.discord.on('interactionCreate', this.handleMatchesCommand);
+        this.discord.on('error', (error) => {
+            this.dbg('Discord encountered an error: %s', error);
+            if (!this.discord.isReady()) {
+                this.dbg('Discord client seems to have died, restarting...');
+                void this.initialize(this.token, this.guildId, this.channelId);
+            }
+        })
     }
 
     static getInstance(): DiscordConnector {
@@ -77,6 +86,7 @@ export default class DiscordConnector {
         } else {
             this.guildId = guildId;
             this.channelId = channelId;
+            this.token = token;
             await (this.discord as Client<false>).login(token);
         }
     }
