@@ -98,11 +98,10 @@
 
         <h1>{{currentRound.title}}</h1>
         <DoneButtonAdmin v-if="currentRound.mode === 'simpleDoneButton'" :players="sanetizedPlayers" :details="currentRound.additionalDetails" :matchId="this.matchId" @error="onError"></DoneButtonAdmin>
-        <RouletteSpinAdmin v-if="currentRound.mode === 'rouletteSpin'" :players="sanetizedPlayers" :details="currentRound.additionalDetails" :matchId="this.matchId" @error="onError"></RouletteSpinAdmin>
+        <RouletteSpinAdmin v-if="currentRound.mode === 'rouletteSpin' || currentRound.mode === 'wackyExtensions'" :players="sanetizedPlayers" :details="currentRound.additionalDetails" :matchId="this.matchId" @error="onError"></RouletteSpinAdmin>
         <BingoAdmin v-if="currentRound.mode === 'bingo'" :players="sanetizedPlayers" :details="currentRound.additionalDetails" :matchId="this.matchId" @error="onError"></BingoAdmin>
         <TimerAdmin v-if="currentRound.mode === 'timer'" :details="currentRound.additionalDetails"></TimerAdmin>
         <TwoSpinsAdmin v-if="currentRound.mode === 'twoSpins'" :players="sanetizedPlayers" :details="currentRound.additionalDetails" :matchId="this.matchId" @error="onError"></TwoSpinsAdmin>
-        <SelectableSpinAdmin v-if="currentRound.mode === 'selectableSpin'" :players="sanetizedPlayers" :details="currentRound.additionalDetails" :matchId="this.matchId" @error="onError"></SelectableSpinAdmin>
         <RelayAdmin v-if="currentRound.mode === 'relay'" :players="sanetizedPlayers" :details="currentRound.additionalDetails" :matchId="matchId" :arrivalTimestamp="currentRound.arrivingTimestamp" @error="onError"></RelayAdmin>
 
       </v-col>
@@ -121,7 +120,6 @@ import TwoSpinsAdmin from "@/components/GameModesAdmin/TwoSpins.vue";
 import BingoAdmin from "@/components/GameModesAdmin/Bingo.vue";
 import TimerAdmin from "@/components/GameModesAdmin/Timer.vue";
 import RelayAdmin from "@/components/GameModesAdmin/Relay.vue";
-import SelectableSpinAdmin from "@/components/GameModesAdmin/SelectableSpin.vue";
 import { DateTime } from "luxon";
 
 export default defineComponent({
@@ -133,7 +131,6 @@ export default defineComponent({
     BingoAdmin,
     AddRoundDialog,
     TwoSpinsAdmin,
-    SelectableSpinAdmin,
     RelayAdmin,
   },
   data() {
@@ -242,7 +239,7 @@ export default defineComponent({
         const arrivingTS = DateTime.fromISO(this.arrivingTimestamp).toMillis();
         if (!isNaN(arrivingTS)) {
           (this.matchInfo as any).rounds[roundIndex].arrivingTimestamp = arrivingTS;
-          if (this.leavingTimestamp === 0 || this.leavingTimestamp === undefined) {
+          if (this.leavingTimestamp <= 0 || this.leavingTimestamp === undefined) {
             (this.matchInfo as any).rounds[roundIndex].leavingTimestamp = -1;
           } else {
             (this.matchInfo as any).rounds[roundIndex].leavingTimestamp = arrivingTS + (this.leavingTimestamp * 1000 * 60);

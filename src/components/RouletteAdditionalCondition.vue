@@ -1,46 +1,43 @@
 <template>
   <div class="viewer-spin">
       <div class="condition">
-          <div class="image" :style="'background: url(' + target.target.tileUrl + ') center center / cover no-repeat;'"></div>
+          <div class="image" :style="'background: url(' + objective.objective.tileUrl + ') center center / cover no-repeat;'"></div>
           <div class="icon" v-if="!noIcons">
-              <HitmanIcon icon="challenge-category-assassination" />
+              <HitmanIcon icon="objective" />
           </div>
           <dl class="text">
-              <dt>Target</dt>
-              <dd>{{ target.target.name }}</dd>
+              <dt>Objective</dt>
+              <dd>{{ objective.objective.name }}</dd>
           </dl>
-          <div class="icon clickable" v-if="editable" @click="$emit('toggleNtko', target.target.name)">
-            <HitmanIcon icon="complication" />
-          </div>
       </div>
       <div class="condition">
-          <div class="image" :style="'background: url(' + target.killMethod.tileUrl + ') center center / cover no-repeat;'"></div>
+          <div class="image" :style="'background: url(' + objective.completionMethod.tileUrl + ') center center / cover no-repeat;'"></div>
           <div class="icon" v-if="!noIcons">
-              <HitmanIcon icon="difficulty-casual" />
+              <HitmanIcon icon="objective" />
           </div>
           <dl class="text">
-              <dt>Eliminate using</dt>
-              <dd>{{ buildKillMethod() }}</dd>
+              <dt>Complete using</dt>
+              <dd>{{ objective.completionMethod.name }}</dd>
           </dl>
-          <div class="icon clickable" v-if="editable" @click="$emit('editCondition', target.target.name)">
+          <div class="icon clickable" v-if="editable" @click="$emit('editMethod', objective.objective.name)">
             <HitmanIcon icon="edit" />
           </div>
       </div>
       <div class="condition">
-          <div class="image" :style="'background: url(' + target.disguise.tileUrl + ') center center / cover no-repeat;'"></div>
+          <div class="image" :style="'background: url(' + objective.disguise.tileUrl + ') center center / cover no-repeat;'"></div>
           <div class="icon" v-if="!noIcons">
               <HitmanIcon icon="disguise" />
           </div>
           <dl class="text">
               <dt>Wear disguise</dt>
-              <dd>{{ target.disguise.name }}</dd>
+              <dd>{{ objective.disguise.name }}</dd>
           </dl>
-          <div class="icon clickable" v-if="editable" @click="$emit('editDisguise', target.target.name)">
+          <div class="icon clickable" v-if="editable" @click="$emit('editDisguise', objective.objective.name)">
             <HitmanIcon icon="edit" />
           </div>
       </div>
-      <template v-if="target.complications.length > 0">
-          <div v-for="complication in target.complications" class="condition complication" :key="complication.name">
+      <template v-if="objective.complications.length > 0">
+          <div v-for="complication in objective.complications" class="condition complication" :key="complication.name">
               <div class="image" :style="'background: url(' + complication.tileUrl + ') center center / cover no-repeat;'"></div>
               <div class="icon" v-if="!noIcons">
                   <HitmanIcon icon="complication" />
@@ -100,22 +97,13 @@ import { defineComponent } from 'vue';
 import HitmanIcon from '@/components/HitmanIcon.vue'
 
 export default defineComponent({
-  name: 'ViewerTarget',
-  props: ['target', 'noIcons', 'editable'],
+  name: 'RouletteAdditionalCondition',
+  props: ['objective', 'noIcons', 'editable'],
   components: {
     HitmanIcon
   },
   data() {
       return {};
-  },
-  methods: {
-      buildKillMethod() {
-          if (this.target.killMethod.selectedVariant) {
-              return this.target.killMethod.selectedVariant + ' ' + this.target.killMethod.name;
-          } else {
-              return this.target.killMethod.name;
-          }
-      },
-  },
+  }
 });
 </script>

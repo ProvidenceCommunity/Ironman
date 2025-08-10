@@ -3,8 +3,8 @@ import { RouletteSpinGameMode } from "./GameModes/rouletteSpin";
 import { BingoGameMode } from "./GameModes/bingo";
 import {TimerGameMode} from "./GameModes/timer";
 import { TwoSpinsGameMode } from "./GameModes/twoSpins";
-import { SelectableSpinGameMode } from "./GameModes/selectableSpin";
 import { RelayGameMode } from "./GameModes/relay";
+import { WackyExtensionsGameMode } from "./GameModes/wacky-extensions";
 
 export interface MatchField {
     type: "string" | "select" | "list";
@@ -68,10 +68,10 @@ export interface GameMode {
 export const GameModes: { [key: string]: GameMode } = {
     "simpleDoneButton": new DoneButtonGameMode(),
     "rouletteSpin": new RouletteSpinGameMode(),
+    "wackyExtensions": new WackyExtensionsGameMode(),
     "bingo": new BingoGameMode(),
     "timer": new TimerGameMode(),
     "twoSpins": new TwoSpinsGameMode(),
-    "selectableSpin": new SelectableSpinGameMode(),
     "relay": new RelayGameMode()
 }
 

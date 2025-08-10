@@ -1,6 +1,7 @@
 <template>
     <div :class="`spin spins-${spin.targetConditions.length}`">
-        <RouletteCondition v-for="(target, i) in spin.targetConditions" :target="target" :key="i" :noIcons="spin.targetConditions.length > 4" />
+        <RouletteCondition v-for="(target, i) in spin.targetConditions" :target="target" :key="i" :noIcons="spin.targetConditions.length > 4" :editable="editable" @editCondition="(v) => $emit('editCondition', v)" @editDisguise="(v) => $emit('editDisguise', v)" @toggleNtko="(v) => $emit('toggleNtko', v)" />
+        <RouletteAdditionalCondition v-for="(objective, i) in spin.additionalObjectives" :objective="objective" :key="i" :noIcons="spin.targetConditions.length > 4" :editable="editable" @editMethod="(v) => $emit('editMethod', v)" @editDisguise="(v) => $emit('editDisguise', v)" />
     </div>
 </template>
 
@@ -37,12 +38,16 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import RouletteCondition from '@/components/RouletteCondition.vue';
+import RouletteAdditionalCondition from '@/components/RouletteAdditionalCondition.vue';
 
 export default defineComponent({
     name: 'RouletteSpin',
-    props: ['spin'],
+    props: ['spin', 'editable'],
     components: {
-        RouletteCondition,
+        RouletteCondition, RouletteAdditionalCondition,
     },
+    emits: [
+        'editCondition'
+    ],
 });
 </script>

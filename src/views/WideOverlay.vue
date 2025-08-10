@@ -1,12 +1,11 @@
 <template>
     <div class="container">
       <div class="container" v-if="matchData.roundLive">
-        <WideSpinOverlay :data="currentDetails.currentSpin" class="spin" v-if="currentRound.mode === 'rouletteSpin'" />
+        <WideSpinOverlay :data="currentDetails.currentSpin" class="spin" v-if="currentRound.mode === 'rouletteSpin' || currentRound.mode === 'wackyExtensions'" />
         <WideSpinOverlay :data="currentDetails.maps[currentDetails.currentSpin[spinNum]]" class="spin" v-if="currentRound.mode === 'relay' && currentDetails.maps[currentDetails.currentSpin[spinNum]] !== undefined" />
         <WideSpinOverlay :data="currentDetails.currentSpins[spinNum]" class="spin" v-if="currentRound.mode === 'twoSpins'" />
         <DoneButtonOverlay :data="currentRound" v-if="currentRound.mode === 'simpleDoneButton' || currentRound.mode === 'timer'"></DoneButtonOverlay>
         <BingoOverlay :data="currentRound" v-if="currentRound.mode === 'bingo'"></BingoOverlay>
-        <SelectableSpinOverlay :data="currentDetails.currentSpin" v-if="currentRound.mode === 'selectableSpin'"></SelectableSpinOverlay>
         <CountdownBar v-if="currentRound.mode === 'relay' && currentDetails.maps[currentDetails.currentSpin[1]] !== undefined" :timeRemaining="relaySpinTimeRemaining" :totalTime="relaySpinTotalTime"></CountdownBar>
         <CountdownBar :timeRemaining="matchData.countdown" :totalTime="matchData.totalMatchTime" v-else></CountdownBar>
       </div>
@@ -63,13 +62,12 @@
   import { Duration } from "luxon";
   import DoneButtonOverlay from "@/components/GameModesOverlay/DoneButton.vue";
   import BingoOverlay from "@/components/GameModesOverlay/Bingo.vue";
-  import SelectableSpinOverlay from "@/components/GameModesOverlay/SelectableSpin.vue";
   import WideSpinOverlay from "@/components/GameModesOverlay/WideRouletteSpin.vue";
   import { useTheme } from "vuetify";
   
   export default defineComponent({
     name: 'RouletteSpinOverlay',
-    components: {BingoOverlay, DoneButtonOverlay, SpinOverlay, SelectableSpinOverlay, CountdownBar, WideSpinOverlay},
+    components: {BingoOverlay, DoneButtonOverlay, SpinOverlay, CountdownBar, WideSpinOverlay},
     data() {
       return {
         matchData: {

@@ -23,11 +23,10 @@
         <div v-if="this.matchInfo.roundLive">
           <CountdownBar :total-time="this.matchInfo.totalMatchTime" :time-remaining="this.matchInfo.countdown"></CountdownBar>
           <DoneButtonPlayer v-if="matchInfo.currentGameMode === 'simpleDoneButton'" :matchId="this.matchId" :player="this.player" :details="this.matchInfo.round" @error="onError"></DoneButtonPlayer>
-          <RouletteSpinPlayer v-else-if="matchInfo.currentGameMode === 'rouletteSpin'" :matchId="this.matchId" :player="this.player" :details="this.matchInfo.round" @error="onError"></RouletteSpinPlayer>
+          <RouletteSpinPlayer v-else-if="matchInfo.currentGameMode === 'rouletteSpin' || matchInfo.currentGameMode === 'wackyExtensions'" :matchId="this.matchId" :player="this.player" :details="this.matchInfo.round" @error="onError"></RouletteSpinPlayer>
           <BingoPlayer v-else-if="matchInfo.currentGameMode === 'bingo'" :matchId="this.matchId" :player="this.player" :details="this.matchInfo.round" :players="this.matchInfo.players" @error="onError"></BingoPlayer>
           <TimerPlayer v-else-if="matchInfo.currentGameMode === 'timer'" :details="this.matchInfo.round"></TimerPlayer>
           <TwoSpinsPlayer v-else-if="matchInfo.currentGameMode === 'twoSpins'" :matchId="this.matchId" :player="this.player" :details="this.matchInfo.round" @error="onError"></TwoSpinsPlayer>
-          <SelectableSpinPlayer v-else-if="matchInfo.currentGameMode === 'selectableSpin'" :matchId="this.matchId" :player="this.player" :details="this.matchInfo.round" @error="onError"></SelectableSpinPlayer>
           <RelayPlayer v-else-if="matchInfo.currentGameMode === 'relay'" :matchId="matchId" :player="player" :details="matchInfo.round" @error="onError"></RelayPlayer>
         </div>
         <div v-else>
@@ -50,7 +49,6 @@ import BingoPlayer from "@/components/GameModesPlayer/Bingo.vue";
 import CountdownBar from "@/components/CountdownBar.vue";
 import TimerPlayer from "@/components/GameModesPlayer/Timer.vue";
 import TwoSpinsPlayer from "@/components/GameModesPlayer/TwoSpins.vue";
-import SelectableSpinPlayer from "@/components/GameModesPlayer/SelectableSpin.vue";
 import RelayPlayer from "@/components/GameModesPlayer/Relay.vue";
 
 export default defineComponent({
@@ -62,7 +60,6 @@ export default defineComponent({
     DoneButtonPlayer,
     RouletteSpinPlayer,
     TwoSpinsPlayer,
-    SelectableSpinPlayer,
     RelayPlayer
   },
   data() {

@@ -51,12 +51,14 @@ export interface Spin {
 
 interface AdminEventPayload {
     playerIndex: number;
+    spin: Spin;
 }
 
 export const missionIdToSlug: {[key: string]: string} = {
     "Freeform Training (ICA Facility)": "hitman|ica-facility|freeform-training",
     "The Final Test (ICA Facility)": "hitman|ica-facility|the-final-test",
     "The Showstopper (Paris)": "hitman|paris|the-showstopper",
+    "Holiday Hoarders (Paris)": "hitman|paris|holiday-hoarders",
     "World of Tomorrow (Sapienza)": "hitman|sapienza|world-of-tomorrow",
     "The Icon (Sapienza)": "hitman|sapienza|the-icon",
     "Landslide (Sapienza)": "hitman|sapienza|landslide",
@@ -88,6 +90,14 @@ export const missionIdToSlug: {[key: string]: string} = {
     "End Of An Era (Chongqing)": "hitman3|chongqing|end-of-an-era",
     "The Farewell (Mendoza)": "hitman3|mendoza|the-farewell",
     "Untouchable (Carpathian Mountains)": "hitman3|carpathian-mountains|untouchable"
+}
+
+export interface RouletteGameModeDetails extends GameModeDetails {
+    currentSpin: Spin;
+    generatorOptions: SpinGeneratorOptions;
+    noTargets: boolean;
+    doneStatus: number[];
+    lastDone: number[];
 }
 
 export class RouletteSpinGameMode implements GameMode {
@@ -125,8 +135,8 @@ export class RouletteSpinGameMode implements GameMode {
                 type: "boolean"
             },
             {
-                id: "uniqueTargetKills",
-                caption: "Allow unique target kills",
+                id: "noUniqueTargetKills",
+                caption: "No unique target kills",
                 type: "boolean"
             },
             {
@@ -140,6 +150,12 @@ export class RouletteSpinGameMode implements GameMode {
                 type: "boolean"
             },
             {
+                id: "secondaries",
+                caption: "Enable secondary objectives",
+                type: "select",
+                options: ["No", "Method only", "Method and disguise"]
+            },
+            {
                 id: "hardOrImpossible",
                 caption: "Allow hard or impossible conditions",
                 type: "boolean"
@@ -147,7 +163,7 @@ export class RouletteSpinGameMode implements GameMode {
         ];
     }
 
-    async generate(options: GeneratorOptions, players: string[]): Promise<GameModeDetails> {
+    async generate(options: GeneratorOptions, players: string[]): Promise<RouletteGameModeDetails> {
         const spinGenOptions: SpinGeneratorOptions = {
             missionPool: [missionIdToSlug[options['mission'] as string]],
             criteriaFilters: {
@@ -155,11 +171,11 @@ export class RouletteSpinGameMode implements GameMode {
                 specificMelee: !options['noMelee'] as boolean,
                 specificFirearms: !options['noFirearms'] as boolean,
                 specificAccidents: !options['noAccidents'] as boolean,
-                uniqueTargetKills: options['uniqueTargetKills'] as boolean,
+                uniqueTargetKills: !options['noUniqueTargetKills'] as boolean,
                 genericKills: options['genericKills'] as boolean,
                 impossibleOrDifficultKills: options['hardOrImpossible'] as boolean,
-                additionalObjectives: false,
-                additionalObjectiveDisguises: false,
+                additionalObjectives: options['secondaries'] !== "No",
+                additionalObjectiveDisguises: options['secondaries'] === "Method and disguise",
                 potentialComplications: []
             }
         }
@@ -176,39 +192,42 @@ export class RouletteSpinGameMode implements GameMode {
         return {
             currentSpin: spin,
             generatorOptions: spinGenOptions,
-            noTargets: options['noTargets'],
+            noTargets: options['noTargets'] as boolean,
             doneStatus: players.map(() => { return 0 }),
             lastDone: players.map(() => { return -1 })
         };
     }
 
-    async handleAdminEvent(event: string, payload: AdminEventPayload, currentState: GameModeDetails): Promise<GameModeDetails> {
+    async handleAdminEvent(event: string, payload: AdminEventPayload, currentState: RouletteGameModeDetails): Promise<RouletteGameModeDetails> {
         if (event === "acceptDone") {
-            (currentState['doneStatus'] as number[])[payload.playerIndex] = 2;
+            currentState.doneStatus[payload.playerIndex] = 2;
         }
         if (event === "rejectDone") {
-            (currentState['doneStatus'] as number[])[payload.playerIndex] = 0;
-            (currentState['lastDone'] as number[])[payload.playerIndex] = -1;
+            currentState.doneStatus[payload.playerIndex] = 0;
+            currentState.lastDone[payload.playerIndex] = -1;
         }
         if (event === "respin") {
-            currentState['currentSpin'] = await RouletteSpinGameMode.generateSpin(currentState['generatorOptions'] as SpinGeneratorOptions, currentState['noTargets'] as boolean);
+            currentState.currentSpin = await RouletteSpinGameMode.generateSpin(currentState.generatorOptions, currentState.noTargets);
+        }
+        if (event === "updateSpin") {
+            currentState.currentSpin = payload.spin;
         }
         return currentState;
     }
 
-    handleUserEvent(event: string, player: number, payload: unknown, currentState: GameModeDetails): GameModeDetails {
+    handleUserEvent(event: string, player: number, payload: unknown, currentState: RouletteGameModeDetails): RouletteGameModeDetails {
         if (event === "done") {
-            (currentState['doneStatus'] as number[])[player] = 1;
-            (currentState['lastDone'] as number[])[player] = Date.now();
+            currentState.doneStatus[player] = 1;
+            currentState.lastDone[player] = Date.now();
         }
         return currentState;
     }
 
-    getPlayerDetails(player: number, currentState: GameModeDetails): GameModeDetails {
+    getPlayerDetails(player: number, currentState: RouletteGameModeDetails): GameModeDetails {
         return {
-            currentSpin: currentState['currentSpin'],
-            doneStatus: (currentState['doneStatus'] as number[])[player],
-            lastDone: (currentState['lastDone'] as number[])[player],
+            currentSpin: currentState.currentSpin,
+            doneStatus: currentState.doneStatus[player],
+            lastDone: currentState.lastDone[player],
         };
     }
 
