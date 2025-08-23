@@ -3,11 +3,13 @@ import { RouletteGameModeDetails, RouletteSpinGameMode, Spin } from "./rouletteS
 
 export interface WackyExtensionsGameModeDetails extends RouletteGameModeDetails {
     loudOnly: boolean;
+    cardsInPlay: string[];
 }
 
 interface AdminEventPayload {
     playerIndex: number;
     spin: Spin;
+    cards: string[];
 }
 
 export class WackyExtensionsGameMode extends RouletteSpinGameMode implements GameMode {
@@ -31,7 +33,8 @@ export class WackyExtensionsGameMode extends RouletteSpinGameMode implements Gam
 
         return {
             ...originalState,
-            loudOnly: options['loudOnly'] as boolean
+            loudOnly: options['loudOnly'] as boolean,
+            cardsInPlay: players.map(() => ""),
         }
             
     }
@@ -42,39 +45,43 @@ export class WackyExtensionsGameMode extends RouletteSpinGameMode implements Gam
         if (event === "respin" && currentState.loudOnly) {
             newState.currentSpin = WackyExtensionsGameMode.makeSpinLoudOnly(newState.currentSpin);
         }
+        if (event === "setCards") {
+            currentState.cardsInPlay = payload.cards;
+        }
 
         return {
             ...newState,
-            loudOnly: currentState.loudOnly
+            loudOnly: currentState.loudOnly,
+            cardsInPlay: currentState.cardsInPlay
         };
     }
 
     private static makeSpinLoudOnly(spin: Spin): Spin {
         let methodOptions = [
             {
-		        "name": "Pistol",
-		        "largeWeapon": false,
-		        "tileUrl": "https://media.hitmaps.com/img/hitman3/contractconditions/condition_killmethod_pistol.jpg",
+                "name": "Pistol",
+                "largeWeapon": false,
+                "tileUrl": "https://media.hitmaps.com/img/hitman3/contractconditions/condition_killmethod_pistol.jpg",
                 "selectedVariant": "Loud"
             }, {
                 "name": "Sniper Rifle",
-		        "largeWeapon": true,
-		        "tileUrl": "https://media.hitmaps.com/img/hitman3/contractconditions/condition_killmethod_sniperrifle.jpg",
+                "largeWeapon": true,
+                "tileUrl": "https://media.hitmaps.com/img/hitman3/contractconditions/condition_killmethod_sniperrifle.jpg",
                 "selectedVariant": "Loud"
             }, {
                 "name": "Assault Rifle",
-		        "largeWeapon": true,
-		        "tileUrl": "https://media.hitmaps.com/img/hitman3/contractconditions/condition_killmethod_assaultrifle.jpg",
+                "largeWeapon": true,
+                "tileUrl": "https://media.hitmaps.com/img/hitman3/contractconditions/condition_killmethod_assaultrifle.jpg",
                 "selectedVariant": "Loud"
             }, {
                 "name": "SMG",
-		        "largeWeapon": false,
-		        "tileUrl": "https://media.hitmaps.com/img/hitman3/contractconditions/condition_killmethod_smg.jpg",
+                "largeWeapon": false,
+                "tileUrl": "https://media.hitmaps.com/img/hitman3/contractconditions/condition_killmethod_smg.jpg",
                 "selectedVariant": "Loud"
             }, {
                 "name": "Shotgun",
-		        "largeWeapon": true,
-		        "tileUrl": "https://media.hitmaps.com/img/hitman3/contractconditions/condition_killmethod_shotgun.jpg",
+                "largeWeapon": true,
+                "tileUrl": "https://media.hitmaps.com/img/hitman3/contractconditions/condition_killmethod_shotgun.jpg",
                 "selectedVariant": "Loud"
             }, {
                 "name": "Explosive (Weapon)",

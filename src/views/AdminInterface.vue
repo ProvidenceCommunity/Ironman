@@ -39,7 +39,7 @@
                   <b>Wide-Overlay:</b> <a :href="getWideOverlayLink()">{{ getWideOverlayLink() }}</a> (1900px x 6000px)
                 </li>
                 <li>
-                  <b>FFF-Overlay:</b> <a :href="getEventOverlayLink()">{{ getEventOverlayLink() }}</a> (1920px x 1080px)
+                  <b>Wacky 2-Overlay:</b> <a :href="getEventOverlayLink()">{{ getEventOverlayLink() }}</a> (1920px x 1080px)
                 </li>
               </ul>
             </v-expansion-panel-text>
@@ -98,11 +98,12 @@
 
         <h1>{{currentRound.title}}</h1>
         <DoneButtonAdmin v-if="currentRound.mode === 'simpleDoneButton'" :players="sanetizedPlayers" :details="currentRound.additionalDetails" :matchId="this.matchId" @error="onError"></DoneButtonAdmin>
-        <RouletteSpinAdmin v-if="currentRound.mode === 'rouletteSpin' || currentRound.mode === 'wackyExtensions'" :players="sanetizedPlayers" :details="currentRound.additionalDetails" :matchId="this.matchId" @error="onError"></RouletteSpinAdmin>
+        <RouletteSpinAdmin v-if="currentRound.mode === 'rouletteSpin'" :players="sanetizedPlayers" :details="currentRound.additionalDetails" :matchId="this.matchId" @error="onError"></RouletteSpinAdmin>
         <BingoAdmin v-if="currentRound.mode === 'bingo'" :players="sanetizedPlayers" :details="currentRound.additionalDetails" :matchId="this.matchId" @error="onError"></BingoAdmin>
         <TimerAdmin v-if="currentRound.mode === 'timer'" :details="currentRound.additionalDetails"></TimerAdmin>
         <TwoSpinsAdmin v-if="currentRound.mode === 'twoSpins'" :players="sanetizedPlayers" :details="currentRound.additionalDetails" :matchId="this.matchId" @error="onError"></TwoSpinsAdmin>
         <RelayAdmin v-if="currentRound.mode === 'relay'" :players="sanetizedPlayers" :details="currentRound.additionalDetails" :matchId="matchId" :arrivalTimestamp="currentRound.arrivingTimestamp" @error="onError"></RelayAdmin>
+        <WackyExtensionAdmin v-if="currentRound.mode === 'wackyExtensions'" :players="sanetizedPlayers" :details="currentRound.additionalDetails" :matchId="this.matchId" @error="onError" />
 
       </v-col>
       <v-spacer></v-spacer>
@@ -120,6 +121,7 @@ import TwoSpinsAdmin from "@/components/GameModesAdmin/TwoSpins.vue";
 import BingoAdmin from "@/components/GameModesAdmin/Bingo.vue";
 import TimerAdmin from "@/components/GameModesAdmin/Timer.vue";
 import RelayAdmin from "@/components/GameModesAdmin/Relay.vue";
+import WackyExtensionAdmin from "@/components/GameModesAdmin/WackyExtensions.vue";
 import { DateTime } from "luxon";
 
 export default defineComponent({
@@ -132,6 +134,7 @@ export default defineComponent({
     AddRoundDialog,
     TwoSpinsAdmin,
     RelayAdmin,
+    WackyExtensionAdmin
   },
   data() {
     return {

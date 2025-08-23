@@ -176,7 +176,7 @@ export default class DiscordConnector {
             }
         }
 
-        await channel.send({ embeds: [embed] });
+        await channel.send({ content: `${ players.join(" vs ")}`, embeds: [embed] });
     }
 
     async handleMatchesCommand(interaction: Interaction): Promise<void> {

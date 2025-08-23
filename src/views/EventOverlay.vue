@@ -1,33 +1,43 @@
 <template>
   <div class="background" v-if="loadCompleted">
-    <span class="title">
-      RRLAN 2025
-    </span>
-
     <span class="playername p1">
       {{ matchData.players[0] }}
     </span>
     <span class="playername p2">
       {{ matchData.players[1] }}
     </span>
-    <span class="playeraccolade acc1">
-      {{ translateNameToAccolade(matchData.players[0]) }}
-    </span>
-    <span class="playeraccolade acc2">
-      {{ translateNameToAccolade(matchData.players[1]) }}
-    </span>
+    <div class="playercards left" :style="getCardBackground(leftPlayerCard)">
+      <template v-if="leftPlayerCard != null">
+        <span class="cardtitle">{{ leftPlayerCard }}:</span>
+        {{ getCardDescription(leftPlayerCard) }}
+      </template>
+    </div>
+    <div class="playercards right" :style="getCardBackground(rightPlayerCard)">
+      <template v-if="rightPlayerCard != null">
+        <span class="cardtitle">{{ rightPlayerCard }}:</span>
+        {{ getCardDescription(rightPlayerCard) }}
+      </template>
+    </div>
+    
+    <div class="card-overlay"></div>
 
-    <div class="score left">
+    <div class="score left" :style="scoreColor(leftSuit)">
       {{ matchData.scores[0] }}
     </div>
 
-    <div class="score right">
+    <div class="score right" :style="scoreColor(rightSuit)">
       {{ matchData.scores[1] }}
     </div>
 
 
-    <v-img :src="avatars[0]" width="167" height="167" class="pfp imgl"></v-img>
-    <v-img :src="avatars[1]" width="167" height="167" class="pfp imgr"></v-img>
+    <img v-if="leftSuit == 0" src="../assets/wacky_scores/spade.png" alt="" class="suit left" />
+    <img v-if="leftSuit == 1" src="../assets/wacky_scores/heart.png" alt="" class="suit left" />
+    <img v-if="leftSuit == 2" src="../assets/wacky_scores/club.png" alt="" class="suit left" />
+    <img v-if="leftSuit == 3" src="../assets/wacky_scores/diamond.png" alt="" class="suit left" />
+    <img v-if="rightSuit == 0" src="../assets/wacky_scores/spade.png" alt="" class="suit right" />
+    <img v-if="rightSuit == 1" src="../assets/wacky_scores/heart.png" alt="" class="suit right" />
+    <img v-if="rightSuit == 2" src="../assets/wacky_scores/club.png" alt="" class="suit right" />
+    <img v-if="rightSuit == 3" src="../assets/wacky_scores/diamond.png" alt="" class="suit right" />
     
     <WideOverlay class="overlay" />
   </div>
@@ -46,110 +56,118 @@ body.overlay::-webkit-scrollbar {
 
 <style scoped>
 @font-face {
-  font-family: skyfont;
-  src: url("@/assets/Skyfont.otf");
-}
-@font-face {
-  font-family: heavitas;
-  src: url("@/assets/Heavitas.ttf");
-}
-.playername {
-  font-family: heavitas;
-  font-size: 50px;
-  position: absolute;
-  width: 590px;
-  /* letter-spacing: 1px; */
-  white-space: 0.1px;
-  top: 88px;
-  color: white;
-}
-.p1 {
-  left: 273px;
-}
-.p2 {
-  right: 253px;
-  text-align: right;
-}
-.playeraccolade {
-  font-family: heavitas;
-  font-size: 31px;
-  position: absolute;
-  width: 590px;
-  /* letter-spacing: 1px; */
-  white-space: 0.1px;
-  top: 177px;
-  color: white;
-}
-.acc1 {
-  left: 273px;
-}
-.acc2 {
-  right: 259px;
-  text-align: right;
-}
-.score {
-  color: white;
-  font-family: skyfont;
-  font-size: 200px;
-  text-align: center;
-  position: absolute;
-  top: 26px;
-}
-.score.left {
-  left: 740px;
-  text-align: right;
-  width: 188px;
-}
-.score.right {
-  left: 997px;
+  font-family: scream;
+  src: url("@/assets/scream.ttf");
 }
 
-.pfp {
+@font-face {
+  font-family: jersey;
+  src: url("@/assets/Jersey10-Regular.ttf");
+}
+
+.playername {
+  font-family: scream;
+  font-size: 40px;
   position: absolute;
-  top: 86px;
+  width: 700px;
+  /* letter-spacing: 1px; */
+  white-space: 0.1px;
+  top: 40px;
+  color: black;
+  text-align: center;
 }
-.imgl {
-  left: 56px;
+.p1 {
+  left: 40px;
 }
-.imgr {
-  right: 56px;
+.p2 {
+  right: 40px;
 }
+.playercards {
+  font-family: scream;
+  font-size: 20px;
+  position: absolute;
+  width: 773px;
+  /* letter-spacing: 1px; */
+  white-space: 0.1px;
+  top: 149px;
+  padding-top: 4px;
+  padding-left: 30px;
+  padding-right: 30px;
+  height: 99px;
+  color: black;
+  background-color: white;
+}
+.cardtitle {
+  font-weight: bold;
+}
+.playercards.left {
+  left: 8px;
+}
+.playercards.right {
+  width: 770px;
+  right: 6px;
+}
+.score {
+  color: black;
+  font-family: jersey;
+  font-size: 150px;
+  text-align: center;
+  position: absolute;
+  top: 20px;
+}
+.score.left {
+  left: 869px;
+}
+.score.right {
+  right: 860px;
+}
+
+.suit {
+  position: absolute;
+  top: 180px;
+  width: 100px;
+}
+.suit.left {
+  left: 847px;
+}
+.suit.right {
+  right: 847px;
+}
+
 .background {
   position: absolute;
   width: 1920px;
   height: 1080px;
   overflow: hidden;
-  /* background-image: url("@/assets/Overlay_example.png"); */
-  background-image: url("@/assets/Overlay_template_2.png");
-  /* background-color: black */
+  background-image: url("@/assets/wacky-background.png");
 }
+
+.card-overlay {
+  position: absolute;
+  width: 1920px;
+  height: 1080px;
+  overflow: hidden;
+  background-image: url("@/assets/wacky-playercards-overlay.png");
+  z-index: 10;
+}
+
 .overlay {
   position: absolute;
   left: 0px;
   top: 813px;
 }
-.title {
-  font-family: heavitas;
-  font-size: 50px;
-  position: absolute;
-  /* letter-spacing: 1px; */
-  white-space: 0.1px;
-  width: 1920px;
-  text-align: center;
-  left: 0px;
-  color: white;
-}
 </style>
 <script lang="ts">
 import {defineComponent} from "vue";
-import SpinOverlay from "@/components/GameModesOverlay/RouletteSpin.vue";
-import CountdownBar from "@/components/CountdownBar.vue";
 import { get } from "@/http";
 import WideOverlay from "./WideOverlay.vue";
+import ALL_CARDS from '@/wacky_cards.json';
+
+const allCards = ALL_CARDS.map((card) => card.name);
 
 export default defineComponent({
   name: 'ProOverlay',
-  components: {SpinOverlay, CountdownBar, WideOverlay},
+  components: {WideOverlay},
   data() {
     return {
       matchData: {
@@ -157,29 +175,20 @@ export default defineComponent({
           additionalDetails: {}
         },
         players: ["",""],
-        avatars: ["",""],
         scores: [0,0],
         countdown: 0
       },
       updateInterval: -1,
       matchId: "",
-      animations: {
-        leftBar: undefined as any,
-        rightBar: undefined as any,
-        leftRunner: undefined as any,
-        rightRunner: undefined as any,
-      },
-      avatars: ["",""],
       loadCompleted: false,
+      leftSuit: Math.floor(Math.random() * 4),
+      rightSuit: Math.floor(Math.random() * 4),
     }
   },
   async created() {
     this.matchId = window.location.pathname.split("/").pop() as string;
     this.updateInterval = setInterval(this.update, 1000);
     await this.update();
-
-    this.avatars[0] = await this.getPfp(this.translateNameToId(this.matchData.players[0]));
-    this.avatars[1] = await this.getPfp(this.translateNameToId(this.matchData.players[1]));
 
     this.loadCompleted = true;
   },
@@ -195,86 +204,41 @@ export default defineComponent({
       const request = await get(`/api/match/overlay/${this.matchId}`);
       this.matchData = request.data;
     },
-    async getPfp(discordId: string): Promise<string> {
-      if (discordId === "") {
-        return "";
+    scoreColor(suit: number) {
+      switch (suit) {
+        case 0:
+          return "color: #3c4368";
+        case 1:
+          return "color: #f03464";
+        case 2:
+          return "color: #235955";
+        case 3:
+          return "color: #f06b3f";
       }
-      const avatar = await get(`/data/avatar/${discordId}`);
-      if (avatar.status !== 200) {
-        return "";
-      }
-      return avatar.data.avatar;
+      return "color: black";
     },
-    translateNameToId(name: string) {
-      switch(name.toLowerCase()) {
-        case "thatobserver":
-          return "247092196874911744";
-        case "currymaker":
-          return "292699566782939137";
-        case "in4fun":
-          return "412288950854746113";
-        case "scruffy":
-          return "692039323905818704";
-        case "veggerby":
-          return "203962938250231808";
-        case "some random person":
-        case "random":
-        case "randy":
-          return "247360708562518016";
-        case "yannini":
-          return "229973032234516480";
-        case "aphro":
-          return "374542927751413760";
-        case "cab":
-        case "cabben":
-          return "319549223722811402";
-        case "chrisx3":
-          return "355182845141975042";
-        case "falcon":
-          return "100578817474572288";
-        case "luke":
-        case "lukedotpng":
-          return "577656406010757130";
-        case "pigiero":
-          return "161873616684843030";
-      }
-      return "";
+    getCardDescription(cardName: string) {
+        return ALL_CARDS.find((card) => card.title === cardName)?.description ?? "";
     },
-    translateNameToAccolade(name: string) {
-      switch(name.toLowerCase()) {
-        case "thatobserver":
-          return "Returning Rival";
-        case "currymaker":
-          return "Returning Rival";
-        case "in4fun":
-          return "RRWC 2020 & RR13 Champion";
-        case "scruffy":
-          return "RRWC 2024 & 3x RR Champion";
-        case "veggerby":
-          return "Returning Rival";
-        case "some random person":
-        case "random":
-        case "randy":
-          return "Returning Rival";
-        case "yannini":
-          return "3-Time RR Champion";
-        case "aphro":
-          return "Returning Rival";
-        case "cab":
-        case "cabben":
-          return "Returning Rival";
-        case "chrisx3":
-          return "RR Finalist";
-        case "falcon":
-          return "Returning Rival";
-        case "luke":
-        case "lukedotpng":
-          return "Returning Rival";
-        case "pigiero":
-          return "RR8 Champion";
-        default:
-          return "";
-      }
+    getCardBackground(cardName: string) {
+        const cardType = ALL_CARDS.find((card) => card.title === cardName)?.category ?? "";
+        switch (cardType) {
+          case "Map":
+            return "background-color: #ffe599";
+          case "Settings":
+            return "background-color: #ea9999";
+          case "Loadout":
+            return "background-color: #f9cb9c";
+          case "Spin":
+            return "background-color: #b4a7d6";
+          case "Buff":
+            return "background-color: #93c47d";
+          case "Misc":
+            return "background-color: #cccccc";
+          case "Meta":
+            return "background-color: #00ffff";
+        }
+        return "background-color: white";
     }
   },
   computed: {
@@ -284,6 +248,18 @@ export default defineComponent({
     currentDetails(): any {
       return this.matchData.round.additionalDetails;
     },
+    leftPlayerCard() {
+      if (this.currentRound.mode !== "wackyExtensions") {
+        return null;
+      }
+      return this.currentDetails.cardsInPlay[0];
+    },
+    rightPlayerCard() {
+      if (this.currentRound.mode !== "wackyExtensions") {
+        return null;
+      }
+      return this.currentDetails.cardsInPlay[1];
+    }
   }
 })
 </script>
