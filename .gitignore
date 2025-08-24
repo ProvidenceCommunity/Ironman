@@ -22,7 +22,6 @@ pnpm-debug.log*
 *.sln
 *.sw?
 
-config.json
-database.json
+data
 .env
 app.cjs

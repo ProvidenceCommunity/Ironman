@@ -1,5 +1,4 @@
 node_modules
 .env
 app.cjs
-config.json
-database.json
+data

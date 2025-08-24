@@ -26,7 +26,7 @@ ENV NODE_ENV=production
 COPY --from=build /app/app.cjs /app/app.cjs
 COPY --from=build /app/dist /app/dist
 
-WORKDIR /app/data
+WORKDIR /app
 
 VOLUME /app/data
 
@@ -35,4 +35,4 @@ ENV PORT=8000
 
 EXPOSE 8000
 
-CMD [ "node", "/app/app.cjs" ]
+CMD [ "node", "./app.cjs" ]
