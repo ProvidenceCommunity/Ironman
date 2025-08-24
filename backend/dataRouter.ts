@@ -34,10 +34,6 @@ dataRouter.get('/game_modes/:game_mode', (req, res) => {
 });
 
 dataRouter.get('/matches', (req, res) => {
-    if (!req.session.isAdmin) {
-        res.sendStatus(403);
-        return;
-    }
     res.json({
         matches: getMatches()
     });
@@ -52,10 +48,6 @@ dataRouter.get('/schema', (req, res) => {
 })
 
 dataRouter.get('/users', async (req, res) => {
-    if (!req.session.isAdmin) {
-        res.sendStatus(403);
-        return;
-    }
     res.json(await DiscordConnector.getInstance().getAvailableUsers());
 })
 

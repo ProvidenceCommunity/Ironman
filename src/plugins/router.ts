@@ -7,6 +7,7 @@ import OverlayView from '../views/StandardOverlay.vue';
 import LocalLoginView from '../views/LocalLogin.vue';
 import EventOverlay from "@/views/EventOverlay.vue";
 import WideOverlay from '@/views/WideOverlay.vue';
+import UpcomingView from '@/views/UpcomingView.vue';
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -48,6 +49,11 @@ const routes: Array<RouteRecordRaw> = [
     path: '/login',
     name: 'locallogin',
     component: LocalLoginView
+  },
+  {
+    path: '/upcoming',
+    name: 'upcoming',
+    component: UpcomingView
   }
 ]
 
