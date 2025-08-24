@@ -64,38 +64,56 @@
 }
 </style>
 
-<script setup lang="ts">
+<script lang="ts">
 import HitmanIcon from '@/components/HitmanIcon.vue';
 import { get } from '@/http';
 import { DateTime } from 'luxon';
-import { computed } from 'vue';
+import { defineComponent } from 'vue';
 
-const { data: matches } = await get("/data/matches");
-const { data: users } = await get("/data/users");
-
-const filteredSortedMatches = computed(() => {
-    return matches.matches.filter((match) => {
-        return match.finished !== true
-    }).sort((a, b) => {
-        if (a.timestamp === -1) {
-            return 1;
+export default defineComponent({
+    name: 'UpcomingView',
+    components: { HitmanIcon },
+    data() {
+        return {
+            matches: {},
+            users: {},
         }
-        if (b.timestamp === -1) {
-            return -1;
+    },
+    async created() {
+        const matchesQuery = await get("/data/matches");
+        const usersQuery = await get("/data/users");
+        this.matches = matchesQuery.data;
+        this.users = usersQuery.data;
+    },
+    computed: {
+        filteredSortedMatches() {
+            if (this.matches.matches == null) {
+                return [];
+            }
+            return this.matches.matches.filter((match) => {
+                return match.finished !== true
+            }).sort((a, b) => {
+                if (a.timestamp === -1) {
+                    return 1;
+                }
+                if (b.timestamp === -1) {
+                    return -1;
+                }
+
+                return a.timestamp - b.timestamp;
+            });
         }
-
-        return a.timestamp - b.timestamp;
-    });
-});
-
-function transformScheduleTime(time: number) {
-    if (time <= 0) {
-        return "Not scheduled";
+    },
+    methods: {
+        transformScheduleTime(time: number) {
+            if (time <= 0) {
+                return "Not scheduled";
+            }
+            return DateTime.fromMillis(time).toLocaleString(DateTime.DATETIME_MED);
+        },
+        transformPlayers(players: string[]) {
+            return players.map((player) => this.users[player]?.replace(/#\d+/g, "") ?? player);
+        }
     }
-    return DateTime.fromMillis(time).toLocaleString(DateTime.DATETIME_MED);
-}
-
-function transformPlayers(players: string[]) {
-    return players.map((player) => users[player]?.replace(/#\d+/g, "") ?? player);
-}
+})
 </script>

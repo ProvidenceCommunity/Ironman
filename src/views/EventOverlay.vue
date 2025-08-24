@@ -249,13 +249,13 @@ export default defineComponent({
       return this.matchData.round.additionalDetails;
     },
     leftPlayerCard() {
-      if (this.currentRound.mode !== "wackyExtensions") {
+      if (this.currentRound?.mode !== "wackyExtensions") {
         return null;
       }
       return this.currentDetails.cardsInPlay[0];
     },
     rightPlayerCard() {
-      if (this.currentRound.mode !== "wackyExtensions") {
+      if (this.currentRound?.mode !== "wackyExtensions") {
         return null;
       }
       return this.currentDetails.cardsInPlay[1];
