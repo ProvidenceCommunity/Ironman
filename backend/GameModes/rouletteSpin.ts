@@ -174,7 +174,7 @@ export class RouletteSpinGameMode implements GameMode {
                 uniqueTargetKills: !options['noUniqueTargetKills'] as boolean,
                 genericKills: options['genericKills'] as boolean,
                 impossibleOrDifficultKills: options['hardOrImpossible'] as boolean,
-                additionalObjectives: options['secondaries'] !== "No",
+                additionalObjectives: options['secondaries'] === "Method only" || options['secondaries'] === "Method and disguise",
                 additionalObjectiveDisguises: options['secondaries'] === "Method and disguise",
                 potentialComplications: []
             }

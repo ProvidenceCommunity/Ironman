@@ -1,5 +1,5 @@
 import debug from "debug";
-import { APIEmbedField, Client, CommandInteraction, EmbedBuilder, IntentsBitField, Interaction, TextChannel } from "discord.js";
+import { APIEmbedField, Client, CommandInteraction, EmbedBuilder, Events, IntentsBitField, Interaction, TextChannel } from "discord.js";
 import { DateTime } from "luxon";
 import { getConfig, getMatches } from "./database";
 import { IronmanMatch } from "./model";
@@ -63,13 +63,20 @@ export default class DiscordConnector {
         });
 
         this.discord.on('interactionCreate', this.handleMatchesCommand);
-        this.discord.on('error', (error) => {
+        this.discord.on(Events.Error, (error) => {
             this.dbg('Discord encountered an error: %s', error);
             if (!this.discord.isReady()) {
                 this.dbg('Discord client seems to have died, restarting...');
                 void this.initialize(this.token, this.guildId, this.channelId);
             }
-        })
+        });
+        this.discord.on(Events.ShardError, (error) => {
+            this.dbg('Discord encountered a shard error: %s', error);
+            if (!this.discord.isReady()) {
+                this.dbg('Discord client seems to have died, restarting...');
+                void this.initialize(this.token, this.guildId, this.channelId);
+            }
+        });
     }
 
     static getInstance(): DiscordConnector {

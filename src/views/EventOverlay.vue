@@ -7,13 +7,13 @@
       {{ matchData.players[1] }}
     </span>
     <div class="playercards left" :style="getCardBackground(leftPlayerCard)">
-      <template v-if="leftPlayerCard != null">
+      <template v-if="leftPlayerCard != null && leftPlayerCard != ''">
         <span class="cardtitle">{{ leftPlayerCard }}:</span>
         {{ getCardDescription(leftPlayerCard) }}
       </template>
     </div>
     <div class="playercards right" :style="getCardBackground(rightPlayerCard)">
-      <template v-if="rightPlayerCard != null">
+      <template v-if="rightPlayerCard != null && rightPlayerCard != ''">
         <span class="cardtitle">{{ rightPlayerCard }}:</span>
         {{ getCardDescription(rightPlayerCard) }}
       </template>
@@ -114,12 +114,13 @@ body.overlay::-webkit-scrollbar {
   text-align: center;
   position: absolute;
   top: 20px;
+  width: 125px;
 }
 .score.left {
-  left: 869px;
+  left: 834px;
 }
 .score.right {
-  right: 860px;
+  right: 834px;
 }
 
 .suit {
