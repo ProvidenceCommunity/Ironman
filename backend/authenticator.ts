@@ -78,7 +78,6 @@ authRouter.post("/local_login", (req, res) => {
     }
     dbg("Local login - failed");
     res.sendStatus(403);
-    return;
 });
 
 authRouter.get("/super_secret_localauth_toggle", (req, res) => {

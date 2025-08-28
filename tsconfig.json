@@ -18,6 +18,9 @@
     "paths": {
       "@/*": [
         "src/*"
+      ],
+      "@shared-types/*": [
+        "types/*"
       ]
     },
   },
@@ -26,7 +29,9 @@
     "src/**/*.tsx",
     "src/**/*.vue",
     "tests/**/*.ts",
-    "tests/**/*.tsx"
+    "tests/**/*.tsx",
+    "types/**/*.ts",
+    "backend/**/*.ts",
   ],
   "exclude": [
     "node_modules"

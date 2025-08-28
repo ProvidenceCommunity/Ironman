@@ -1,6 +1,7 @@
-import {GameMode, GameModeDetails, GeneratorOption, GeneratorOptions, IronmanMatch} from "../model";
+import {GameMode, GeneratorOption, GeneratorOptions, IronmanMatch} from "../model";
 import {setMatch} from "../database";
 import { missionIdToSlug, RouletteSpinGameMode, Spin, SpinGeneratorOptions } from "./rouletteSpin";
+import { GameModeDetails } from "@shared-types/RoundInfo";
 
 interface AdminEventPayload {
     playerIndex?: number;

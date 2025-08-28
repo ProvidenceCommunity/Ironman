@@ -24,12 +24,12 @@ dataRouter.get('/game_modes', (req, res) => {
 });
 
 dataRouter.get('/game_modes/:game_mode', (req, res) => {
-    if (GameModes[req.params.game_mode as string] === undefined) {
+    if (GameModes[req.params.game_mode] === undefined) {
         res.sendStatus(404);
         return;
     }
     res.json({
-        generatorOptions: GameModes[req.params.game_mode as string].getGeneratorOptions()
+        generatorOptions: GameModes[req.params.game_mode].getGeneratorOptions()
     });
 });
 

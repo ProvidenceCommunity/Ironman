@@ -5,6 +5,7 @@ import {TimerGameMode} from "./GameModes/timer";
 import { TwoSpinsGameMode } from "./GameModes/twoSpins";
 import { RelayGameMode } from "./GameModes/relay";
 import { WackyExtensionsGameMode } from "./GameModes/wacky-extensions";
+import { GameModeDetails } from "@shared-types/RoundInfo";
 
 export interface MatchField {
     type: "string" | "select" | "list";
@@ -40,10 +41,6 @@ export interface IronmanRound {
     additionalDetails: GameModeDetails;
     arrivingTimestamp: number;
     leavingTimestamp: number;
-}
-
-export interface GameModeDetails {
-    [key: string]: unknown;
 }
 
 export interface GeneratorOption {

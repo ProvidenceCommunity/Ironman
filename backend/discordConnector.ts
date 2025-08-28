@@ -25,8 +25,8 @@ interface AvatarCache {
 export default class DiscordConnector {
     private static instance: DiscordConnector | null = null;
 
-    private discord: Client<boolean>;
-    private dbg: debug.Debugger;
+    private readonly discord: Client<boolean>;
+    private readonly dbg: debug.Debugger;
     private guildId: string;
     private channelId: string;
     private playerMapCache: PlayerMap;
@@ -80,16 +80,13 @@ export default class DiscordConnector {
     }
 
     static getInstance(): DiscordConnector {
-        if (DiscordConnector.instance === null) {
-            DiscordConnector.instance = new DiscordConnector();
-        }
+        DiscordConnector.instance ??= new DiscordConnector();
         return DiscordConnector.instance;
     }
 
     async initialize(token: string, guildId: string, channelId: string): Promise<void> {
         if (this.discord.isReady()) {
             this.dbg("WARN: initialize called even though bot is ready");
-            return;
         } else {
             this.guildId = guildId;
             this.channelId = channelId;
@@ -176,9 +173,9 @@ export default class DiscordConnector {
             }
             if (configField.announceInDiscord) {
                 if (typeof match.schedulingData[key] === "object") {
-                    embed.addFields({ name: configField.title, value: (match.schedulingData[key] as string[]).join("\n") });
+                    embed.addFields({ name: configField.title, value: (match.schedulingData[key]).join("\n") });
                 } else {
-                    embed.addFields({ name: configField.title, value: match.schedulingData[key] as string });
+                    embed.addFields({ name: configField.title, value: match.schedulingData[key] });
                 }
             }
         }
@@ -218,7 +215,7 @@ export default class DiscordConnector {
                 }
                 if (configField.displayInMatchesCommand) {
                     if (typeof match.schedulingData[key] === "object") {
-                        details += `\n:small_orange_diamond:**${configField.title}**: ${(match.schedulingData[key] as string[]).join(" - ")}`;
+                        details += `\n:small_orange_diamond:**${configField.title}**: ${(match.schedulingData[key]).join(" - ")}`;
                     } else {
                         details += `\n:small_orange_diamond:**${configField.title}**: ${match.schedulingData[key]}`;
                     }

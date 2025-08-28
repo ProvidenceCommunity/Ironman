@@ -1,4 +1,5 @@
-import {GameMode, GameModeDetails, GeneratorOption, GeneratorOptions} from "../model";
+import { GameModeDetails } from "@shared-types/RoundInfo";
+import {GameMode, GeneratorOption, GeneratorOptions} from "../model";
 
 interface AdminEventPayload {
     playerIndex?: number;
