@@ -164,7 +164,7 @@
   import {defineComponent} from "vue";
   
   export default defineComponent({
-    name: "BerlinRouletteCondition",
+    name: "WideOverlayRouletteCondition",
     props: [ 'target' ],
     data() {
       return {}

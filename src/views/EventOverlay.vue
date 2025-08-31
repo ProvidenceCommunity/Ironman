@@ -1,10 +1,10 @@
 <template>
   <div class="background" v-if="loadCompleted">
     <span class="playername p1">
-      {{ matchData.players[0] }}
+      {{ fixedPlayerName(matchData.players[0]) }}
     </span>
     <span class="playername p2">
-      {{ matchData.players[1] }}
+      {{ fixedPlayerName(matchData.players[1]) }}
     </span>
     <div class="playercards left" :style="getCardBackground(leftPlayerCard)">
       <template v-if="leftPlayerCard != null && leftPlayerCard != ''">
@@ -164,8 +164,6 @@ import { get } from "@/http";
 import WideOverlay from "./WideOverlay.vue";
 import ALL_CARDS from '@/wacky_cards.json';
 
-const allCards = ALL_CARDS.map((card) => card.name);
-
 export default defineComponent({
   name: 'ProOverlay',
   components: {WideOverlay},
@@ -188,7 +186,7 @@ export default defineComponent({
   },
   async created() {
     this.matchId = window.location.pathname.split("/").pop() as string;
-    this.updateInterval = setInterval(this.update, 1000);
+    this.updateInterval = window.setInterval(this.update, 1000);
     await this.update();
 
     this.loadCompleted = true;
@@ -240,6 +238,34 @@ export default defineComponent({
             return "background-color: #00ffff";
         }
         return "background-color: white";
+    },
+    fixedPlayerName(oldName: string) {
+      switch (oldName) {
+        case "userjoinedyourchannel":
+          return "ChannelJoined";
+        case "alphirox":
+          return "Alph";
+        case "aphrodytea_":
+          return "aphro";
+        case "channelreindeer":
+          return "Channel Reindeer";
+        case "cabben06":
+          return "Cab";
+        case "taranprits1":
+          return "Taran";
+        case "chrisx3_":
+          return "ChrisX3";
+        case "blithe51":
+          return "Blithe";
+        case "nezukochanpsn":
+          return "Nezuko Chan";
+        case "moo.2":
+          return "Moo";
+        case "scruffy05":
+          return "Scruffy";
+        default:
+          return oldName;
+      }
     }
   },
   computed: {
