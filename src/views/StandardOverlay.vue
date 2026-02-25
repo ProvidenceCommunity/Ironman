@@ -1,9 +1,9 @@
 <template>
   <div class="container">
     <div class="container" v-if="matchData.roundLive">
-      <SpinOverlay :data="currentDetails.currentSpin" class="spin" v-if="currentRound.mode === 'rouletteSpin' || matchInfo.currentGameMode === 'wackyExtensions'"></SpinOverlay>
+      <SpinOverlay :data="currentDetails.currentSpin" class="spin" v-if="currentRound.mode === 'rouletteSpin' || currentRound.mode === 'wackyExtensions'"></SpinOverlay>
       <SpinOverlay :data="currentDetails.maps[currentDetails.currentSpin[spinNum]]" class="spin" v-if="currentRound.mode === 'relay' && currentDetails.maps[currentDetails.currentSpin[spinNum]] !== undefined"></SpinOverlay>
-      <SpinOverlay :data="currentDetails.currentSpins[spinNum]" class="spin" v-if="currentRound.mode === 'twoSpins'"></SpinOverlay>
+      <SpinOverlay :data="currentDetails.currentSpins[spinNum]" class="spin" v-if="currentRound.mode === 'nSpins'"></SpinOverlay>
       <DoneButtonOverlay :data="currentRound" v-if="currentRound.mode === 'simpleDoneButton' || currentRound.mode === 'timer'"></DoneButtonOverlay>
       <BingoOverlay :data="currentRound" v-if="currentRound.mode === 'bingo'"></BingoOverlay>
       <CountdownBar v-if="currentRound.mode === 'relay' && currentDetails.maps[currentDetails.currentSpin[1]] !== undefined" :timeRemaining="relaySpinTimeRemaining" :totalTime="relaySpinTotalTime"></CountdownBar>

@@ -26,8 +26,8 @@
           <RouletteSpinPlayer v-else-if="matchInfo.currentGameMode === 'rouletteSpin' || matchInfo.currentGameMode === 'wackyExtensions'" :matchId="matchId" :player="player" :details="this.matchInfo.round" @error="onError"></RouletteSpinPlayer>
           <BingoPlayer v-else-if="matchInfo.currentGameMode === 'bingo'" :matchId="matchId" :player="player" :details="matchInfo.round" :players="matchInfo.players" @error="onError"></BingoPlayer>
           <TimerPlayer v-else-if="matchInfo.currentGameMode === 'timer'" :details="matchInfo.round"></TimerPlayer>
-          <TwoSpinsPlayer v-else-if="matchInfo.currentGameMode === 'twoSpins'" :matchId="matchId" :player="player" :details="matchInfo.round" @error="onError"></TwoSpinsPlayer>
           <RelayPlayer v-else-if="matchInfo.currentGameMode === 'relay'" :matchId="matchId" :player="player" :details="matchInfo.round" @error="onError"></RelayPlayer>
+          <NSpinsPlayer v-else-if="matchInfo.currentGameMode === 'nSpins'" :matchId="matchId" :player="player" :details="matchInfo.round" @onError="onError"/>
         </div>
         <div v-else>
           <h1>Waiting for match info...</h1>
@@ -97,11 +97,10 @@ import { get } from '@/http';
 import BingoPlayer from "@/components/GameModesPlayer/Bingo.vue";
 import CountdownBar from "@/components/CountdownBar.vue";
 import TimerPlayer from "@/components/GameModesPlayer/Timer.vue";
-import TwoSpinsPlayer from "@/components/GameModesPlayer/TwoSpins.vue";
 import RelayPlayer from "@/components/GameModesPlayer/Relay.vue";
+import NSpinsPlayer from "@/components/GameModesPlayer/NSpins.vue";
 import { Howl, Howler } from 'howler';
 import HitmanIcon from "@/components/HitmanIcon.vue";
-import { MatchInfo } from "@shared-types/MatchInfo";
 
 export default defineComponent({
   name: "PlayerClient",
@@ -111,8 +110,8 @@ export default defineComponent({
     BingoPlayer,
     DoneButtonPlayer,
     RouletteSpinPlayer,
-    TwoSpinsPlayer,
     RelayPlayer,
+    NSpinsPlayer,
     HitmanIcon
   },
   data() {
@@ -126,7 +125,7 @@ export default defineComponent({
         countdown: 0,
         index: -1,
         roundLive: false,
-      } as MatchInfo,
+      },
       error: "",
       errorShown: false,
       connectionIssues: false,

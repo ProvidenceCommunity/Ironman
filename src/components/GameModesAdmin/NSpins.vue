@@ -2,21 +2,19 @@
   <v-list>
     <v-list-item v-for="(player, index) in players" :key="index" lines="two">
       <v-list-item-title>{{ player }}</v-list-item-title>
-      <v-list-item-subtitle>Current status: {{ getPlayerStatus(index) }}</v-list-item-subtitle>
-      <template v-slot:append v-if="isPlayerDone(index)">
-        <v-btn @click="acceptRun(index)" color="green">Accept</v-btn>
-        <v-btn @click="rejectRun(index)" color="red">Reject</v-btn>
+      <v-list-item-subtitle>Current status: {{ getPlayerStatus(index as number) }}</v-list-item-subtitle>
+      <template v-slot:append v-if="isPlayerDone(index as number)">
+        <v-btn @click="acceptRun(index as number)" color="green">Accept</v-btn>
+        <v-btn @click="rejectRun(index as number)" color="red">Reject</v-btn>
       </template>
     </v-list-item>
   </v-list>
-  <h1>{{ details.currentSpins[0].mission.name }}</h1>
-  <h3>Spin 1:</h3>
-  <v-btn @click="respin(0)">Respin</v-btn><br>
-  <RouletteSpin :spin="details.currentSpins[0]" />
-  <v-divider></v-divider>
-  <h3>Spin 2:</h3>
-  <v-btn @click="respin(1)">Respin</v-btn><br>
-  <RouletteSpin :spin="details.currentSpin[1]" />
+  <template v-for="(spin, idx) in details.currentSpins" :key="idx">
+    <h3>{{ spin.mission.name }}</h3>
+    <v-btn @click="respin(idx as number)">Respin</v-btn><br>
+    <RouletteSpin :spin="spin" />
+    <v-divider />
+  </template>
 </template>
 
 <script lang="ts">
@@ -26,8 +24,8 @@ import RouletteSpin from '@/components/RouletteSpin.vue';
 import {DateTime} from "luxon";
 
 export default defineComponent({
-  name: "TwoSpinsAdmin",
-  components: {RouletteSpin},
+  name: "NSpinsAdmin",
+  components: { RouletteSpin },
   props: [ 'players', 'details', 'matchId' ],
   emits: [ 'error' ],
   data() {
@@ -62,7 +60,7 @@ export default defineComponent({
       }
     },
     async respin(mapIndex: number) {
-      const resp = await post("/api/match/admin/" + this.matchId + "/respin", { map: mapIndex });
+      const resp = await post("/api/match/admin/" + this.matchId + "/respin", { mapIndex: mapIndex });
       if (resp.status !== 204) {
         this.$emit("error", "An error occurred while generating a new spin.");
       }

@@ -1,13 +1,19 @@
 <template>
-  <h1>{{ details.currentSpins[0].mission.name }}</h1>
-  <h3>Spin 1:</h3>
-  <RouletteSpin :spin="details.currentSpins[0]" />
-  <v-divider></v-divider>
-  <h3>Spin 2:</h3>
-  <RouletteSpin :spin="details.currentSpins[1]" />
+  <template v-for="(spin, idx) in details.currentSpins" :key="idx">
+    <h3>{{ spin.mission.name }}</h3>
+    <RouletteSpin :spin="spin" />
+    <v-divider />
+  </template>
   <h5>Please click the done button upon finishing!</h5>
-  <v-btn @click="done" x-large>{{ buttonText }}</v-btn>
+  <v-btn @click="done" class="doneButton" color="success">{{ buttonText }}</v-btn>
 </template>
+
+<style scoped>
+.doneButton {
+  padding: 0 100px 0 100px;
+  font-size: 24pt;
+}
+</style>
 
 <script lang="ts">
 import {defineComponent} from "vue";
@@ -15,7 +21,7 @@ import {post} from "@/http";
 import RouletteSpin from '@/components/RouletteSpin.vue';
 
 export default defineComponent({
-  name: "TwoSpinsPlayer",
+  name: "NSpinsPlayer",
   props: ['matchId', 'player', 'details'],
   emits: ['error'],
   components: {

@@ -55,6 +55,19 @@ interface AdminEventPayload {
     spin: Spin;
 }
 
+export interface RawOptions {
+    mission: string;
+    noDisguise: boolean;
+    noMelee: boolean;
+    noFirearms: boolean;
+    noAccidents: boolean;
+    noUniqueTargetKills: boolean;
+    genericKills: boolean;
+    hardOrImpossible: boolean;
+    secondaries: string;
+    noNtko: boolean;
+}
+
 export const missionIdToSlug: {[key: string]: string} = {
     "Freeform Training (ICA Facility)": "hitman|ica-facility|freeform-training",
     "The Final Test (ICA Facility)": "hitman|ica-facility|the-final-test",
@@ -165,28 +178,7 @@ export class RouletteSpinGameMode implements GameMode {
     }
 
     async generate(options: GeneratorOptions, players: string[]): Promise<RouletteGameModeDetails> {
-        const spinGenOptions: SpinGeneratorOptions = {
-            missionPool: [missionIdToSlug[options['mission'] as string]],
-            criteriaFilters: {
-                specificDisguises: !options['noDisguise'] as boolean,
-                specificMelee: !options['noMelee'] as boolean,
-                specificFirearms: !options['noFirearms'] as boolean,
-                specificAccidents: !options['noAccidents'] as boolean,
-                uniqueTargetKills: !options['noUniqueTargetKills'] as boolean,
-                genericKills: options['genericKills'] as boolean,
-                impossibleOrDifficultKills: options['hardOrImpossible'] as boolean,
-                additionalObjectives: options['secondaries'] === "Method only" || options['secondaries'] === "Method and disguise",
-                additionalObjectiveDisguises: options['secondaries'] === "Method and disguise",
-                potentialComplications: []
-            }
-        }
-
-        if (!options['noNtko']) {
-            spinGenOptions.criteriaFilters.potentialComplications.push({
-                complicationType: "No Target Pacification",
-                oddsOfReceivingComplication: 0.2
-            });
-        }
+        const spinGenOptions = RouletteSpinGameMode.buildGeneratorOptions(options as unknown as RawOptions);
 
         const spin = await RouletteSpinGameMode.generateSpin(spinGenOptions, options['noTargets'] as boolean);
 
@@ -230,6 +222,33 @@ export class RouletteSpinGameMode implements GameMode {
             doneStatus: currentState.doneStatus[player],
             lastDone: currentState.lastDone[player],
         };
+    }
+
+    static buildGeneratorOptions(options: RawOptions): SpinGeneratorOptions {
+        const spinOptions = {
+            missionPool: [missionIdToSlug[options.mission]],
+            criteriaFilters: {
+                specificDisguises: !options.noDisguise,
+                specificMelee: !options.noMelee,
+                specificFirearms: !options.noFirearms,
+                specificAccidents: !options.noAccidents,
+                uniqueTargetKills: !options.noUniqueTargetKills,
+                genericKills: options.genericKills,
+                impossibleOrDifficultKills: options.hardOrImpossible,
+                additionalObjectives: options.secondaries === "Method only" || options.secondaries === "Method and disguise",
+                additionalObjectiveDisguises: options.secondaries === "Method and disguise",
+                potentialComplications: []
+            }
+        } as SpinGeneratorOptions;
+
+        if (!options.noNtko) {
+            spinOptions.criteriaFilters.potentialComplications.push({
+                complicationType: "No Target Pacification",
+                oddsOfReceivingComplication: 0.25
+            });
+        }
+
+        return spinOptions;
     }
 
     static async generateSpin(options: SpinGeneratorOptions, freestyleMode: boolean): Promise<Spin> {

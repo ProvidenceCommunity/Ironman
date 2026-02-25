@@ -2,10 +2,10 @@ import { DoneButtonGameMode } from "./GameModes/simpleDone";
 import { RouletteSpinGameMode } from "./GameModes/rouletteSpin";
 import { BingoGameMode } from "./GameModes/bingo";
 import {TimerGameMode} from "./GameModes/timer";
-import { TwoSpinsGameMode } from "./GameModes/twoSpins";
 import { RelayGameMode } from "./GameModes/relay";
 import { WackyExtensionsGameMode } from "./GameModes/wacky-extensions";
 import { GameModeDetails } from "@shared-types/RoundInfo";
+import { NSpinsGameMode } from "./GameModes/nSpins";
 
 export interface MatchField {
     type: "string" | "select" | "list";
@@ -68,8 +68,8 @@ export const GameModes: { [key: string]: GameMode } = {
     "wackyExtensions": new WackyExtensionsGameMode(),
     "bingo": new BingoGameMode(),
     "timer": new TimerGameMode(),
-    "twoSpins": new TwoSpinsGameMode(),
-    "relay": new RelayGameMode()
+    "relay": new RelayGameMode(),
+    "nSpins": new NSpinsGameMode(),
 }
 
 declare module 'express-session' {

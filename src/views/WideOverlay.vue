@@ -3,7 +3,7 @@
       <div class="container" v-if="matchData.roundLive">
         <WideSpinOverlay :data="currentDetails.currentSpin" class="spin" v-if="currentRound.mode === 'rouletteSpin' || currentRound.mode === 'wackyExtensions'" />
         <WideSpinOverlay :data="currentDetails.maps[currentDetails.currentSpin[spinNum]]" class="spin" v-if="currentRound.mode === 'relay' && currentDetails.maps[currentDetails.currentSpin[spinNum]] !== undefined" />
-        <WideSpinOverlay :data="currentDetails.currentSpins[spinNum]" class="spin" v-if="currentRound.mode === 'twoSpins'" />
+        <WideSpinOverlay :data="currentDetails.currentSpins[spinNum]" class="spin" v-if="currentRound.mode === 'nSpins'" />
         <DoneButtonOverlay :data="currentRound" v-if="currentRound.mode === 'simpleDoneButton' || currentRound.mode === 'timer'"></DoneButtonOverlay>
         <BingoOverlay :data="currentRound" v-if="currentRound.mode === 'bingo'"></BingoOverlay>
         <CountdownBar v-if="currentRound.mode === 'relay' && currentDetails.maps[currentDetails.currentSpin[1]] !== undefined" :timeRemaining="relaySpinTimeRemaining" :totalTime="relaySpinTotalTime"></CountdownBar>
@@ -56,7 +56,6 @@
   </style>
   <script lang="ts">
   import {defineComponent} from "vue";
-  import SpinOverlay from "@/components/GameModesOverlay/RouletteSpin.vue";
   import CountdownBar from "@/components/CountdownBar.vue";
   import { get } from "@/http";
   import { Duration } from "luxon";
@@ -67,7 +66,7 @@
   
   export default defineComponent({
     name: 'RouletteSpinOverlay',
-    components: {BingoOverlay, DoneButtonOverlay, SpinOverlay, CountdownBar, WideSpinOverlay},
+    components: {BingoOverlay, DoneButtonOverlay, CountdownBar, WideSpinOverlay},
     data() {
       return {
         matchData: {
