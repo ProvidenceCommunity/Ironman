@@ -4,6 +4,9 @@
       <v-col>
         <v-sheet class="target" :style="'background: url(' + target.target.tileUrl + ') center center / cover no-repeat;'">
           <div class="targetName">{{ target.target.name }}</div>
+          <div v-if="hasNtko" class="complication">
+            No Target Pacification
+          </div>
         </v-sheet>
       </v-col>
       <v-col>
@@ -27,12 +30,13 @@
 <style scoped>
 .target {
   height: 100%;
+  position: relative;
 }
 .targetName {
   font-size: 220%;
-  top: 75%;
+  bottom: 10%;
   left: 10px;
-  position: relative;
+  position: absolute;
   font-weight: bold;
   color: white;
 }
@@ -50,6 +54,16 @@
   height: 100%;
   width: 50%;
   display: inline-block;
+}
+.complication {
+  background-color: red;
+  position: absolute;
+  bottom: 0px;
+  width: 100%;
+  color: white;
+  font-size: 150%;
+  padding-left: 10px;
+  font-weight: bold;
 }
 </style>
 
@@ -69,6 +83,11 @@ export default defineComponent({
       } else {
         return this.target.killMethod.name;
       }
+    }
+  },
+  computed: {
+    hasNtko() {
+      return this.target.complications.filter((comp: {name: string}) => comp.name === "No Target Pacification").length > 0;
     }
   }
 })

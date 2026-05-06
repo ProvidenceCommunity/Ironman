@@ -1,7 +1,8 @@
-import {GameMode, GameModeDetails, GeneratorOption, GeneratorOptions} from "../model";
+import { GameModeDetails } from "@shared-types/RoundInfo";
+import {GameMode, GeneratorOption, GeneratorOptions} from "../model";
 import axios from 'axios';
 
-interface SpinGeneratorOptions {
+export interface SpinGeneratorOptions {
     missionPool: string[];
     criteriaFilters: {
         specificDisguises: boolean;
@@ -11,10 +12,13 @@ interface SpinGeneratorOptions {
         uniqueTargetKills: boolean;
         genericKills: boolean;
         impossibleOrDifficultKills: boolean;
+        additionalObjectives: boolean;
+        additionalObjectiveDisguises: boolean;
+        potentialComplications: {complicationType: string, oddsOfReceivingComplication: number}[];
     }
 }
 
-interface Spin {
+export interface Spin {
     mission: {
         slug: string;
         publicIdPrefix: number;
@@ -38,18 +42,37 @@ interface Spin {
         disguise: {
             name: string;
             tileUrl: string;
-        }
+        },
+        complications: {
+            name: string;
+            tileUrl: string;
+        }[]
     }[]
 }
 
 interface AdminEventPayload {
     playerIndex: number;
+    spin: Spin;
 }
 
-const missionIdToSlug: {[key: string]: string} = {
+export interface RawOptions {
+    mission: string;
+    noDisguise: boolean;
+    noMelee: boolean;
+    noFirearms: boolean;
+    noAccidents: boolean;
+    noUniqueTargetKills: boolean;
+    genericKills: boolean;
+    hardOrImpossible: boolean;
+    secondaries: string;
+    noNtko: boolean;
+}
+
+export const missionIdToSlug: {[key: string]: string} = {
     "Freeform Training (ICA Facility)": "hitman|ica-facility|freeform-training",
     "The Final Test (ICA Facility)": "hitman|ica-facility|the-final-test",
     "The Showstopper (Paris)": "hitman|paris|the-showstopper",
+    "Holiday Hoarders (Paris)": "hitman|paris|holiday-hoarders",
     "World of Tomorrow (Sapienza)": "hitman|sapienza|world-of-tomorrow",
     "The Icon (Sapienza)": "hitman|sapienza|the-icon",
     "Landslide (Sapienza)": "hitman|sapienza|landslide",
@@ -71,6 +94,7 @@ const missionIdToSlug: {[key: string]: string} = {
     "Illusions of Grandeur (Mumbai)": "hitman2|mumbai|illusions-of-grandeur",
     "Another Life (Whittleton Creek)": "hitman2|whittleton-creek|another-life",
     "A Bitter Pill (Whittleton Creek)": "hitman2|whittleton-creek|a-bitter-pill",
+    "Shadows in the Water (Ambrose Island)": "hitman2|ambrose-island|shadows-in-the-water",
     "The Ark Society (Isle of Sgàil)": "hitman2|isle-of-sgail|ark-society",
     "Golden Handshake (New York)": "hitman2|new-york|golden-handshake",
     "The Last Resort (Haven Island)": "hitman2|haven-island|the-last-resort",
@@ -79,8 +103,15 @@ const missionIdToSlug: {[key: string]: string} = {
     "Apex Predator (Berlin)": "hitman3|berlin|apex-predator",
     "End Of An Era (Chongqing)": "hitman3|chongqing|end-of-an-era",
     "The Farewell (Mendoza)": "hitman3|mendoza|the-farewell",
-    "Untouchable (Carpathian Mountains)": "hitman3|carpathian-mountains|untouchable",
-    "Shadows in the Water (Ambrose Island)": "hitman3|ambrose-island|shadows-in-the-water"
+    "Untouchable (Carpathian Mountains)": "hitman3|carpathian-mountains|untouchable"
+}
+
+export interface RouletteGameModeDetails extends GameModeDetails {
+    currentSpin: Spin;
+    generatorOptions: SpinGeneratorOptions;
+    noTargets: boolean;
+    doneStatus: number[];
+    lastDone: number[];
 }
 
 export class RouletteSpinGameMode implements GameMode {
@@ -118,74 +149,109 @@ export class RouletteSpinGameMode implements GameMode {
                 type: "boolean"
             },
             {
-                id: "uniqueTargetKills",
-                caption: "Allow unique target kills",
+                id: "noUniqueTargetKills",
+                caption: "No unique target kills",
                 type: "boolean"
             },
             {
                 id: "genericKills",
                 caption: "Allow generic kills",
                 type: "boolean"
+            },
+            {
+                id: "noNtko",
+                caption: "Disable No Target Pacification",
+                type: "boolean"
+            },
+            {
+                id: "secondaries",
+                caption: "Enable secondary objectives",
+                type: "select",
+                options: ["No", "Method only", "Method and disguise"]
+            },
+            {
+                id: "hardOrImpossible",
+                caption: "Allow hard or impossible conditions",
+                type: "boolean"
             }
         ];
     }
 
-    async generate(options: GeneratorOptions, players: string[]): Promise<GameModeDetails> {
-        const spinGenOptions: SpinGeneratorOptions = {
-            missionPool: [missionIdToSlug[options['mission'] as string]],
-            criteriaFilters: {
-                specificDisguises: !options['noDisguise'] as boolean,
-                specificMelee: !options['noMelee'] as boolean,
-                specificFirearms: !options['noFirearms'] as boolean,
-                specificAccidents: !options['noAccidents'] as boolean,
-                uniqueTargetKills: options['uniqueTargetKills'] as boolean,
-                genericKills: options['genericKills'] as boolean,
-                impossibleOrDifficultKills: false
-            }
-        }
+    async generate(options: GeneratorOptions, players: string[]): Promise<RouletteGameModeDetails> {
+        const spinGenOptions = RouletteSpinGameMode.buildGeneratorOptions(options as unknown as RawOptions);
 
-        const spin = await this.generateSpin(spinGenOptions, options['noTargets'] as boolean);
+        const spin = await RouletteSpinGameMode.generateSpin(spinGenOptions, options['noTargets'] as boolean);
 
         return {
             currentSpin: spin,
             generatorOptions: spinGenOptions,
-            noTargets: options['noTargets'],
+            noTargets: options['noTargets'] as boolean,
             doneStatus: players.map(() => { return 0 }),
             lastDone: players.map(() => { return -1 })
         };
     }
 
-    async handleAdminEvent(event: string, payload: AdminEventPayload, currentState: GameModeDetails): Promise<GameModeDetails> {
+    async handleAdminEvent(event: string, payload: AdminEventPayload, currentState: RouletteGameModeDetails): Promise<RouletteGameModeDetails> {
         if (event === "acceptDone") {
-            (currentState['doneStatus'] as number[])[payload.playerIndex] = 2;
+            currentState.doneStatus[payload.playerIndex] = 2;
         }
         if (event === "rejectDone") {
-            (currentState['doneStatus'] as number[])[payload.playerIndex] = 0;
-            (currentState['lastDone'] as number[])[payload.playerIndex] = -1;
+            currentState.doneStatus[payload.playerIndex] = 0;
+            currentState.lastDone[payload.playerIndex] = -1;
         }
         if (event === "respin") {
-            currentState['currentSpin'] = await this.generateSpin(currentState['generatorOptions'] as SpinGeneratorOptions, currentState['noTargets'] as boolean);
+            currentState.currentSpin = await RouletteSpinGameMode.generateSpin(currentState.generatorOptions, currentState.noTargets);
+        }
+        if (event === "updateSpin") {
+            currentState.currentSpin = payload.spin;
         }
         return currentState;
     }
 
-    handleUserEvent(event: string, player: number, payload: unknown, currentState: GameModeDetails): GameModeDetails {
+    handleUserEvent(event: string, player: number, payload: unknown, currentState: RouletteGameModeDetails): RouletteGameModeDetails {
         if (event === "done") {
-            (currentState['doneStatus'] as number[])[player] = 1;
-            (currentState['lastDone'] as number[])[player] = Date.now();
+            currentState.doneStatus[player] = 1;
+            currentState.lastDone[player] = Date.now();
         }
         return currentState;
     }
 
-    getPlayerDetails(player: number, currentState: GameModeDetails): GameModeDetails {
+    getPlayerDetails(player: number, currentState: RouletteGameModeDetails): GameModeDetails {
         return {
-            currentSpin: currentState['currentSpin'],
-            doneStatus: (currentState['doneStatus'] as number[])[player],
-            lastDone: (currentState['lastDone'] as number[])[player],
+            currentSpin: currentState.currentSpin,
+            doneStatus: currentState.doneStatus[player],
+            lastDone: currentState.lastDone[player],
         };
     }
 
-    async generateSpin(options: SpinGeneratorOptions, freestyleMode: boolean): Promise<Spin> {
+    static buildGeneratorOptions(options: RawOptions): SpinGeneratorOptions {
+        const spinOptions = {
+            missionPool: [missionIdToSlug[options.mission]],
+            criteriaFilters: {
+                specificDisguises: !options.noDisguise,
+                specificMelee: !options.noMelee,
+                specificFirearms: !options.noFirearms,
+                specificAccidents: !options.noAccidents,
+                uniqueTargetKills: !options.noUniqueTargetKills,
+                genericKills: options.genericKills,
+                impossibleOrDifficultKills: options.hardOrImpossible,
+                additionalObjectives: options.secondaries === "Method only" || options.secondaries === "Method and disguise",
+                additionalObjectiveDisguises: options.secondaries === "Method and disguise",
+                potentialComplications: []
+            }
+        } as SpinGeneratorOptions;
+
+        if (!options.noNtko) {
+            spinOptions.criteriaFilters.potentialComplications.push({
+                complicationType: "No Target Pacification",
+                oddsOfReceivingComplication: 0.25
+            });
+        }
+
+        return spinOptions;
+    }
+
+    static async generateSpin(options: SpinGeneratorOptions, freestyleMode: boolean): Promise<Spin> {
         try {
             const spin = await axios.post('https://rouletteapi.hitmaps.com/api/spins', options, { validateStatus: () => { return true } });
             const result = spin.data;
@@ -195,19 +261,11 @@ export class RouletteSpinGameMode implements GameMode {
                     e.target.tileUrl = "https://media.hitmaps.com/img/hitmaps-roulette/berlin-target.png";
                 });
             }
-            // if (!options.criteriaFilters.specificDisguises) {
-            //     (result.targetConditions as {disguise: {name: string;tileUrl: string}}[]).forEach((e, index) => {
-            //         e.disguise.name = "Any disguise";
-            //         e.disguise.tileUrl = "";
-            //     });
-            // }
 
             const splittedSlug = options.missionPool[0].split("|");
-            const missionInfo = await axios.get(`https://www.hitmaps.com/api/v1/games/${splittedSlug[0]}/locations/${splittedSlug[1]}/missions/${splittedSlug[2]}`);
+            const missionInfo = await axios.get(`https://api.hitmaps.com/api/games/${splittedSlug[0]}/locations/${splittedSlug[1]}/missions/${splittedSlug[2]}`);
 
-            return Object.assign(result, { mission: { name: missionInfo.data[0].name, backgroundTile: missionInfo.data[0].backgroundUrl } });
-
-            // return result;
+            return Object.assign(result, { mission: { name: missionInfo.data.name, backgroundTile: missionInfo.data.backgroundUrl } });
         } catch(e) {
             return {
                 mission: {
@@ -230,7 +288,8 @@ export class RouletteSpinGameMode implements GameMode {
                     disguise: {
                         name: "",
                         tileUrl: ""
-                    }
+                    },
+                    complications: []
                 }]
             }
         }

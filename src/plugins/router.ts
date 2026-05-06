@@ -5,7 +5,9 @@ import AdminInterfaceView from '../views/AdminInterface.vue'
 import PlayerClientView from '../views/PlayerClient.vue';
 import OverlayView from '../views/StandardOverlay.vue';
 import LocalLoginView from '../views/LocalLogin.vue';
-import BingoTournamentOverlay from "@/views/BingoTournamentOverlay.vue";
+import EventOverlay from "@/views/EventOverlay.vue";
+import WideOverlay from '@/views/WideOverlay.vue';
+import UpcomingView from '@/views/UpcomingView.vue';
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -34,14 +36,24 @@ const routes: Array<RouteRecordRaw> = [
     component: OverlayView
   },
   {
-    path: '/bingo-overlay/:matchID',
-    name: 'bingotournamentoverlay',
-    component: BingoTournamentOverlay
+    path: '/event-overlay/:matchID',
+    name: 'eventoverlay',
+    component: EventOverlay
+  },
+  {
+    path: '/wide-overlay/:matchID',
+    name: 'wideoverlay',
+    component: WideOverlay
   },
   {
     path: '/login',
     name: 'locallogin',
     component: LocalLoginView
+  },
+  {
+    path: '/upcoming',
+    name: 'upcoming',
+    component: UpcomingView
   }
 ]
 

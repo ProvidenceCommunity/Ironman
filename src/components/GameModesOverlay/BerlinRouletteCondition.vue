@@ -2,6 +2,9 @@
   <div>
     <v-sheet class="target" :style="`background: url(${ target.target.tileUrl }) center center / cover no-repeat;`">
       <span class="targetName">{{ target.target.name }}</span>
+      <span v-if="hasNtko" class="complication">
+        NTKO
+      </span>
     </v-sheet>
     <v-sheet class="condition">
       <img :src="target.killMethod.tileUrl" class="conditionImg float-right">
@@ -18,6 +21,7 @@
 
 <style scoped>
 .target {
+  position: relative;
   height: 34%;
 }
 .condition {
@@ -45,6 +49,17 @@
   font-weight: bold;
   color: white;
 }
+.complication {
+  background-color: red;
+  position: absolute;
+  right: 0px;
+  height: 100%;
+  color: white;
+  font-size: 150%;
+  padding-left: 10px;
+  font-weight: bold;
+  padding-right: 10px;
+}
 </style>
 
 <script lang="ts">
@@ -63,6 +78,11 @@ export default defineComponent({
       } else {
         return this.target.killMethod.name;
       }
+    }
+  },
+  computed: {
+    hasNtko() {
+      return this.target.complications.filter((comp: {name: string}) => comp.name === "No Target Pacification").length > 0;
     }
   }
 })

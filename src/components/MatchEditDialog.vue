@@ -43,7 +43,7 @@ export default defineComponent({
                 if (this.match.timestamp <= 0) {
                     this.datetime = "";
                 } else {
-                    this.datetime = DateTime.fromMillis(this.match.timestamp).toFormat("yyyy-MM-dd'T'hh:mm");
+                    this.datetime = DateTime.fromMillis(this.match.timestamp).toFormat("yyyy-MM-dd'T'HH:mm");
                 }
                 this.players = this.match.players.join("\n");
                 this.newSchedulingInformation = {};

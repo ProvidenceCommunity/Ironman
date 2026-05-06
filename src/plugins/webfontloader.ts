@@ -4,6 +4,8 @@
  * webfontloader documentation: https://github.com/typekit/webfontloader
  */
 
+import '@/assets/hitman2.css';
+
 export async function loadFonts () {
   const webFontLoader = await import(/* webpackChunkName: "webfontloader" */'webfontloader')
 

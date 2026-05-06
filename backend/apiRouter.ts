@@ -1,8 +1,9 @@
 import { Router } from 'express';
 import {createMatch, getMatch, sessionStore, setMatch} from "./database";
-import {GameModeDetails, GameModes, IronmanRound} from "./model";
+import {GameModes, IronmanRound} from "./model";
 import debug from 'debug';
 import DiscordConnector from './discordConnector';
+import { MatchInfo } from "@shared-types/MatchInfo";
 
 const dbg = debug("ironman:api");
 
@@ -26,7 +27,7 @@ apiRouter.post('/match/update/:mID', (req, res) => {
     }
     const match = getMatch(req.params.mID);
     Object.assign(match, req.body);
-    setMatch(req.params.mID as string, match);
+    setMatch(req.params.mID, match);
     res.sendStatus(204);
 });
 
@@ -38,7 +39,7 @@ apiRouter.post('/match/schedule/:mID', async (req, res) => {
     const match = getMatch(req.params.mID);
     const shouldAnnounce = DiscordConnector.shouldAnnounceSchedule(match, Object.assign({}, match, req.body));
     Object.assign(match, req.body);
-    setMatch(req.params.mID as string, match);
+    setMatch(req.params.mID, match);
     if (shouldAnnounce) {
         await DiscordConnector.getInstance().sendSchedulingMessage(match);
     }
@@ -50,7 +51,7 @@ apiRouter.get('/match/admin/:mID', async (req, res) => {
         res.sendStatus(403);
         return;
     }
-    const match = getMatch(req.params.mID as string);
+    const match = getMatch(req.params.mID);
     if (!match) {
         res.sendStatus(404);
         return;
@@ -63,7 +64,7 @@ apiRouter.post('/match/admin/:mID/addRound', async (req, res) => {
         res.sendStatus(403);
         return;
     }
-    const match = getMatch(req.params.mID as string);
+    const match = getMatch(req.params.mID);
     if (!match) {
         res.sendStatus(404);
         return;
@@ -78,7 +79,7 @@ apiRouter.post('/match/admin/:mID/addRound', async (req, res) => {
             leavingTimestamp: -1
         });
         dbg("(%s) Added round %s [%s]: %o", match.id, req.body.title, req.body.game_mode, details);
-        setMatch(req.params.mID as string, match);
+        setMatch(req.params.mID, match);
         res.sendStatus(204);
     } catch {
         dbg("(%s) Error while adding round %s [%s]: %o", match.id, req.body.title, req.body.game_mode, req.body.generatorOptions);
@@ -91,14 +92,14 @@ apiRouter.post('/match/admin/:mID/:event', async (req, res) => {
         res.sendStatus(403);
         return;
     }
-    const match = getMatch(req.params.mID as string);
+    const match = getMatch(req.params.mID);
     if (!match) {
         res.sendStatus(404);
         return;
     }
     const round = match.rounds[match.rounds.length - 1];
     try {
-        round.additionalDetails = await GameModes[round.mode].handleAdminEvent(req.params['event'] as string, req.body, round.additionalDetails, round.arrivingTimestamp);
+        round.additionalDetails = await GameModes[round.mode].handleAdminEvent(req.params['event'], req.body, round.additionalDetails, round.arrivingTimestamp);
         dbg("(%s)[%s] Admin event %s: %o", match.id, round.mode, req.params['event'], req.body);
         res.sendStatus(204);
     } catch {
@@ -108,12 +109,12 @@ apiRouter.post('/match/admin/:mID/:event', async (req, res) => {
 });
 
 apiRouter.get('/match/player/:mID/:player', async (req, res) => {
-    const match = getMatch(req.params.mID as string);
+    const match = getMatch(req.params.mID);
     if (!match) {
         res.sendStatus(404);
         return;
     }
-    const playerIndex = match.players.findIndex((e) => { return e === req.params.player as string });
+    const playerIndex = match.players.findIndex((e) => { return e === req.params.player });
     if (playerIndex < 0) {
         res.sendStatus(404);
         return;
@@ -123,10 +124,11 @@ apiRouter.get('/match/player/:mID/:player', async (req, res) => {
     for (const player of match.players) {
         players.push(await DiscordConnector.getInstance().resolvePlayer(player));
     }
-    const result: {players:string[];scores:number[];round?:GameModeDetails;currentGameMode?:string;countdown?:number;totalMatchTime?:number;roundLive:boolean;roundTitle?:string} = {
+    const result: MatchInfo = {
         players,
         scores: match.scores,
-        roundLive: false
+        roundLive: false,
+        index: playerIndex,
     };
     if (roundIndex >= 0) {
         const round = match.rounds[roundIndex];
@@ -145,12 +147,12 @@ apiRouter.get('/match/player/:mID/:player', async (req, res) => {
 });
 
 apiRouter.post('/match/player/:mID/:player/:event', (req, res) => {
-    const match = getMatch(req.params.mID as string);
+    const match = getMatch(req.params.mID);
     if (!match) {
         res.sendStatus(404);
         return;
     }
-    const playerIndex = match.players.findIndex((pl) => { return pl === req.params.player as string });
+    const playerIndex = match.players.findIndex((pl) => { return pl === req.params.player });
     if (playerIndex < 0) {
         res.sendStatus(404);
         return;
@@ -158,7 +160,7 @@ apiRouter.post('/match/player/:mID/:player/:event', (req, res) => {
     const round = match.rounds[match.rounds.length - 1];
     try {
         dbg("(%s)[%s] Player(%s) event %s: %o", match.id, round.mode, req.params.player, req.params['event'], req.body);
-        round.additionalDetails = GameModes[round.mode].handleUserEvent(req.params.event as string, playerIndex, req.body, round.additionalDetails);
+        round.additionalDetails = GameModes[round.mode].handleUserEvent(req.params.event, playerIndex, req.body, round.additionalDetails, round.arrivingTimestamp);
         res.sendStatus(204);
     } catch {
         dbg("(%s) Error while Player(%s) event %s: %o", match.id, round.mode, req.params.player, req.params['event'], req.body);
@@ -167,18 +169,21 @@ apiRouter.post('/match/player/:mID/:player/:event', (req, res) => {
 });
 
 apiRouter.get('/match/overlay/:mID', async (req, res) => {
-    const match = getMatch(req.params.mID as string);
+    const match = getMatch(req.params.mID);
     if (!match) {
         res.sendStatus(404);
         return;
     }
     const roundIndex = match.rounds.length - 1;
     const players = [] as string[];
+    const avatars = [] as string[];
     for (const player of match.players) {
-        players.push(await (await DiscordConnector.getInstance().resolvePlayer(player)).split("#")[0]);
+        players.push((await DiscordConnector.getInstance().resolvePlayer(player)).split("#")[0]);
+        avatars.push(await DiscordConnector.getInstance().getAvatar(player));
     }
-    const result: {players:string[];scores:number[];round?:IronmanRound;countdown?:number;totalMatchTime?:number;roundLive:boolean} = {
+    const result: {players:string[];avatars:string[];scores:number[];round?:IronmanRound;countdown?:number;totalMatchTime?:number;roundLive:boolean} = {
         players: players,
+        avatars: avatars,
         scores: match.scores,
         roundLive: false
     };

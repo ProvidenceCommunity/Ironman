@@ -1,7 +1,9 @@
 <template>
-  <v-progress-linear v-model="percentage" :height="height" :color="computeColor">
-    <b style="color: white; font-size: 30px;">{{ formattedTimeRemaining }}</b>
-  </v-progress-linear>
+  <div style="background-color: gray">
+    <v-progress-linear v-model="percentage" :height="height" :color="computeColor">
+      <b style="color: white; font-size: 30px;">{{ formattedTimeRemaining }}</b>
+    </v-progress-linear>
+  </div>
 </template>
 
 <script lang="ts">

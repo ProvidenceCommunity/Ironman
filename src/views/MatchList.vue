@@ -127,7 +127,6 @@ export default defineComponent({
       this.currentlyScheduling = this.matches.filter(e => {return e.id === matchId})[0];
     },
     async saveEdit(matchId, data) {
-      console.log(data);
       await post("/api/match/schedule/" + matchId, data);
       await this.updateList();
       this.currentlyScheduling = null;
@@ -159,7 +158,11 @@ export default defineComponent({
       return this.matchFields.filter(e => e.displayInOverview);
     },
     displayedMatches() {
-      return this.matches.filter(e => { return !e.finished || this.showFinished });
+      return this.matches
+        .filter(e => { return !e.finished || this.showFinished })
+        .sort((a, b) => {
+          return a.timestamp - b.timestamp;
+        });
     }
   }
 })

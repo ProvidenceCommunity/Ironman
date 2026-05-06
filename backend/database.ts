@@ -16,6 +16,7 @@ interface GlobalConfig {
     matchSchema: MatchField[];
     discord: {
         enableMatchupChannel: boolean;
+        enableMatchesCommand: boolean;
         guildId: string;
         channelId: string;
         botToken: string;
@@ -28,7 +29,7 @@ let config: GlobalConfig;
 
 export async function loadDatabase(): Promise<void> {
     try {
-        const file = await readFile("./database.json", 'utf8');
+        const file = await readFile("./data/database.json", 'utf8');
         matches = JSON.parse(file);
         dbg("Loaded %d matches", Object.keys(matches).length);
     } catch {
@@ -39,7 +40,7 @@ export async function loadDatabase(): Promise<void> {
 
 export async function loadConfig(): Promise<void> {
     try {
-        const file = await readFile("./config.json", "utf8");
+        const file = await readFile("./data/config.json", "utf8");
         config = JSON.parse(file);
         dbg("Loaded global config.");
     } catch {
@@ -49,6 +50,7 @@ export async function loadConfig(): Promise<void> {
             matchSchema: [],
             discord: {
                 enableMatchupChannel: false,
+                enableMatchesCommand: false,
                 botToken: "",
                 channelId: "",
                 guildId: ""
@@ -58,8 +60,7 @@ export async function loadConfig(): Promise<void> {
 }
 
 export async function writeDatabase(): Promise<void> {
-    await writeFile("./config.json", JSON.stringify(config), 'utf8');
-    await writeFile('./database.json', JSON.stringify(matches), 'utf8');
+    await writeFile('./data/database.json', JSON.stringify(matches), 'utf8');
     dbg("Wrote %d matches to disk", Object.keys(matches).length);
 }
 

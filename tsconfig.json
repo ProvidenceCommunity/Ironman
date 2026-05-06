@@ -13,26 +13,26 @@
     "sourceMap": true,
     "baseUrl": ".",
     "types": [
-      "webpack-env"
+      "vite/client"
     ],
     "paths": {
       "@/*": [
         "src/*"
+      ],
+      "@shared-types/*": [
+        "types/*"
       ]
     },
-    "lib": [
-      "esnext",
-      "dom",
-      "dom.iterable",
-      "scripthost"
-    ]
+    "resolveJsonModule": true
   },
   "include": [
     "src/**/*.ts",
     "src/**/*.tsx",
     "src/**/*.vue",
     "tests/**/*.ts",
-    "tests/**/*.tsx"
+    "tests/**/*.tsx",
+    "types/**/*.ts",
+    "backend/**/*.ts",
   ],
   "exclude": [
     "node_modules"

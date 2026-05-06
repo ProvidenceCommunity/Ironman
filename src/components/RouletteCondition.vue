@@ -1,79 +1,121 @@
 <template>
-  <v-container fluid>
-    <v-row no-gutters>
-      <v-col>
-        <v-sheet class="target" :style="'background: url(' + condition.target.tileUrl + ') center center / cover no-repeat;'">
-          <div class="targetName">{{ condition.target.name }}</div>
-        </v-sheet>
-      </v-col>
-      <v-col>
-        <v-sheet class="condition">
-          <img :src="condition.killMethod.tileUrl" class="conditionImg float-right">
-          <span class="conditionTitle">Eliminate using</span><br>
-          <span class="conditionDetail">{{ buildKillMethod() }}</span>
-        </v-sheet>
-        <v-sheet class="condition">
-          <img :src="condition.disguise.tileUrl" class="conditionImg float-right">
-          <span class="conditionTitle">Wear disguise</span><br>
-          <span class="conditionDetail">{{ condition.disguise.name }}</span>
-        </v-sheet>
-      </v-col>
-    </v-row>
-  </v-container>
+  <div class="viewer-spin">
+      <div class="condition">
+          <div class="image" :style="'background: url(' + target.target.tileUrl + ') center center / cover no-repeat;'"></div>
+          <div class="icon" v-if="!noIcons">
+              <HitmanIcon icon="challenge-category-assassination" />
+          </div>
+          <dl class="text">
+              <dt>Target</dt>
+              <dd>{{ target.target.name }}</dd>
+          </dl>
+          <div class="icon clickable" v-if="editable" @click="$emit('toggleNtko', target.target.name)">
+            <HitmanIcon icon="complication" />
+          </div>
+      </div>
+      <div class="condition">
+          <div class="image" :style="'background: url(' + target.killMethod.tileUrl + ') center center / cover no-repeat;'"></div>
+          <div class="icon" v-if="!noIcons">
+              <HitmanIcon icon="difficulty-casual" />
+          </div>
+          <dl class="text">
+              <dt>Eliminate using</dt>
+              <dd>{{ buildKillMethod() }}</dd>
+          </dl>
+          <div class="icon clickable" v-if="editable" @click="$emit('editCondition', target.target.name)">
+            <HitmanIcon icon="edit" />
+          </div>
+      </div>
+      <div class="condition">
+          <div class="image" :style="'background: url(' + target.disguise.tileUrl + ') center center / cover no-repeat;'"></div>
+          <div class="icon" v-if="!noIcons">
+              <HitmanIcon icon="disguise" />
+          </div>
+          <dl class="text">
+              <dt>Wear disguise</dt>
+              <dd>{{ target.disguise.name }}</dd>
+          </dl>
+          <div class="icon clickable" v-if="editable" @click="$emit('editDisguise', target.target.name)">
+            <HitmanIcon icon="edit" />
+          </div>
+      </div>
+      <template v-if="target.complications.length > 0">
+          <div v-for="complication in target.complications" class="condition complication" :key="complication.name">
+              <div class="image" :style="'background: url(' + complication.tileUrl + ') center center / cover no-repeat;'"></div>
+              <div class="icon" v-if="!noIcons">
+                  <HitmanIcon icon="complication" />
+              </div>
+              <dl class="text">
+                  <dt>Complication</dt>
+                  <dd>{{ complication.name }}</dd>
+              </dl>
+          </div>
+      </template>
+  </div>
 </template>
 
-<style scoped>
-  .target {
-    height: 198px;
-    width: 325px;
-    max-width: 325px;
-  }
-  .targetName {
-    font-size: 25px;
-    top: 80%;
-    left: 10px;
-    position: relative;
-    font-weight: bold;
-  }
+<style lang="scss" scoped>
+.clickable {
+    cursor: pointer;
+    font-size: 1rem !important;
+}
+.viewer-spin {
   .condition {
-    height: 99px;
-    width: 600px;
+      display: flex;
+      gap: 1rem;
+
+      &.complication {
+          color: white;
+          background: rgba(red, 0.75);
+      }
+      .icon {
+          flex: 0 0 3rem;
+          width: 3rem;
+          height: 5rem;
+          padding: 1rem 1rem 0 0;
+          font-size: 2rem;
+      }
+      .image {
+          flex: 0 0 5rem;
+          width: 5rem;
+          height: 5rem;
+          font-size: 2rem;
+      }
+      .text {
+          padding: 1rem 1rem 0 0;
+          dt {
+              font-size: 0.75rem;
+          }
+          dd {
+              font-size: 1.25rem;
+              line-height: 1;
+          }
+      }
   }
-  .conditionTitle {
-    color: red;
-    margin-top: 10px;
-    margin-left: 10px;
-    font-size: 20px;
-  }
-  .conditionDetail {
-    margin-left: 10px;
-    margin-top: 10px;
-    font-size: 25px;
-    font-weight: bold;
-  }
-  .conditionImg {
-    height: 99px;
-    display: flex;
-  }
+}
 </style>
 
 <script lang="ts">
-import {defineComponent} from "vue";
+import { defineComponent } from 'vue';
+import HitmanIcon from '@/components/HitmanIcon.vue'
 
 export default defineComponent({
-  name: "RouletteCondition",
-  props: [ 'condition' ],
+  name: 'ViewerTarget',
+  props: ['target', 'noIcons', 'editable'],
+  components: {
+    HitmanIcon
+  },
   data() {
-    return {}
+      return {};
   },
   methods: {
-    buildKillMethod() {
-      if (this.condition.killMethod.selectedVariant) {
-        return this.condition.killMethod.selectedVariant + " " + this.condition.killMethod.name;
-      } else {
-        return this.condition.killMethod.name;
-      }
-    }
-  }
-})
+      buildKillMethod() {
+          if (this.target.killMethod.selectedVariant) {
+              return this.target.killMethod.selectedVariant + ' ' + this.target.killMethod.name;
+          } else {
+              return this.target.killMethod.name;
+          }
+      },
+  },
+});
 </script>

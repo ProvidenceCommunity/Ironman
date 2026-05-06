@@ -3,10 +3,8 @@
   <h3>{{ details.additionalInfo }}</h3>
   <v-list>
     <v-list-item v-for="(player, index) in players" :key="index" lines="two">
-      <v-list-item-header>
-        <v-list-item-title>{{ player }}</v-list-item-title>
-        <v-list-item-subtitle>Current status: {{ getPlayerStatus(index) }}</v-list-item-subtitle>
-      </v-list-item-header>
+      <v-list-item-title>{{ player }}</v-list-item-title>
+      <v-list-item-subtitle>Current status: {{ getPlayerStatus(index) }}</v-list-item-subtitle>
       <template v-slot:append v-if="isPlayerDone(index)">
         <v-btn @click="acceptRun(index)" color="green">Accept</v-btn>
         <v-btn @click="rejectRun(index)" color="red">Reject</v-btn>

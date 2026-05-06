@@ -2,14 +2,18 @@ import { DoneButtonGameMode } from "./GameModes/simpleDone";
 import { RouletteSpinGameMode } from "./GameModes/rouletteSpin";
 import { BingoGameMode } from "./GameModes/bingo";
 import {TimerGameMode} from "./GameModes/timer";
-import { TwoSpinsGameMode } from "./GameModes/twoSpins";
+import { RelayGameMode } from "./GameModes/relay";
+import { WackyExtensionsGameMode } from "./GameModes/wacky-extensions";
+import { GameModeDetails } from "@shared-types/RoundInfo";
+import { NSpinsGameMode } from "./GameModes/nSpins";
 
 export interface MatchField {
     type: "string" | "select" | "list";
     name: string;
     title: string;
-    displayInOverview: boolean;
-    announceInDiscord: boolean;
+    displayInOverview?: boolean;
+    announceInDiscord?: boolean;
+    displayInMatchesCommand?: boolean;
     options?: string[] | MatchField;
 }
 
@@ -39,10 +43,6 @@ export interface IronmanRound {
     leavingTimestamp: number;
 }
 
-export interface GameModeDetails {
-    [key: string]: unknown;
-}
-
 export interface GeneratorOption {
     type: "string" | "number" | "select" | "boolean" | "list";
     id: string;
@@ -57,7 +57,7 @@ export interface GeneratorOptions {
 export interface GameMode {
     getGeneratorOptions(): GeneratorOption[];
     generate(options: GeneratorOptions, players: string[]): Promise<GameModeDetails> | GameModeDetails;
-    handleUserEvent(event: string, player: number, payload: unknown, currentState: GameModeDetails): GameModeDetails;
+    handleUserEvent(event: string, player: number, payload: unknown, currentState: GameModeDetails, roundStartingTimestamp: number): GameModeDetails;
     handleAdminEvent(event: string, payload: unknown, currentState: GameModeDetails, roundStartingTimestamp: number): Promise<GameModeDetails> | GameModeDetails;
     getPlayerDetails(player: number, currentState: GameModeDetails, match: IronmanMatch): GameModeDetails;
 }
@@ -65,9 +65,11 @@ export interface GameMode {
 export const GameModes: { [key: string]: GameMode } = {
     "simpleDoneButton": new DoneButtonGameMode(),
     "rouletteSpin": new RouletteSpinGameMode(),
+    "wackyExtensions": new WackyExtensionsGameMode(),
     "bingo": new BingoGameMode(),
     "timer": new TimerGameMode(),
-    "twoSpins": new TwoSpinsGameMode(),
+    "relay": new RelayGameMode(),
+    "nSpins": new NSpinsGameMode(),
 }
 
 declare module 'express-session' {

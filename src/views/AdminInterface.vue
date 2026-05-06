@@ -36,7 +36,10 @@
                   <b>Shoutcast-Overlay:</b> <a :href="getOverlayLink()">{{ getOverlayLink() }}</a> (1300px x 600px)
                 </li>
                 <li>
-                  <b>Bingo-Overlay:</b> <a :href="getEventOverlayLink()">{{ getEventOverlayLink() }}</a> (1920px x 1080px)
+                  <b>Wide-Overlay:</b> <a :href="getWideOverlayLink()">{{ getWideOverlayLink() }}</a> (1900px x 6000px)
+                </li>
+                <li>
+                  <b>Wacky 2-Overlay:</b> <a :href="getEventOverlayLink()">{{ getEventOverlayLink() }}</a> (1920px x 1080px)
                 </li>
               </ul>
             </v-expansion-panel-text>
@@ -50,7 +53,7 @@
             <v-expansion-panel-text>
               <ul>
                 <li v-for="(player, index) of sanetizedPlayers" :key="index">
-                  <v-text-field v-model="playerScores[index]" hide-details="true" density="compact" :label="player" @change="updateScores" type="number"></v-text-field>
+                  <v-text-field v-model="playerScores[index]" :hide-details="true" density="compact" :label="player" @change="updateScores" type="number"></v-text-field>
                 </li>
               </ul>
             </v-expansion-panel-text>
@@ -63,7 +66,7 @@
       <v-spacer></v-spacer>
       <v-col cols="5">
         <b>Add new round:</b><br>
-        <v-select :items="gameModes" v-model="gameModeToAdd" ></v-select>
+        <v-select :items="gameModes" v-model="gameModeToAdd" :loading="roundAddLoading"></v-select>
 
         <v-container>
           <v-row>
@@ -98,7 +101,9 @@
         <RouletteSpinAdmin v-if="currentRound.mode === 'rouletteSpin'" :players="sanetizedPlayers" :details="currentRound.additionalDetails" :matchId="this.matchId" @error="onError"></RouletteSpinAdmin>
         <BingoAdmin v-if="currentRound.mode === 'bingo'" :players="sanetizedPlayers" :details="currentRound.additionalDetails" :matchId="this.matchId" @error="onError"></BingoAdmin>
         <TimerAdmin v-if="currentRound.mode === 'timer'" :details="currentRound.additionalDetails"></TimerAdmin>
-        <TwoSpinsAdmin v-if="currentRound.mode === 'twoSpins'" :players="sanetizedPlayers" :details="currentRound.additionalDetails" :matchId="this.matchId" @error="onError"></TwoSpinsAdmin>
+        <RelayAdmin v-if="currentRound.mode === 'relay'" :players="sanetizedPlayers" :details="currentRound.additionalDetails" :matchId="matchId" :arrivalTimestamp="currentRound.arrivingTimestamp" @error="onError"></RelayAdmin>
+        <WackyExtensionAdmin v-if="currentRound.mode === 'wackyExtensions'" :players="sanetizedPlayers" :details="currentRound.additionalDetails" :matchId="this.matchId" @error="onError" />
+        <NSpinsAdmin v-if="currentRound.mode === 'nSpins'" :players="sanetizedPlayers" :details="currentRound.additionalDetails" :matchId="this.matchId" @error="onError"></NSpinsAdmin>
 
       </v-col>
       <v-spacer></v-spacer>
@@ -112,9 +117,11 @@ import { get, post } from '@/http';
 import AddRoundDialog from '@/components/AddRoundDialog.vue';
 import DoneButtonAdmin from "@/components/GameModesAdmin/DoneButton.vue";
 import RouletteSpinAdmin from "@/components/GameModesAdmin/RouletteSpin.vue";
-import TwoSpinsAdmin from "@/components/GameModesAdmin/TwoSpins.vue";
 import BingoAdmin from "@/components/GameModesAdmin/Bingo.vue";
 import TimerAdmin from "@/components/GameModesAdmin/Timer.vue";
+import RelayAdmin from "@/components/GameModesAdmin/Relay.vue";
+import WackyExtensionAdmin from "@/components/GameModesAdmin/WackyExtensions.vue";
+import NSpinsAdmin from "@/components/GameModesAdmin/NSpins.vue";
 import { DateTime } from "luxon";
 
 export default defineComponent({
@@ -125,7 +132,9 @@ export default defineComponent({
     DoneButtonAdmin,
     BingoAdmin,
     AddRoundDialog,
-    TwoSpinsAdmin,
+    RelayAdmin,
+    WackyExtensionAdmin,
+    NSpinsAdmin
   },
   data() {
     return {
@@ -147,7 +156,8 @@ export default defineComponent({
       error: "",
       errorShown: false,
       connectionIssues: false,
-      discordPlayersMap: {} as { [key: string]: string }
+      discordPlayersMap: {} as { [key: string]: string },
+      roundAddLoading: false,
     }
   },
   async created() {
@@ -173,17 +183,22 @@ export default defineComponent({
     getOverlayLink(): string {
       return `${window.location.origin}/overlay/${this.matchId}`
     },
+    getWideOverlayLink(): string {
+      return `${window.location.origin}/wide-overlay/${this.matchId}`
+    },
     getEventOverlayLink(): string {
-      return `${window.location.origin}/bingo-overlay/${this.matchId}`
+      return `${window.location.origin}/event-overlay/${this.matchId}`
       // return "";
     },
     async doneAddingRound(values: any, title: string) {
       if (values) {
+        this.roundAddLoading = true;
         const resp = await post('/api/match/admin/' + this.matchId + '/addRound', {
           game_mode: this.gameModeToAdd,
           generatorOptions: values,
           title: title
         });
+        this.roundAddLoading = false;
         if (resp.status !== 204) {
           this.onError("An error occured while creating the round.");
         }
@@ -227,7 +242,7 @@ export default defineComponent({
         const arrivingTS = DateTime.fromISO(this.arrivingTimestamp).toMillis();
         if (!isNaN(arrivingTS)) {
           (this.matchInfo as any).rounds[roundIndex].arrivingTimestamp = arrivingTS;
-          if (this.leavingTimestamp === 0 || this.leavingTimestamp === undefined) {
+          if (this.leavingTimestamp <= 0 || this.leavingTimestamp === undefined) {
             (this.matchInfo as any).rounds[roundIndex].leavingTimestamp = -1;
           } else {
             (this.matchInfo as any).rounds[roundIndex].leavingTimestamp = arrivingTS + (this.leavingTimestamp * 1000 * 60);
@@ -299,11 +314,11 @@ export default defineComponent({
         if (roundIndex >= 0) {
           (this.matchInfo as any).rounds[roundIndex].leavingTimestamp = Date.now();
           if (newER >= 0) {
-            (this.matchInfo as any)['scores'][newER] += 1;
+            this.playerScores[newER] += 2;
           } else if (newER === -2) {
-            ((this.matchInfo as any)['scores'] as number[]).map(v => { return v + 0.5 });
+            this.playerScores = this.playerScores.map(v => { return v + 1 });
           }
-          await this.sendData();
+          await this.updateScores();
         }
         this.endRound = undefined;
       }
@@ -321,8 +336,8 @@ export default defineComponent({
       return { mode: "" };
     },
     endRoundItems(): unknown[] {
-      let arr = this.sanetizedPlayers.map((p, idx) => { return {title: `End round and increase score of ${p} by 1`, value: idx} });
-      arr.push({title: "End round and increase score of every player by 0.5", value: -2});
+      let arr = this.sanetizedPlayers.map((p, idx) => { return {title: `End round and increase score of ${p} by 2`, value: idx} });
+      arr.push({title: "End round and increase score of every player by 1", value: -2});
       arr.push({title: "End round and don't increase scores", value: -1});
       return arr;
     },
