@@ -76,6 +76,7 @@ export class RelayGameMode implements GameMode {
                 "Three-Headed Serpent (Santa Fortuna)",
                 "Chasing a Ghost (Mumbai)",
                 "Another Life (Whittleton Creek)",
+                "Shadows in the Water (Ambrose Island)",
                 "The Ark Society (Isle of Sgàil)",
                 "Golden Handshake (New York)",
                 "The Last Resort (Haven Island)",
@@ -84,7 +85,6 @@ export class RelayGameMode implements GameMode {
                 "Apex Predator (Berlin)",
                 "End Of An Era (Chongqing)",
                 "The Farewell (Mendoza)",
-                "Shadows in the Water (Ambrose Island)"
             )
         } else {
             maps.push(...(options['maps'] as string[]));
